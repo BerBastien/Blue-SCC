@@ -60,26 +60,8 @@ library(rnaturalearth)
     glimpse(closest_mean_coef)
      coral_areas_wgs84_2_joined[which(coral_areas_wgs84_2_joined$surveys == 0), c(3,4,5,6)] <- closest_mean_coef
     glimpse(coral_areas_wgs84_2_joined)
-    save(coral_areas_wgs84_2_joined,file="Data/modules/corals/flooded_corals.Rds")
+    floodedArea_corals <- coral_areas_wgs84_2_joined
+    save(coral_areas_wgs84_2_joined,file="Data/modules/corals/floodedArea_corals.Rds")
 
         
         
-
-    
-
-
-
-# List all feature classes in a file geodatabase
-subset(ogrDrivers(), grepl("GDB", name))
-
-fc_list <- ogrListLayers(filename)
-print(fc_list)
-
-# Read the feature class
-fc <- readOGR(dsn=filename,layer="AEB_Coral")
-
-# Determine the FC extent, projection, and attribute information
-summary(fc)
-
-# View the feature class
-plot(fc)

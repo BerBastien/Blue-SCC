@@ -1,4 +1,4 @@
-x<-c("ggplot2", "dplyr","WDI","scico")
+x<-c("ggplot2", "dplyr","WDI","ggpubr","scico","lfe","rnaturalearth","scales")
 lapply(x, require, character.only = TRUE)
 setwd("C:\\Users\\basti\\Documents\\GitHub\\BlueDICE")
 datadir <- "C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\modules\\fish\\"
@@ -105,6 +105,20 @@ glimpse(temp)
     
     levels(factor(fisheries_df_temp$rcp))
     
+    ggplot(fisheries_df_temp %>% filter(scenario=="No Adaptation")) + 
+    geom_line(aes(x=tdif,y=(100*p1/gdp_ppp_2012_2021),group=interaction(country,scenario),color=country),alpha=0.5)+
+    geom_text_repel(data=fisheries_df_temp %>% filter(scenario=="No Adaptation" & rcp=="RCP85" & (-(p2-p1)/gdp_ppp_2012_2021) >0.1),
+        aes(x=tdif+0.3,y=(100*(p1)/gdp_ppp_2012_2021),group=interaction(country,scenario),color=country,label=sovereign),
+        alpha=0.5, max.pverlaps=200)+
+    guides(color="none")+
+    theme_minimal() + 
+    #scale_y_continuous(lim=c(-100,80)) + 
+    #coord_y_continuous(trans=log)+
+    xlab("Temperature Increase by the end of the Century\nw.r.t. 2012-2021 period")+
+    ylab("Profit from Fisheries \n (% of present GDP)") + 
+    scale_color_scico_d(direction=-1)+
+    ggtitle("No Adaptation")
+
     library("ggrepel")  
     ggplot(fisheries_df_temp %>% filter(scenario=="No Adaptation")) + 
     geom_line(aes(x=tdif,y=((p2-p1)/gdp_ppp_2012_2021),group=interaction(country,scenario),color=country),alpha=0.5)+
@@ -116,11 +130,105 @@ glimpse(temp)
     #scale_y_continuous(lim=c(-100,80)) + 
     #coord_y_continuous(trans=log)+
     xlab("Temperature Increase by the end of the Century\nw.r.t. 2012-2021 period")+
-    ylab("Profit Loss from Fisheries Damages\n (% of present GDP)") + 
+    ylab("Profit Loss from Fisheries Damages\n (Fraction of present GDP)") + 
     scale_color_scico_d(direction=-1)+
     ggtitle("No Adaptation")+
     xlim(0,4.5)
     ggsave("Figures/SM/fisheries/profits_dif_noadaptation_temp_percGDP.png",dpi=600)
+
+
+    fisheries_df_temp <- fisheries_df_temp %>%
+    mutate(loss=(p2-p1)/gdp_ppp_2012_2021)
+
+
+        glimpse(  fisheries_df_temp)
+    library('tidyverse')
+    fisheries_tcoeff <- fisheries_df_temp%>%
+        filter(!is.na(loss)) %>%
+        group_by(sovereign_iso3) %>%
+        nest() %>%
+        mutate(
+            tcoeff = map_dbl(data, ~{
+            mod <- felm(loss ~ 0 + I(tdif) | 0 | 0 | 0, .x)
+            coef(mod)[1]
+            }),
+
+            se = map_dbl(data, ~{
+            mod <- felm(loss~ 0 + I(tdif) | 0 | 0 | 0, .x)
+            summary(mod)$coef[2]
+            }),
+
+            pval = map_dbl(data, ~{
+            mod <- felm(loss ~ 0 + I(tdif) | 0 | 0 | 0, .x)
+            summary(mod)$coef[4]
+             })
+            
+        )
+
+        glimpse(fisheries_tcoeff)
+
+        fisheries_tcoeff <- fisheries_tcoeff %>%
+        unnest(data) %>% slice(1) %>% ungroup %>% select(sovereign_iso3,tcoeff,se,pval) %>% as.data.frame()
+        
+
+        save(fisheries_tcoeff,file="Data/Modules/fish/fisheries_tcoeff.Rds")
+        load(file="Data/Modules/fish/fisheries_tcoeff.Rds")
+        glimpse(fisheries_tcoeff)
+
+    fisheries_tcoeff$tcoeff <- fisheries_tcoeff$tcoeff*100
+    fisheries_tcoeff$se <- fisheries_tcoeff$se*100
+    write.csv(fisheries_tcoeff,file="Data/intermediate_output/fisheries_tcoeff.csv")
+
+
+    # Get the world map in sf format
+    library("rnaturalearth")
+    world <- ne_countries(scale = "medium", returnclass = "sf")
+
+    # Merge your data with the world map data
+    merged_data <- left_join(world, fisheries_tcoeff, by = c("iso_a3" = "sovereign_iso3"))
+    merged_data <- left_join(merged_data, fisheries_df_temp %>% group_by(sovereign_iso3) %>% slice(1) %>% ungroup, by = c("iso_a3" = "sovereign_iso3"))
+
+    glimpse(merged_data)
+
+    # Plot
+
+    max(merged_data$tcoeff,na.rm=T)
+    max(merged_data$tcoeff,na.rm=T)
+
+    merged_data %>% filter(tcoeff>0)
+    merged_data %>% filter(region_un== "Seven seas (open ocean)")
+    
+    ggplot(merged_data)+geom_histogram(aes(x=-tcoeff))    +
+    scale_x_continuous(trans="log")
+
+    merged_data <- merged_data %>% filter(!is.na(tcoeff) & region_un!= "Seven seas (open ocean)")
+    merged_data$region_un <- factor(merged_data$region_un)
+    merged_data$region_un <- droplevels(merged_data$region_un)
+    levels(merged_data$region_un)
+
+    library(ggrepel)
+    Loss_perC <- ggplot(merged_data )+geom_point(aes(x=gdp_ppp_2012_2021,y=-tcoeff,color=region_un)) +
+    geom_text_repel(data=merged_data %>% filter(abs(tcoeff)>1),aes(x=gdp_ppp_2012_2021,y=-tcoeff,label=iso_a3,color=region_un))+
+    scale_x_continuous(trans="log")+
+    scale_y_continuous(trans="log")+
+    scale_color_scico_d(begin=0.1,end=0.8)+
+    theme_bw() + 
+    xlab("GDP")+ylab("%GDP Loss per Degree C") + 
+    labs(color="")+theme(legend.position="bottom")
+    
+
+    
+    Map_Loss <- ggplot(data = merged_data) +
+    geom_sf(aes(fill = -tcoeff)) +
+    scale_fill_scico(palette = "lajolla", limits = c(0, 0.1), oob=squish) + # Use the desired scico palette
+    coord_sf(crs = "+proj=robin") + # Robinson projection
+    theme_minimal() +
+    labs(fill = "%GDP Loss per Degree C")+theme(legend.position="bottom")
+    
+    ggarrange(Map_Loss,Loss_perC,widths=c(2,1.1))
+    ggsave("Figures/SM/fisheries/MapFisheries_Coef_2.png",dpi=600)
+
+        
 
 
     

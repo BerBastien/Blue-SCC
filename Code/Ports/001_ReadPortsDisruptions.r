@@ -95,6 +95,13 @@ temp <- rbind(temp,temp2,temp3)
         mutate(across(where(is.character), toupper))
     names(port_df)[2] <- "scenario"
 
+    port_df <- port_df %>% #I suspect scenarios were flipped accidentaly in the original dataset
+        mutate(
+            scenario= recode(scenario, 
+            "RCP45" = "RCP85", 
+            "RCP85" = "RCP45")
+        )
+
     glimpse(port_df)
     port_df_temp <- merge(port_df,temp %>% filter(year==2050) %>% select(-year),by="scenario")
 
@@ -139,10 +146,5 @@ temp <- rbind(temp,temp2,temp3)
 
     glimpse(port_ssp)
 
-    port_ssp <- port_ssp %>% #I suspect scenarios were flipped accidentaly in the original dataset
-        mutate(
-            scenario= recode(scenario, 
-            "RCP45" = "RCP85", 
-            "RCP85" = "RCP45")
-        )
+    
     write.csv(port_ssp,"Data/modules/ports/ports_ssps.csv")

@@ -20,7 +20,7 @@
     
     corals2 <- corals[,which(names(corals) %in% c("Y_future_RCP85_yr_2100_change",
     "Y_future_RCP85_yr_2050_change","uniqueplace",
-    "Y_future_RCP45_yr_2100_change","Y_future_RCP45_yr_2050_change"))]  #Y_future_RCP45_yr_2050_change is the coral cover percent in 2050 minus the coral cover percentage in 2018
+    "Y_future_RCP45_yr_2100_change","Y_future_RCP45_yr_2050_change"))]  # Y_future_RCP45_yr_2050_change is the coral cover percent in 2050 minus the coral cover percentage in 2018
 
     corals_long <- corals2 %>%
     pivot_longer(cols = -uniqueplace, names_to = "variable", values_to = "cover_change")
@@ -192,8 +192,9 @@
         
 
         save(corals_tcoeff,file="Data/Modules/Corals/corals_tcoeff.Rds")
+        load(file="Data/Modules/Corals/corals_tcoeff.Rds")
         
-        corals_tcoeff_sf <- corals_tcoeff%>%
+        corals_tcoeff_sf <- corals_tcoeff %>%
         slice(1) %>% select(uniqueplace, tcoeff, geometry, se, pval,cover)  %>% ungroup()%>%
         st_as_sf()
 
@@ -243,9 +244,10 @@
         breaks <- seq(min(log10(coral_areas_gulf$GIS_AREA_K)), max(log10(coral_areas_gulf$GIS_AREA_K)))
         coral_areas_gulf$area_group <- cut(log10(coral_areas_gulf$GIS_AREA_K), breaks = breaks, labels = FALSE)
 
-        breaks <- seq(min((coral_temp_gulf$tcoeff)), max((coral_temp_gulf$tcoeff)),length.out=10)
-        coral_temp_gulf$coef_group <- cut((coral_temp_gulf$tcoeff), breaks = breaks, labels = FALSE)
+        breaks <- seq(min((coral_temp_gulf$tcoeff*0.01)), max((coral_temp_gulf$tcoeff*0.01)),length.out=10)
+        coral_temp_gulf$coef_group <- cut((coral_temp_gulf$tcoeff*0.01), breaks = breaks, labels = FALSE)
         save(coral_areas_gulf,file="Data/Modules/Corals/coral_areas_gulf.Rds")
+        save(coral_temp_gulf,file="Data/Modules/Corals/coral_temp_gulf.Rds")
     ## Zoom in the Gulf of Mexico (end)
 
     ## Zoom in Florida Keys (start)

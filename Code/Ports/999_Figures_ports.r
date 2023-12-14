@@ -1,4 +1,4 @@
-x<-c("ggplot2", "dplyr","WDI","ggpubr","scico")
+x<-c("ggplot2", "dplyr","WDI","ggpubr","scico","rnaturalearth","scales")
 lapply(x, require, character.only = TRUE)
 setwd("C:\\Users\\basti\\Documents\\GitHub\\BlueDICE")
 
@@ -45,3 +45,26 @@ ggarrange(pr_type,pr_total,ncol=2,align="h",widths=c(3,4))
     theme_bw()
 
     ggsave("Figures/SM/ports/Future_Risk.png",dpi=600)
+
+
+# Figure 3
+
+
+    load(file="Data/Modules/Ports/ports_tcoeff.Rds")
+    write.csv(ports_tcoeff,file="Data/intermediate_output/ports_tcoeff.csv")
+
+
+    # Get the world map in sf format
+    world <- ne_countries(scale = "medium", returnclass = "sf")
+
+    # Merge your data with the world map data
+    merged_data <- left_join(world, ports_tcoeff, by = c("iso_a3" = "iso3"))
+
+    # Plot
+    ggplot(data = merged_data) +
+    geom_sf(aes(fill = tcoeff)) +
+    scale_fill_scico(palette = "lajolla", limits = c(0, 1), oob=squish) + # Use the desired scico palette
+    coord_sf(crs = "+proj=robin") + # Robinson projection
+    theme_minimal() +
+    labs(fill = "Ports Damage\n(%GDP/Degree C)")
+    ggsave("Figures/SM/ports/Map_Ports_Coef.png",dpi=600)

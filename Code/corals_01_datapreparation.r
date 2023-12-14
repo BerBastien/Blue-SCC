@@ -1,3 +1,8 @@
+##  In this Code:
+##  Reading Coral Extent and Combining with coefficient of temperature damage
+##  
+
+
 #setup#
 
     x <- c('raster','ggOceanMapsData','ggOceanMaps', 'ggpubr',
