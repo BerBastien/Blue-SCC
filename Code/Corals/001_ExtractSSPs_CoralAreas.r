@@ -1,14 +1,6 @@
 ## Extract GDP and Pop for coral Areas
 
-## Setup (start)
-    x <- c('raster','ggOceanMapsData','ggOceanMaps', 'ggpubr',
-    'dplyr','ncdf4','ggplot2','tidyverse','RColorBrewer','colorspace','spData','sf',
-    'lfe','marginaleffects','rgdal',"rnaturalearth",'rgeos','geosphere','sf','ggthemes','scales',"exactextractr")
-    lapply(x, require, character.only = TRUE)
-    setwd('C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Code\\Corals')
-    dir1 <- 'C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\corals\\'
-    dir_ssps <- "C:\\Users\\basti\\Box\\Data\\SSPs\\Gridded\\Pop\\"
-## Setup (end)
+
 ## Load Corals
     continents <- ne_countries(scale = "medium", returnclass = "sf") #%>%st_transform(st_crs(coral_areas_wgs84))  
     dir_wcmc <- "C:\\Users\\basti\\Box\\Data\\Oceans\\coral_extent\\14_001_WCMC008_CoralReefs2021_v4_1\\01_Data"

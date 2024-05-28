@@ -3,7 +3,7 @@ library(ggplot2)
 library(ggpubr)
 library(scico)
 ## Functions
-    ces_utility <- function(c, e, i, s1 = 0.5, s2 = 0.1, theta1 = 0.55, theta2 = 0.58, alpha = 1.45) {
+    ces_utility <- function(c, e, i, s1 = 0.1, s2 = 0.1, theta1 = 0.55, theta2 = 0.58, alpha = 1.45) {
         utility_ces <- (
             (
                 (
@@ -18,18 +18,18 @@ library(scico)
     }
 
 
-    ces_utility <- function(c, e, i, theta1 = 0.55, theta2 = 0.58, alpha = 1.45) {
-        utility_ces <- (
-            (
-                (((c)^theta1 + ( e)^theta1)
-                )^((theta2) / (theta1)) +
-                (i)^theta2
-            )^((1 - alpha) / (theta2))
-            - 1
-        ) / (1 - alpha)
+    # ces_utility <- function(c, e, i, theta1 = 0.55, theta2 = 0.58, alpha = 1.45) {
+    #     utility_ces <- (
+    #         (
+    #             (((c)^theta1 + ( e)^theta1)
+    #             )^((theta2) / (theta1)) +
+    #             (i)^theta2
+    #         )^((1 - alpha) / (theta2))
+    #         - 1
+    #     ) / (1 - alpha)
 
-        return(utility_ces)
-    }
+    #     return(utility_ces)
+    # }
 
 ## Functions
 
@@ -95,8 +95,8 @@ u_ces_gd <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et$val
 u_ces_gd_damaged <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et_dam$value,i=it_dam$value), fun  = "GreenDICE", type = "Damaged")
 u_ces <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et$value,i=it$value,theta1=1,), fun  = "theta1=1", type = "Baseline")
 u_ces_damaged <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et_dam$value,i=it_dam$value,theta1=1,), fun  = "theta1=1", type = "Damaged")
-u_ces2 <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et$value,i=it$value,theta1=-1,), fun  = "theta1=-1", type = "Baseline")
-u_ces2_damaged <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et_dam$value,i=it_dam$value,theta1=-1,), fun  = "theta1=-1", type = "Damaged")
+u_ces2 <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et$value,i=it$value,theta1=0.11,), fun  = "theta1=0.11", type = "Baseline")
+u_ces2_damaged <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et_dam$value,i=it_dam$value,theta1=0.11,), fun  = "theta1=0.11", type = "Damaged")
 u_ces3 <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et$value,i=it$value,theta1=0.8), fun  = "theta1=0.8", type = "Baseline")
 u_ces3_damaged <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et_dam$value,i=it_dam$value,theta1=0.8), fun  = "theta1=0.8", type = "Damaged")
 u_ces4 <- data.frame(year = ct$year, utility = ces_utility(c=ct$value,e=et$value,i=it$value,theta1=0.3), fun  = "theta1=0.3", type = "Baseline")
@@ -111,7 +111,6 @@ ggplot(df_u)+
 #ggplot(df_u %>% filter(fun=="thetas=1"))+
 geom_line(aes(x=year,y=(utility),col=fun,linetype=type))+
 theme_bw() 
-
 
 plot_util <- ggplot(df_u)+
 #ggplot(df_u %>% filter(fun=="thetas=-1"))+

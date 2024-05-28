@@ -6,7 +6,7 @@
     lapply(x, require, character.only = TRUE)
 
     setwd('C:\\Users\\basti\\Documents\\GitHub\\BlueDICE')
-    dir1 <- 'C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\corals\\'
+    dir1 <- 'C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\all_data\\corals\\'
     
 #setup 
 
@@ -60,7 +60,7 @@
     filter(year > 1996, year<2019) %>%
     mutate(t_96_18 = mean(temp)) %>%
     filter(year==1997) %>%
-    select(t_96_18,scenario) %>%
+    dplyr::select(t_96_18,scenario) %>%
     inner_join(temp, by = c("scenario"))
 
     glimpse(temp)
@@ -131,6 +131,8 @@
 # Read future coral cover (end)
 
 ## Estimate Temperature Coefficient (start)
+    
+    load(file="Data/Modules/Corals/corals_temp_unique.Rds")
     library(rnaturalearth)
     dir_wcmc <- "C:\\Users\\basti\\Box\\Data\\Oceans\\coral_extent\\14_001_WCMC008_CoralReefs2021_v4_1\\01_Data"
     v4_coral_py <- sf::st_read(dsn = file.path(dir_wcmc), layer = "WCMC008_CoralReef2021_Py_v4_1")
@@ -154,6 +156,8 @@
     coral_areas_wgs84 <- coral_areas_wgs84[-na_vals_id,]
     
     corals_temp_unique_sf <- st_as_sf(corals_temp_unique, coords = c("Longitude.Degrees", "Latitude.Degrees"))
+   
+    
 
     # Set the CRS for corals_temp_unique_sf
     corals_temp_unique_sf <- st_set_crs(corals_temp_unique_sf, st_crs(coral_sf))
@@ -189,15 +193,100 @@
 
         corals_tcoeff <- corals_tcoeff %>%
         unnest(data)
+
+
         
 
         save(corals_tcoeff,file="Data/Modules/Corals/corals_tcoeff.Rds")
         load(file="Data/Modules/Corals/corals_tcoeff.Rds")
+        glimpse(corals_tcoeff)        
         
         corals_tcoeff_sf <- corals_tcoeff %>%
         slice(1) %>% select(uniqueplace, tcoeff, geometry, se, pval,cover)  %>% ungroup()%>%
         st_as_sf()
 
+
+        all_places <- unique(corals_temp_unique_sf_wgs84$uniqueplace)
+        i <- 1
+        for (place in all_places){
+            
+            place_data <- corals_temp_unique_sf_wgs84 %>% filter(uniqueplace==place)
+            coef <- corals_tcoeff%>% filter(uniqueplace==place)
+            #glimpse(place_data)
+            plot <- ggplot() + 
+            geom_point(data=place_data,aes(x=tdif,y=cover_change_perc)) +
+            geom_line(aes(x=(seq(0,40)*0.1),y=(seq(0,40)*0.1*coef$tcoeff[1])))+
+            geom_ribbon(aes(x=(seq(0,40)*0.1),ymin=(seq(0,40)*0.1*(coef$tcoeff[1])-coef$se*1.645),
+                ymax=(seq(0,40)*0.1*(coef$tcoeff[1])+coef$se*1.645)),alpha=0.1)+
+            theme_minimal()+
+            xlab("Temperature Increase") + 
+            ylab("Percent Cover Change")
+            plot
+            ggsave(filename = paste0("Figures/all_figures/corals/place_Area_Damage//place_", i, "_mangrove_benefits.jpg"), plot = plot, width = 8, height = 4)
+            i <- i +1
+        }
+        
+        mod <- felm(cover_change_perc ~ 0+ tdif + I(tdif^2)| 0 | 0 | 0, corals_temp_unique_sf_wgs84)
+        summary(mod)$coef[4]
+        
+        coral_t_coeff_sq <- corals_temp_unique_sf_wgs84 %>%
+        group_by(uniqueplace) %>%
+        nest() %>%
+        mutate(
+            tcoeff = map_dbl(data, ~{
+            mod <- felm(cover_change_perc ~ 0+ tdif + I(tdif^2)| 0 | 0 | 0, .x)
+            coef(mod)[1]
+            }),
+
+            tcoeff2 = map_dbl(data, ~{
+            mod <- felm(cover_change_perc ~ 0+ tdif + I(tdif^2)| 0 | 0 | 0, .x)
+            coef(mod)[2]
+            }),
+
+            se = map_dbl(data, ~{
+            mod <- felm(cover_change_perc ~ 0  +tdif +  I(tdif^2)| 0 | 0 | 0, .x)
+            summary(mod)$coef[3]
+            }),
+
+            se2 = map_dbl(data, ~{
+            mod <- felm(cover_change_perc ~ 0  +tdif +  I(tdif^2)| 0 | 0 | 0, .x)
+            summary(mod)$coef[4]
+            }),
+
+            pval = map_dbl(data, ~{
+            mod <- felm(cover_change_perc ~ 0 +tdif +  I(tdif^2) | 0 | 0 | 0, .x)
+            summary(mod)$coef[7]
+            }), 
+
+            living_coral_cover = map_dbl(data, ~{
+            mod <- lm(cover ~1, .x)
+            summary(mod)$coef[1]
+            })
+        )
+
+        glimpse(coral_t_coeff_sq)
+
+        all_places <- unique(corals_temp_unique_sf_wgs84$uniqueplace)
+        i <- 1
+        for (place in all_places){
+            
+            place_data <- corals_temp_unique_sf_wgs84 %>% filter(uniqueplace==place)
+            coef <- coral_t_coeff_sq%>% filter(uniqueplace==place)
+            #glimpse(place_data)
+            plot <- ggplot() + 
+            geom_point(data=place_data,aes(x=tdif,y=cover_change_perc)) +
+            geom_line(aes(x=(seq(0,40)*0.1),y= ((seq(0,40)*0.1)*coef$tcoeff[1]+ ((seq(0,40)*0.1)^2)*coef$tcoeff2[1]))) +
+
+            geom_ribbon(    aes(x=(seq(0,40)*0.1),ymin=((seq(0,40)*0.1)*(coef$tcoeff[1]-coef$se*1.645)+((seq(0,40)*0.1)^2)*(coef$tcoeff2[1]-coef$se2*1.645)),
+                ymax=((seq(0,40)*0.1)*(coef$tcoeff[1]+coef$se*1.645)+((seq(0,40)*0.1)^2)*(coef$tcoeff2[1]+coef$se2*1.645))),alpha=0.1)+
+            theme_minimal()+
+            xlab("Temperature Increase") + 
+            ylab("Percent Cover Change")
+            plot
+            ggsave(filename =paste0("Figures/all_figures/corals/place_Area_Damage//sq//place_", i, "_mangrove_benefits.jpg"), plot = plot, width = 8, height = 4)
+            i <- i +1
+        }
+        
 ## Estimate Temperature Coefficient (end)
 
 ## Example of the Methodology using a subset of the data (start)
