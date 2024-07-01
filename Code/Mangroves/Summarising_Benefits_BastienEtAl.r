@@ -1,86 +1,84 @@
 #Summarising Benefits per Ha
 
-    library(scico)
-    library(tidyr)
-    library(dplyr)
-    library(rlang)
-    library(dplyr)
-    library(purrr)
-    library(tidyverse)
-             library("rnaturalearthdata")
-             library(ggpubr)
-            library("rnaturalearth")
-                        library("scales")
 
+    # Gridcell-level mangrove projections (start)
+        scen_allforcings_allES <- read.csv(file="Data/modules/mangroves/scen_allforcings_allES_ssp270.csv")
+        glimpse(scen_allforcings_allES)
+    # Gridcell-level mangrove projections (end)
 
-
-    scen_allforcings_allES <- read.csv(file="Data/modules/mangroves/scen_allforcings_allES_ssp270.csv")
-    glimpse(scen_allforcings_allES)
 
 ## Area Change
+
+    ## Read country-level mangrove projections (start)
     
     
-    diff_country_total <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp370_brander_corrected_countries.csv")
-    diff_country_total1 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp170_brander_corrected_countries.csv")
-    diff_country_total2 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp270_brander_corrected_countries.csv")
-    diff_country_total3 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp370_brander_corrected_countries.csv")
-    diff_country_total4 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp470_brander_corrected_countries.csv")
-    diff_country_total5 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp570_brander_corrected_countries.csv")
+        diff_country_total <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp370_brander_corrected_countries.csv")
+        diff_country_total1 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp170_brander_corrected_countries.csv")
+        diff_country_total2 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp270_brander_corrected_countries.csv")
+        diff_country_total3 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp370_brander_corrected_countries.csv")
+        diff_country_total4 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp470_brander_corrected_countries.csv")
+        diff_country_total5 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp570_brander_corrected_countries.csv")
 
-    glimpse(diff_country_total3)
-    glimpse(diff_country_total2)
-
-    diff_country_total1 %>% filter(countrycode=="NLD") 
-
-    ssp_gdp <- read.csv(file='C:\\Users\\basti\\Box\\Data\\SSPs\\ssp_gdp.csv')
-    glimpse(ssp_gdp)
-    countries_in_ssps <- unique(ssp_gdp$ISO3)    
-    ssp_temp <- read.csv(file="C:\\Users\\basti\\Box\\Data\\SSPs\\CO2Pulse\\SSP585_magicc_202310021547.csv")
-    ssp_temp <- read.csv(file="C:\\Users\\basti\\Box\\Data\\SSPs\\CO2Pulse\\SSP370_magicc_202311031621.csv")
-
+        glimpse(diff_country_total1)
         
-    ssp_gdp$countrycode <- ssp_gdp$ISO3
+        diff_country_total <- rbind(diff_country_total1 %>% dplyr::rename("POP_Country"="Pop_Country_ssp1","GDP_Country"="GDP_Country_ssp1","POP"="POP_SSP1","GDP"="GDP_SSP1") %>% mutate(scenario="SSP1"),
+                                diff_country_total2 %>% dplyr::rename("POP_Country"="Pop_Country_ssp2","GDP_Country"="GDP_Country_ssp2","POP"="POP_SSP2","GDP"="GDP_SSP2") %>% mutate(scenario="SSP2"),
+                                diff_country_total3 %>% dplyr::rename("POP_Country"="Pop_Country_ssp3","GDP_Country"="GDP_Country_ssp3","POP"="POP_SSP3","GDP"="GDP_SSP3") %>% mutate(scenario="SSP3"),
+                                diff_country_total4 %>% dplyr::rename("POP_Country"="Pop_Country_ssp4","GDP_Country"="GDP_Country_ssp4","POP"="POP_SSP4","GDP"="GDP_SSP4") %>% mutate(scenario="SSP4"),
+                                diff_country_total5 %>% dplyr::rename("POP_Country"="Pop_Country_ssp5","GDP_Country"="GDP_Country_ssp5","POP"="POP_SSP5","GDP"="GDP_SSP5") %>% mutate(scenario="SSP5"))
+
+    ## Read country-level mangrove projections (end)
+
     
+    ##  Merge with GDP (start)
+
+        ssp_gdp <- read.csv(file=paste0(dir_box,'\\SSPs\\ssp_gdp.csv'))
+        ssp_temp <- read.csv(file=paste0(dir_box,"\\SSPs\\CO2Pulse\\SSP585_magicc_202310021547.csv"))
+        ssp_temp <- read.csv(file=paste0(dir_box,"\\SSPs\\CO2Pulse\\SSP370_magicc_202311031621.csv"))
+        countries_in_ssps <- unique(ssp_gdp$ISO3)            
+            
+        ssp_gdp$countrycode <- ssp_gdp$ISO3        
+        
+        ssp_temp_long <- ssp_temp %>%
+            tidyr::pivot_longer(
+                cols = starts_with("X"),
+                names_to = "year",
+                values_to = "value"
+            ) %>%
+            # Remove the "X" prefix from the year column and convert to numeric
+            mutate(year = as.numeric(str_remove(year, "X"))) %>% filter(variable=="Surface Temperature")
+        
+        ssp_temp_long$temp2025 <- ssp_temp_long %>% filter(year==2025) %>% dplyr::select(value) %>% unlist()
+        ssp_temp_long$temp <- ssp_temp_long$value - ssp_temp_long$temp2025
     
-    ssp_temp_long <- ssp_temp %>%
-        tidyr::pivot_longer(
-            cols = starts_with("X"),
-            names_to = "year",
-            values_to = "value"
-        ) %>%
-        # Remove the "X" prefix from the year column and convert to numeric
-        mutate(year = as.numeric(str_remove(year, "X"))) %>% filter(variable=="Surface Temperature")
+        benefit_ssp <- merge(ssp_gdp,diff_country_total,by=c("countrycode","year","scenario"),all=T)
+        benefit_ssp <- merge(benefit_ssp ,ssp_temp_long,by=c("year"),all=F) %>% filter(year>2025)
+        benefit_ssp$benefit_change_perGDP <- 100*benefit_ssp$benefit_change / (benefit_ssp$GDP.billion2005USDperYear * 10^9)
+        glimpse(benefit_ssp)
+    ##  Merge with GDP (start)
 
 
 
-    ssp_temp_long$temp2025 <- ssp_temp_long %>% filter(year==2025) %>% dplyr::select(value) %>% unlist()
-    ssp_temp_long$temp <- ssp_temp_long$value - ssp_temp_long$temp2025
-    
-    diff_country_total <- rbind(diff_country_total1 %>% rename("POP_Country"="Pop_Country_ssp1","GDP_Country"="GDP_Country_ssp1","POP"="POP_SSP1","GDP"="GDP_SSP1") %>% mutate(scenario="SSP1"),
-                                diff_country_total2 %>% rename("POP_Country"="Pop_Country_ssp2","GDP_Country"="GDP_Country_ssp2","POP"="POP_SSP2","GDP"="GDP_SSP2") %>% mutate(scenario="SSP2"),
-                                diff_country_total3 %>% rename("POP_Country"="Pop_Country_ssp3","GDP_Country"="GDP_Country_ssp3","POP"="POP_SSP3","GDP"="GDP_SSP3") %>% mutate(scenario="SSP3"),
-                                diff_country_total4 %>% rename("POP_Country"="Pop_Country_ssp4","GDP_Country"="GDP_Country_ssp4","POP"="POP_SSP4","GDP"="GDP_SSP4") %>% mutate(scenario="SSP4"),
-                                diff_country_total5 %>% rename("POP_Country"="Pop_Country_ssp5","GDP_Country"="GDP_Country_ssp5","POP"="POP_SSP5","GDP"="GDP_SSP5") %>% mutate(scenario="SSP5"))
-    
-    benefit_ssp <- merge(ssp_gdp,diff_country_total,by=c("countrycode","year","scenario"),all=T)
-    benefit_ssp <- merge(benefit_ssp ,ssp_temp_long,by=c("year"),all=F) %>% filter(year>2025)
-    benefit_ssp$benefit_change_perGDP <- 100*benefit_ssp$benefit_change / (benefit_ssp$GDP.billion2005USDperYear * 10^9)
-    glimpse(benefit_ssp)
 
+    ## Read Area loss (start)
     
-    scen_arealoss_perc_both <- read.csv(file="Data/modules/mangroves/Proj_Area_Perc_onlyCC_SSP270.csv")
-    grid_with_countries_ALL <- read.csv("Data/modules/mangroves/grid_with_specific_countries_FINAL.csv")
-    scen_arealoss_perc_both <- scen_arealoss_perc_both %>% left_join(grid_with_countries_ALL %>% mutate(gridcell_id=id),by="gridcell_id")
-    scen_arealoss_perc_both$countrycode_old <-scen_arealoss_perc_both$countrycode
-    scen_arealoss_perc_both$countrycode <- scen_arealoss_perc_both$iso_a3
     
-    glimpse(scen_arealoss_perc_both)
-    benefit_ssp2 <- benefit_ssp %>% filter(scenario.x=="SSP2")
-    country_area_mangrove_2020 <- scen_arealoss_perc_both %>% filter(year==2026) %>%
-                            group_by(countrycode) %>% 
-                            summarize(area_2020 = sum(mangrove_area2020,na.rm=T))
-    benefit_ssp2 <- merge(benefit_ssp2 ,country_area_mangrove_2020,by=c("countrycode"),all=F) 
-    benefit_ssp2$frac_loss <- benefit_ssp2$diff_mangrove_area_future_loss/benefit_ssp2$area_2020
+        scen_arealoss_perc_both <- read.csv(file="Data/modules/mangroves/Proj_Area_Perc_onlyCC_SSP270.csv")
+        grid_with_countries_ALL <- read.csv("Data/modules/mangroves/grid_with_specific_countries_FINAL.csv")
+        scen_arealoss_perc_both <- scen_arealoss_perc_both %>% left_join(grid_with_countries_ALL %>% mutate(gridcell_id=id),by="gridcell_id")
+        scen_arealoss_perc_both$countrycode_old <-scen_arealoss_perc_both$countrycode
+        scen_arealoss_perc_both$countrycode <- scen_arealoss_perc_both$iso_a3
+        
+        glimpse(scen_arealoss_perc_both)
+        benefit_ssp2 <- benefit_ssp %>% filter(scenario.x=="SSP2")
+        country_area_mangrove_2020 <- scen_arealoss_perc_both %>% filter(year==2026) %>%
+                                group_by(countrycode) %>% 
+                                summarize(area_2020 = sum(mangrove_area2020,na.rm=T))
+        benefit_ssp2 <- merge(benefit_ssp2 ,country_area_mangrove_2020,by=c("countrycode"),all=F) 
+        benefit_ssp2$frac_loss <- benefit_ssp2$diff_mangrove_area_future_loss/benefit_ssp2$area_2020
+
+    ## Read Area loss (end)
+
 
     ## LINEAR FUNCTION
         #   coefficients_by_country <- benefit_ssp2 %>% filter(!is.na(frac_loss)) %>%
@@ -112,7 +110,7 @@
 
         #     coefficients_by_country$MangroveArea_2020_km2 <- 0.01*coefficients_by_country$MangroveArea_2020_hectares
         #      coefficients_by_country <- coefficients_by_country %>% dplyr::select(-X,-MangroveArea_2020_hectares) %>% 
-        #         rename(FractionChange_perC = coefficient_temp,
+        #         dplyr::rename(FractionChange_perC = coefficient_temp,
         #         FractionChange_perC_se = coefficient_temp_se)
 
         #     write.csv(coefficients_by_country,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\mangrove_area_coefficients_v4Mar2024.csv")
@@ -175,7 +173,7 @@
 
         coefficients_by_country_sq$MangroveArea_2020_km2 <- 0.01*coefficients_by_country_sq$MangroveArea_2020_hectares
         coefficients_by_country_sq <- coefficients_by_country_sq %>% dplyr::select(-MangroveArea_2020_hectares) %>% 
-            rename(FractionChange_perC = coefficient_temp,
+            dplyr::rename(FractionChange_perC = coefficient_temp,
             FractionChange_perC_se = coefficient_temp_se,
             FractionChange_perC_sq = sq_coefficient_temp,
             FractionChange_perC_sq_se = sq_coefficient_temp_se)
@@ -218,60 +216,42 @@
     ## Quadratic Function
     
 
-        #     library("rnaturalearthdata")
-        #     library("rnaturalearth")
-        #     world_ne <- ne_countries(scale = "medium", returnclass = "sf")
-
-        #     world_ne_with_coeffs <-  merge(world_ne,coefficients_by_country,by.x="iso_a3",by.y="countrycode",all=T)
-        #     glimpse(world_ne_with_coeffs)
-
-        #    world_ne_with_coeffs %>% filter(iso_a3=="GBR")
-            
-        #     library("scales")
-        #     gg <- ggplot(data = world_ne_with_coeffs) +
-        #     geom_sf(aes(fill = FractionChange_perC)) +
-        #     scale_fill_scico(palette = "lajolla",na.value="transparent",
-        #         begin=0.1,end=0.9,direction=1) +
-        #     labs(fill = "Area Damage \n(Fraction per Degree C)") +
-            
-        #     theme_bw()+
-        #             coord_sf(crs = "+proj=robin", ylim = c(-39*10^5, 30*10^5))
-
-        #     gg
-            
-        #     ggsave("C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\mangrove_area_coefficients_lin_march2024.png")
-
 
 ## Area Change
 
 
 ## Prices
     
-    glimpse(scen_allforcings_allES)
-    weighted_avg_benefits <- scen_allforcings_allES %>% filter(year>2025) %>%
-    group_by(countrycode, year,type,forcing) %>%
-    mutate(gdppc = (1.59*GDP_Country_ssp2*10^9)/(Pop_Country_ssp2*10^6)) %>% # GDP is in billion 2005 USD per year, Pop is in million #Cumulative Inflation Global from 2005 to 2020: 59.1 from https://data.worldbank.org/indicator/NY.GDP.DEFL.KD.ZG
-    mutate(benefits_perha_percGDP = (100*benefits_perha)/(1.59*GDP_Country_ssp2*10^9)) %>%
-    summarize(
-        weighted_avg_benefit_perha = sum(benefits_perha * mangrove_area, na.rm = TRUE) / sum(mangrove_area, na.rm = TRUE),
-        weighted_avg_benefit_perha_percGDP = sum(benefits_perha_percGDP * mangrove_area, na.rm = TRUE) / sum(mangrove_area, na.rm = TRUE),
-        gdppc = first(gdppc),
-        GDP_SSP2 = first(1.59*GDP_Country_ssp2*10^9),
-        .groups = "drop"
-    )
-    glimpse(weighted_avg_benefits)
+    ## Get benefits (use non-use) by country, by year, weighted by area (start)
+        glimpse(scen_allforcings_allES)
+        def_mult <- deflator_data %>% 
+            summarize(def_2005_to_2020 =NY.GDP.DEFL.ZS[year==2020]/NY.GDP.DEFL.ZS[year==2005] )
+        
+        weighted_avg_benefits <- scen_allforcings_allES %>% filter(year>2025) %>%
+            group_by(countrycode, year,type,forcing) %>%
+            mutate(gdppc = (def_mult[[1]]*GDP_Country_ssp2*10^9)/(Pop_Country_ssp2*10^6)) %>% # GDP is in billion 2005 USD per year, Pop is in million #Cumulative Inflation Global from 2005 to 2020
+            mutate(benefits_perha_percGDP = (100*benefits_perha)/(def_mult[[1]]*GDP_Country_ssp2*10^9)) %>%
+            summarize(
+                weighted_avg_benefit_perha = sum(benefits_perha * mangrove_area, na.rm = TRUE) / sum(mangrove_area, na.rm = TRUE),
+                weighted_avg_benefit_perha_percGDP = sum(benefits_perha_percGDP * mangrove_area, na.rm = TRUE) / sum(mangrove_area, na.rm = TRUE),
+                gdppc = first(gdppc),
+                GDP_SSP2 = first(def_mult[[1]]*GDP_Country_ssp2*10^9),
+                .groups = "drop"
+            )
+        glimpse(weighted_avg_benefits)
+    ## Get benefits (use non-use) by country, by year, weighted by area (end)
     
     # Market damage Function
         weighted_avg_benefits_prov <- weighted_avg_benefits %>% filter(type=="provision",forcing=="both") %>%
-        left_join(coefficients_by_country_sq, by="countrycode") %>%
-        left_join(ssp_temp_long %>% dplyr::select(temp,year), by="year") %>%
-        mutate(prov_benefits_undamaged = 100* weighted_avg_benefit_perha_percGDP * MangroveArea_2020_km2, 
-                prov_benefits_damaged = 100* weighted_avg_benefit_perha_percGDP * (MangroveArea_2020_km2 * (1+FractionChange_perC*temp+FractionChange_perC_sq*temp^2)) ) %>%
-        mutate(percentage_points_damaged =  prov_benefits_damaged - prov_benefits_undamaged, 
-        fraction_damaged = 0.01 *(prov_benefits_damaged - prov_benefits_undamaged), 
-        percentage_damaged = 100*(100* weighted_avg_benefit_perha) * MangroveArea_2020_km2*(FractionChange_perC*temp + FractionChange_perC_sq* temp^2)/GDP_SSP2 , 
-        x =  100* weighted_avg_benefit_perha_percGDP*0.01 * MangroveArea_2020_km2,
-        fraction_damaged_variance = (x*temp)^2 *FractionChange_perC_se^2 + (x*temp^2)^2 * FractionChange_perC_sq_se^2 )
+            left_join(coefficients_by_country_sq, by="countrycode") %>%
+            left_join(ssp_temp_long %>% dplyr::select(temp,year), by="year") %>%
+            mutate(prov_benefits_undamaged = 100* weighted_avg_benefit_perha_percGDP * MangroveArea_2020_km2, 
+                    prov_benefits_damaged = 100* weighted_avg_benefit_perha_percGDP * (MangroveArea_2020_km2 * (1+FractionChange_perC*temp+FractionChange_perC_sq*temp^2)) ) %>%
+            mutate(percentage_points_damaged =  prov_benefits_damaged - prov_benefits_undamaged, 
+            fraction_damaged = 0.01 *(prov_benefits_damaged - prov_benefits_undamaged), 
+            percentage_damaged = 100*(100* weighted_avg_benefit_perha) * MangroveArea_2020_km2*(FractionChange_perC*temp + FractionChange_perC_sq* temp^2)/GDP_SSP2 , 
+            x =  100* weighted_avg_benefit_perha_percGDP*0.01 * MangroveArea_2020_km2,
+            fraction_damaged_variance = (x*temp)^2 *FractionChange_perC_se^2 + (x*temp^2)^2 * FractionChange_perC_sq_se^2 )
 
         glimpse(weighted_avg_benefits_prov)
 
@@ -294,57 +274,30 @@
             mutate(GDPDam_perC_se_adj = GDPDam_perC_se * ((fraction_damaged_variance + variance) / variance )^0.5 ,
             GDPDam_perC_sq_se_adj = GDPDam_perC_sq_se * ((fraction_damaged_variance + variance) / variance )^0.5,
             cov_t_t2_adj = cov_t_t2.y * ((fraction_damaged_variance + variance) / variance )^0.5 )
-        glimpse(weighted_avg_benefits_prov)
-        glimpse(weighted_avg_benefits_prov2)#here 
 
 
 
 
         mangrove_dam_plot <- ggplot(weighted_avg_benefits_prov2 %>% filter(countrycode%in% countries_in_ssps)) + 
-        geom_point(aes(x=temp,y=fraction_damaged,color=countrycode)) +
-        #geom_text(data=weighted_avg_benefits_prov2 %>% filter(year==2100), aes(x=temp+0.1,y=percentage_damaged/100,color=countrycode,label=countrycode)) +
-        geom_line(aes(x=temp,y=GDPDam_perC*temp + GDPDam_perC_sq*temp^2,color=countrycode))+
-        geom_ribbon(aes(x=temp,ymin=(GDPDam_perC-GDPDam_perC_se_adj*1.96)*temp + (GDPDam_perC_sq-GDPDam_perC_sq_se_adj*1.96)*temp^2, 
-        ymax=(GDPDam_perC+GDPDam_perC_se_adj*1.96)*temp + (GDPDam_perC_sq+GDPDam_perC_sq_se_adj*1.96)*temp^2,fill=countrycode),alpha=0.2)+        
-        theme_bw() + 
-        guides(color=FALSE,fill=FALSE) + 
-        xlab("Temperature Increase under RCP7") + 
-        ylab("Market Damages (% GDP)")
+            geom_point(aes(x=temp,y=fraction_damaged,color=countrycode)) +
+            #geom_text(data=weighted_avg_benefits_prov2 %>% filter(year==2100), aes(x=temp+0.1,y=percentage_damaged/100,color=countrycode,label=countrycode)) +
+            geom_line(aes(x=temp,y=GDPDam_perC*temp + GDPDam_perC_sq*temp^2,color=countrycode))+
+            geom_ribbon(aes(x=temp,ymin=(GDPDam_perC-GDPDam_perC_se_adj*1.96)*temp + (GDPDam_perC_sq-GDPDam_perC_sq_se_adj*1.96)*temp^2, 
+            ymax=(GDPDam_perC+GDPDam_perC_se_adj*1.96)*temp + (GDPDam_perC_sq+GDPDam_perC_sq_se_adj*1.96)*temp^2,fill=countrycode),alpha=0.2)+        
+            theme_bw() + 
+            guides(color=FALSE,fill=FALSE) + 
+            xlab("Temperature Increase under RCP7") + 
+            ylab("Market Damages (% GDP)")
 
         mangrove_dam_plot
 
         glimpse(weighted_avg_benefits_prov2)
         market_coefficients_by_country <- weighted_avg_benefits_prov2 %>% filter(year==2100) %>% dplyr::select(countrycode,GDPDam_perC,GDPDam_perC_se_adj,GDPDam_perC_sq,GDPDam_perC_sq_se_adj,cov_t_t2_adj)
         glimpse(market_coefficients_by_country)
-        write.csv(market_coefficients_by_country,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\mangrove_GDPdam_coefficients_v3May2024_cov.csv")
+        #write.csv(market_coefficients_by_country,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\mangrove_GDPdam_coefficients_v3May2024_cov.csv")
 
-
-        market_ben_mangroves <- ggplot(weighted_avg_benefits_prov %>% filter(countrycode %in% countries_in_ssps)) + 
-        geom_line(aes(x=year,y=100*(100*weighted_avg_benefit_perha) * MangroveArea_2020_km2/GDP_SSP2,color=countrycode)) +
-        theme_bw() +
-        guides(color=FALSE) +
-        geom_text_repel(data = weighted_avg_benefits_prov %>% filter(year==2100),aes(x=year,y=100*(100*weighted_avg_benefit_perha) * MangroveArea_2020_km2/GDP_SSP2,color=countrycode,label=countrycode))+
-        xlab("Year") + ylab("Market Benefits From Mangroves (%GDP)")
 
         
-        market_ben_mangroves_2100 <- ggplot(weighted_avg_benefits_prov %>% filter(year==2100,countrycode %in% countries_in_ssps)) + 
-        geom_text(aes(x=10^11,y=140,label="100%"))+
-        geom_text(aes(x=10^11,y=14,label="10%"))+
-        geom_text(aes(x=10^11,y=1.2,label="1%"))+
-        geom_hline(aes(yintercept=1),linetype=2)+
-        geom_hline(aes(yintercept=10),linetype=2)+
-        geom_hline(aes(yintercept=100),linetype=2)+
-        geom_text(data = weighted_avg_benefits_prov %>% filter(year==2100,countrycode %in% countries_in_ssps),aes(x=GDP_SSP2,y=100*(100*weighted_avg_benefit_perha) * MangroveArea_2020_km2/GDP_SSP2,color=countrycode,label=countrycode))+
-        xlab("GDP in 2100 (2020 Int USD)") + ylab("Market Benefits From Mangroves (%GDP)")+
-        scale_y_continuous(trans="log10")+
-        scale_x_continuous(trans="log10")+
-        theme_bw()+
-        guides(color=FALSE)
-
-
-        ggarrange(market_ben_mangroves , market_ben_mangroves_2100        )
-        ggarrange( ggarrange(market_ben_mangroves , market_ben_mangroves_2100        ), mangrove_dam_plot,ncol=1)        
-        ggsave("Figures//all_figures//mangroves//Market_Dam.png")
 
         # ## MonteCarlo
         #     C_i <- unique(weighted_avg_benefits_prov$countrycode)
@@ -491,8 +444,6 @@
     intermediate_output %>% filter(countrycode=="AGO")
     write.csv(intermediate_output,"Data/intermediate_output/mangrove_benefits_per_km2.csv") ## This is sent to F.G. and he will do the regression
 
-    ggplot(intermediate_output,aes(x=year,y=use_market_perkm2))+geom_line(aes(color=countrycode)) + 
-    geom_text(data=intermediate_output%>% filter(year==2100, countrycode=="IDN"),aes(x=year,y=use_market_perkm2,label=countrycode))
     
     model_coefficients_use_market <- combined_summary %>%
         group_by(countrycode)%>%
@@ -506,7 +457,7 @@
         model_coefficients <- model_coefficients_use_market
     glimpse(model_coefficients_use_market)
     
-    write.csv(model_coefficients_use_market,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\model_coefficients_use_marketv3.csv")
+    #write.csv(model_coefficients_use_market,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\model_coefficients_use_marketv3.csv")
 
 
     model_coefficients_nonuse <- combined_summary %>%
@@ -519,8 +470,8 @@
         unnest(c(intercept,elasticity,intercept_se,elasticity_se))
     model_coefficients_nonuse$units <- "Int2020$_perkm2_peryear"
         glimpse(model_coefficients_nonuse)
-        glimpse(combined_summary)
-    write.csv(model_coefficients_nonuse ,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\model_coefficients_nonusev3.csv")
+        
+    #write.csv(model_coefficients_nonuse ,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\model_coefficients_nonusev3.csv")
 
     
     

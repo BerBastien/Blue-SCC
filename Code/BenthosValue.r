@@ -3,7 +3,17 @@
     x <- c('raster','ggOceanMapsData','ggOceanMaps', 'ggpubr',
     'dplyr','ncdf4','ggplot2','tidyverse','RColorBrewer','colorspace','spData','sf',
     'lfe','marginaleffects','rgdal',"rnaturalearth",'rgeos','geosphere','sf','ggthemes','scales')
-    lapply(x, require, character.only = TRUE)
+        library(tidyverse)
+        library(sf)
+        library(rgeos)
+        library(raster)
+
+        library(raster)
+
+        library(raster)
+        library(sf)
+        lapply(x, install.packages, character.only = TRUE)
+        lapply(x, require, character.only = TRUE)
     #install.packages("ggOceanMapsData", repos = c("https://mikkovihtakari.github.io/drat", "https://cloud.r-project.org"))
 
     ## Function
@@ -28,7 +38,7 @@
     ## Function
 
     setwd('C:\\Users\\basti\\Documents\\GitHub\\BlueDICE')
-    dir1 <- 'C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\benthos\\'
+    dir1 <- 'C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\all_data\\benthos\\'
     
     ## Retreive biomass (start)
         fish_models <- c("dbpm")   #dbpm_ipsl-cm5a-lr_nobc_rcp85_wo-diaz_no-fishing_no-oa_b30cm-bendet_global_monthly_2006_2100.nc4
@@ -123,15 +133,7 @@
     ## Get the raster decay
 
         #install.packages(c("tidyverse", "sf", "rgeos", "raster"))
-        library(tidyverse)
-        library(sf)
-        library(rgeos)
-        library(raster)
-
-        library(raster)
-
-        library(raster)
-        library(sf)
+        
 
         eez_sf <- st_as_sf(eez_gpkg)
         glimpse(eez_sf)

@@ -1,12 +1,7 @@
 #setup 
 
-    x <- c('raster','ggOceanMapsData','ggOceanMaps', 'ggpubr',
-    'dplyr','ncdf4','ggplot2','tidyverse','RColorBrewer','colorspace','spData','sf',
-    'lfe','marginaleffects','rgdal',"rnaturalearth",'rgeos','geosphere','sf','ggthemes','scales')
-    lapply(x, require, character.only = TRUE)
 
-    setwd('C:\\Users\\basti\\Documents\\GitHub\\BlueDICE')
-    dir1 <- 'C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\modules\\mangroves\\'
+    dir1 <- 'Data\\modules\\mangroves\\'
     
 #setup 
 
@@ -26,8 +21,8 @@
     names(temp2)[1] <- "temp"
     temp2$scenario <- "RCP85"
 
-    #temp <- rbind(temp,temp2)
-    temp <- temp2
+    temp <- rbind(temp,temp2)
+    #temp <- temp2
     glimpse(temp)
 
     temp <-temp %>% group_by(scenario) %>%
@@ -52,15 +47,12 @@
 
 
 
-# Read future coral cover (end)
+# Read future mangrove cover (end)
 
 
 
 ## Estimate Temperature Coefficient (start)
     # Calculate the percent change in mangrove area
-    library(dplyr)
-    library(purrr)
-
     # Calculate the percent change in mangrove area from the area in 2021
     mangroves_temp <- mangroves_temp %>%
     group_by(countrycode) %>%
@@ -94,14 +86,14 @@
     
         mangrove_tcoeff <- results %>%
         slice(1) %>% dplyr::select(countrycode, tcoeff, se, pval)  %>% ungroup()
-        save(mangrove_tcoeff,file="Data/Modules/Mangroves/mangroves_tcoeff.Rds")
-        glimpse(ports_tcoeff)
-
-    glimpse( mangrove_tcoeff )
+        
+        #save(mangrove_tcoeff,file="Data/Modules/Mangroves/mangroves_tcoeff.Rds")
+        glimpse( mangrove_tcoeff )
 
     mangrove_temp_df <- merge(mangrove_tcoeff,mangroves_temp %>% filter(year==2021),) %>% dplyr::select(-pval,-year,-X,-t_96_18,-scenario,-temp,-tdif,-area,-area_pct_change)
     names(mangrove_temp_df)[c(1:4)] <- c("countrycode","DamCoef_changeperC","DamCoeff_se","area_2021_km2")
     glimpse(mangrove_temp_df)
+    
     mangrove_temp_df$DamCoef_changeperC <- mangrove_temp_df$DamCoef_changeperC*0.01
     mangrove_temp_df$DamCoeff_se <- mangrove_temp_df$DamCoeff_se*0.01
     mangrove_temp_df$provisioning_value_perkm2year <- 2998
