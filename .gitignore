@@ -2,3 +2,7 @@
 /Data/modules
 /Figures
 /Data/intermediate_output
+.idea
+/Data/**
+!Data/**/
+!Data/**/.gitkeep
