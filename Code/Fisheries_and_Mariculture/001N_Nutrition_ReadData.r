@@ -128,16 +128,10 @@ gbd_deaths_number_doseresponse_pop <- gbd_deaths_number_pop %>%
     ) %>%
     ungroup() %>% 
     rename(countrycode=ISO3, 
-        nutrient_percChange_perDegreeC = risk_w_avg_tcoeff, 
-        nutrient_percChange_perDegreeC_se = risk_w_avg_tcoeff_se, 
-        nutrients_MortalityEffect = sum_magnitude_risk, 
-        nutrients_MortalityEffect_se = sum_magnitude_risk_se)%>% 
-    rename(countrycode=ISO3, 
-        nutrient_percChange_perDegreeC = risk_w_avg_tcoeff, 
-        nutrient_percChange_perDegreeC_se = risk_w_avg_tcoeff_se, 
-        nutrients_MortalityEffect = sum_magnitude_risk, 
-        nutrients_MortalityEffect_se = sum_magnitude_risk_se)
-
+        beta_nutrient_percChange_perDegreeC = risk_w_avg_tcoeff, 
+        beta_nutrient_percChange_perDegreeC_se = risk_w_avg_tcoeff_se, 
+        TME_nutrients_MortalityEffect = sum_magnitude_risk, 
+        TME_nutrients_MortalityEffect_se = sum_magnitude_risk_se)
 
 
 glimpse(gbd_deaths_number_doseresponse_pop)
