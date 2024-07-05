@@ -5,7 +5,7 @@
 
 
     # Gridcell-level mangrove projections (start)
-        scen_allforcings_allES <- read.csv(file="Data/modules/mangroves/scen_allforcings_allES_ssp270.csv")
+        scen_allforcings_allES <- read.csv(file="Data/input_modules/mangroves/scen_allforcings_allES_ssp270.csv")
         glimpse(scen_allforcings_allES)
     # Gridcell-level mangrove projections (end)
 
@@ -15,12 +15,12 @@
     ## Read country-level mangrove projections (start)
     
     
-        diff_country_total <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp370_brander_corrected_countries.csv")
-        diff_country_total1 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp170_brander_corrected_countries.csv")
-        diff_country_total2 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp270_brander_corrected_countries.csv")
-        diff_country_total3 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp370_brander_corrected_countries.csv")
-        diff_country_total4 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp470_brander_corrected_countries.csv")
-        diff_country_total5 <- read.csv(file="Data/modules/mangroves/diff_country_total_ssp570_brander_corrected_countries.csv")
+        diff_country_total <- read.csv(file="Data/input_modules/mangroves/diff_country_total_ssp370_brander_corrected_countries.csv")
+        diff_country_total1 <- read.csv(file="Data/input_modules/mangroves/diff_country_total_ssp170_brander_corrected_countries.csv")
+        diff_country_total2 <- read.csv(file="Data/input_modules/mangroves/diff_country_total_ssp270_brander_corrected_countries.csv")
+        diff_country_total3 <- read.csv(file="Data/input_modules/mangroves/diff_country_total_ssp370_brander_corrected_countries.csv")
+        diff_country_total4 <- read.csv(file="Data/input_modules/mangroves/diff_country_total_ssp470_brander_corrected_countries.csv")
+        diff_country_total5 <- read.csv(file="Data/input_modules/mangroves/diff_country_total_ssp570_brander_corrected_countries.csv")
 
         glimpse(diff_country_total1)
         
@@ -66,8 +66,8 @@
     ## Read Area loss (start)
     
     
-        scen_arealoss_perc_both <- read.csv(file="Data/modules/mangroves/Proj_Area_Perc_onlyCC_SSP270.csv")
-        grid_with_countries_ALL <- read.csv("Data/modules/mangroves/grid_with_specific_countries_FINAL.csv")
+        scen_arealoss_perc_both <- read.csv(file="Data/input_modules/mangroves/Proj_Area_Perc_onlyCC_SSP270.csv")
+        grid_with_countries_ALL <- read.csv("Data/input_modules/mangroves/grid_with_specific_countries_FINAL.csv")
         scen_arealoss_perc_both <- scen_arealoss_perc_both %>% left_join(grid_with_countries_ALL %>% mutate(gridcell_id=id),by="gridcell_id")
         scen_arealoss_perc_both$countrycode_old <-scen_arealoss_perc_both$countrycode
         scen_arealoss_perc_both$countrycode <- scen_arealoss_perc_both$iso_a3

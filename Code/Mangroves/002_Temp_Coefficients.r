@@ -28,7 +28,7 @@
             FractionChange_perC_sq_se = sq_coefficient_temp_se)
         glimpse(coefficients_by_country_sq)
 
-        #write.csv(coefficients_by_country_sq,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\mangrove_area_coefficients_sq_v5April2024_cov.csv")
+        #write.csv(coefficients_by_country_sq,file="Data\\output_modules_input_rice50x\\input_rice50x\\mangrove_area_coefficients_sq.csv")
         
 
         ## PLOTS

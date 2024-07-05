@@ -3,30 +3,50 @@
 # Figure 3
 
 
-    load(file="Data/Modules/Mangroves/mangroves_tcoeff.Rds")
+    mangrove_tcoeff <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/mangrove_area_coefficients_sq.csv")
 
     # Get the world map in sf format
     world <- ne_countries(scale = "medium", returnclass = "sf")
 
     # Merge your data with the world map data
     merged_data <- left_join(world, mangrove_tcoeff, by = c("iso_a3" = "countrycode"))
-
+    glimpse(merged_data)
+    merged_data$Damage_at1C <- merged_data$FractionChange_perC + merged_data$FractionChange_perC_sq
+    merged_data$Damage_at1C_distortion <- -merged_data$Damage_at1C*10000
+    
     windows()
     # Plot
     ggplot(data = merged_data) +
-    geom_sf(aes(fill = tcoeff)) +
+    geom_sf(aes(fill = 100*(Damage_at1C))) +
     scale_fill_scico(palette = "vik", oob=squish,midpoint=0,limits=c(-2,2), 
-                     na.value="transparent") + # Use the desired scico palette
+                     na.value="transparent",direction=-1) + # Use the desired scico palette
     coord_sf(crs = "+proj=robin") + # Robinson projection
     theme_minimal() +
-    labs(fill = "Mangroves Damage\n(%Cover/Degree C)")
+    labs(fill = "Mangroves Impact at \n1C Warming (% Cover)")
+    
     #ggsave("Figures/SM/mangroves/Map_Mangroves_Coef.png",dpi=600)
+    library(cartogram)
+    projected_data <- st_transform(merged_data, crs = "+proj=robin")
+    projected_data$Damage_at1C_exp <- (10000*projected_data$Damage_at1C)^2
+    summary(projected_data$Damage_at1C_distortion)
+    summary(projected_data$Damage_at1C_exp)
+    cartogram_data <- cartogram_cont(projected_data, weight = "Damage_at1C_exp)")
+    
+
+    # Plot the transformed data
+    ggplot(data = cartogram_data) +
+        geom_sf(aes(fill = 100*(Damage_at1C))) +
+        scale_fill_scico(palette = "vik", oob=squish, midpoint=0, limits=c(-2, 2), 
+                        na.value="transparent", direction=-1) +
+        coord_sf(crs = "+proj=robin") + # Robinson projection
+        theme_minimal() +
+        labs(fill = "Mangroves Impact at \n1C Warming (% Cover)")
 
 
 
 ### Market Figure
 
-        weighted_avg_benefits_prov2 <- read.csv(file="Data\\intermediate_output\\weighted_avg_benefits_prov2.csv")
+        weighted_avg_benefits_prov2 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\weighted_avg_benefits_prov2.csv")
         weighted_avg_benefits_prov2 <- weighted_avg_benefits_prov2%>% left_join(regions,by="countrycode")
         
         mangrove_dam_plot <- ggplot(weighted_avg_benefits_prov2 %>% filter(countrycode %in% countries_in_ssps)) + 

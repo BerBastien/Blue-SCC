@@ -14,8 +14,9 @@
                 GDP_SSP2 = first(def_mult[[1]]*GDP_Country_ssp2*10^9),
                 .groups = "drop"
             )
+        glimpse(weighted_avg_benefits)
         
-        #write.csv(weighted_avg_benefits,file="Data\\intermediate_output\\weighted_avg_benefits.csv")
+        #write.csv(weighted_avg_benefits,file="Data\\output_modules_input_rice50x\\output_modules\\weighted_avg_benefits.csv")
     ## Get benefits (use non-use) by country, by year, weighted by area (end)
     
     # Market damage Function (start)
@@ -60,12 +61,12 @@
         glimpse(weighted_avg_benefits_prov2)
         glimpse(weighted_avg_benefits_prov)
 
-        #write.csv(weighted_avg_benefits_prov2,file="Data\\intermediate_output\\weighted_avg_benefits_prov2.csv")
-        #write.csv(weighted_avg_benefits_prov,file="Data\\intermediate_output\\weighted_avg_benefits_prov.csv")
+        #write.csv(weighted_avg_benefits_prov2,file="Data\\output_modules_input_rice50x\\output_modules\\weighted_avg_benefits_prov2.csv")
+        #write.csv(weighted_avg_benefits_prov,file="Data\\output_modules_input_rice50x\\output_modules\\weighted_avg_benefits_prov.csv")
         
         market_coefficients_by_country <- weighted_avg_benefits_prov2 %>% filter(year==2100) %>% dplyr::select(countrycode,GDPDam_perC,GDPDam_perC_se_adj,GDPDam_perC_sq,GDPDam_perC_sq_se_adj,cov_t_t2_adj)
         glimpse(market_coefficients_by_country)
-        #write.csv(market_coefficients_by_country,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\mangrove_GDPdam_coefficients_v3May2024_cov.csv")
+        #write.csv(market_coefficients_by_country,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\output_modules_input_rice50x\\output_modules\\mangrove_GDPdam_coefficients_v3May2024_cov.csv")
     # Market damage Function (end)
 
     ## Non-Market Projections (start)
@@ -85,7 +86,6 @@
 
             glimpse(use_market)
             
-            # Summarize for "food" + "wood"
             use_nonmarket <- weighted_avg_benefits %>%
             filter(type %in% c("regulation"), forcing=="both") %>%
             group_by(countrycode, year) %>%
@@ -109,16 +109,16 @@
             combined_summary <- full_join(combined_summary,non_use, by = c("countrycode", "year"))
             glimpse(combined_summary)
 
-            intermediate_output <- combined_summary %>% 
+            output_modules_input_rice50x\\output_modules <- combined_summary %>% 
             mutate(unit_benefit="Int2020$_perkm2_peryear",
             use_market_perkm2 = total_weighted_avg_benefit_use_market_perha*100,
             use_nonmarket_perkm2 = total_weighted_avg_benefit_use_nonmarket_perha*100,
             nonuse_perkm2 = total_weighted_avg_benefit_nonuse_perha*100) %>% 
             dplyr::select(-gdppc,-total_weighted_avg_benefit_nonuse_perha,-total_weighted_avg_benefit_use_nonmarket_perha,-total_weighted_avg_benefit_use_market_perha)
 
-            glimpse(intermediate_output)
-            intermediate_output %>% filter(countrycode=="AGO")
-            #write.csv(intermediate_output,"Data/intermediate_output/mangrove_benefits_per_km2.csv") ## This is sent to F.G. and he will do the regression
+            glimpse(output_modules_input_rice50x\\output_modules)
+            output_modules_input_rice50x\\output_modules %>% filter(countrycode=="AGO")
+            #write.csv(output_modules_input_rice50x\\output_modules,"Data/output_modules_input_rice50x/input_rice50x/mangrove_benefits_per_km2.csv") ## This is what enters into 
 
 
     ## Non-market projections (end)
@@ -137,7 +137,7 @@
             model_coefficients <- model_coefficients_use_market
         glimpse(model_coefficients_use_market)
         
-        #write.csv(model_coefficients_use_market,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\model_coefficients_use_marketv3.csv")
+        #write.csv(model_coefficients_use_market,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\output_modules_input_rice50x\\output_modules\\model_coefficients_use_marketv3.csv")
 
 
         model_coefficients_nonuse <- combined_summary %>%
@@ -151,7 +151,7 @@
         model_coefficients_nonuse$units <- "Int2020$_perkm2_peryear"
             glimpse(model_coefficients_nonuse)
             
-        #write.csv(model_coefficients_nonuse ,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\model_coefficients_nonusev3.csv")
+        #write.csv(model_coefficients_nonuse ,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\output_modules_input_rice50x\\output_modules\\model_coefficients_nonusev3.csv")
 
         
         
@@ -204,6 +204,6 @@
             # }
 
 
-        #write.csv(model_coefficients_use_nonmarket ,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\model_coefficients_use_nonmarketv3.csv")
+        #write.csv(model_coefficients_use_nonmarket ,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\output_modules_input_rice50x\\output_modules\\model_coefficients_use_nonmarketv3.csv")
     ## Regression of benefits (end)
 
