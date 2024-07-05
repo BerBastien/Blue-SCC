@@ -1,8 +1,9 @@
-/Data
-/Data/modules
 /Figures
-/Data/intermediate_output
 .idea
-/Data/**
-!Data/**/
+/Data/input_modules
+/Data/output_modules_input_rice50x/output_modules
+/Data/other/all_data
+*.RData
+*.gpkg
+#!Data/**/
 !Data/**/.gitkeep

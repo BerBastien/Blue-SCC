@@ -1,15 +1,15 @@
 #setup 
 
     setwd('C:\\Users\\basti\\Documents\\GitHub\\BlueDICE')
-    dir1 <- paste0(getwd(),'\\Data\\all_data\\corals\\')
+    dir1 <- paste0(getwd(),'\\Data\\input_modules\\corals\\')
     
 #setup 
 
 # Merge future coral cover with GMST (start)
     # Input Data (start)
         corals <- read.csv(paste0(dir1,"data_futurecorals.csv")) #Dataset from Sully et al.
-        T_ssp45 <- read.csv("Data/scenarios/SSP245_magicc_202303021423.csv")
-        T_ssp85 <- read.csv("Data/scenarios/SSP585_magicc_202303221353.csv")
+        T_ssp45 <- read.csv("Data/other/scenarios/SSP245_magicc_202303021423.csv")
+        T_ssp85 <- read.csv("Data/other/scenarios/SSP585_magicc_202303221353.csv")
     # Input Data (end)
     
     ## Arranging Coral Projections (start)
@@ -26,7 +26,7 @@
             year = as.numeric(str_extract(variable, "(?<=yr_)\\d{4}")))
         
         corals3 <- corals[,which(names(corals) %in% c("Y_New","uniqueplace"))] 
-        glimpse(corals3)    
+        #glimpse(corals3)    
         corals_long2 <- merge(corals_long,corals3,by="uniqueplace")
 
         corals_long2$cover_change_perc <- 100*corals_long2$cover_change / corals_long2$Y_New
@@ -84,9 +84,9 @@
     ## Merging coral projections and GMST (end)
 
     ## Output Files (start)    
-        save(corals_temp_unique,file="Data/Modules/Corals/corals_temp_unique.Rds")
-        write.csv(corals_temp,"Data/corals/corals_temp.csv")
-        write.csv(corals_temp_unique,"Data/corals/corals_temp_unique.csv")
+        save(corals_temp_unique,file="Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.Rds")
+        write.csv(corals_temp,"Data/output_modules_input_rice50x/output_modules/corals/corals_temp.csv")
+        write.csv(corals_temp_unique,"Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.csv")
 
     ## Output Files (start)
 
@@ -97,7 +97,7 @@
 
 ## Estimate Temperature Coefficient (start)
     # Input (start)
-        load(file="Data/Modules/Corals/corals_temp_unique.Rds")
+        load(file="Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.Rds")
     # Input (start)
 
     # Read coral spatial areas
@@ -166,11 +166,11 @@
 
         
         # Output (start)
-            save(corals_tcoeff,file="Data/Modules/Corals/corals_tcoeff.Rds")
+            save(corals_tcoeff,file="Data/output_modules_input_rice50x/output_modules/corals/corals_tcoeff.Rds")
         # Output (end)
     # Estimate GMST Coefficient (end)
 
-        load(file="Data/Modules/Corals/corals_tcoeff.Rds")
+        load(file="Data/output_modules_input_rice50x/output_modules/corals/corals_tcoeff.Rds")
 
     # Plot estimated coefficients against values (start) 
         
@@ -364,8 +364,8 @@
 
         breaks <- seq(min((coral_temp_gulf$tcoeff*0.01)), max((coral_temp_gulf$tcoeff*0.01)),length.out=10)
         coral_temp_gulf$coef_group <- cut((coral_temp_gulf$tcoeff*0.01), breaks = breaks, labels = FALSE)
-        save(coral_areas_gulf,file="Data/Modules/Corals/coral_areas_gulf.Rds")
-        save(coral_temp_gulf,file="Data/Modules/Corals/coral_temp_gulf.Rds")
+        save(coral_areas_gulf,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_gulf.Rds")
+        save(coral_temp_gulf,file="Data/output_modules_input_rice50x/output_modules/corals/coral_temp_gulf.Rds")
     ## Zoom in the Gulf of Mexico (end)
 
     ## Zoom in Florida Keys (start)
@@ -443,10 +443,10 @@
 
 
 
-        save(coral_areas_keys,file="Data/Modules/Corals/coral_areas_keys.Rds")
-        save(coral_areas_keys_single,file="Data/Modules/Corals/coral_areas_keys_single.Rds")
-        save(coral_areas_keys_single_joined,file="Data/Modules/Corals/coral_areas_keys_single_joined.Rds")
-        save(coral_temp_keys,file="Data/Modules/Corals/coral_temp_keys.Rds")
+        save(coral_areas_keys,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys.Rds")
+        save(coral_areas_keys_single,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys_single.Rds")
+        save(coral_areas_keys_single_joined,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys_single_joined.Rds")
+        save(coral_temp_keys,file="Data/output_modules_input_rice50x/output_modules/corals/coral_temp_keys.Rds")
 
     ## Zoom in Florida Keys (end)
 
@@ -501,9 +501,9 @@
         corals_area_coeff_sf <- st_as_sf(corals_area_coeff_df)
         
         ## Output (start)
-            #uncomment if data is ot there
-            #save(corals_area_coeff_sf,file="Data/modules/corals/corals_area_coeff_sf.Rds")
-            #save(corals_area_coeff_df,file="Data/modules/corals/corals_area_coeff_df.Rds")
+            ##uncomment if data is ot there
+            #save(corals_area_coeff_sf,file="Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_sf.Rds")
+            #save(corals_area_coeff_df,file="Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_df.Rds")
         ## Output (end)
 
 ## Assign coefficients to area polygons (start)

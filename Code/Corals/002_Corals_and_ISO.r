@@ -1,5 +1,5 @@
 
-coral_country_file <- 'Data/modules/corals/coral_country.Rds'
+coral_country_file <- 'Data\\output_modules_input_rice50x\\output_modules\\corals\\coral_country.Rds'
 
 # Check if the valid geometry file already exists
 if (file.exists(coral_country_file)) {
@@ -16,7 +16,7 @@ if (file.exists(coral_country_file)) {
 
         #Join with countries 
 
-        dir_wcmc <- "C:\\Users\\basti\\Box\\Data\\Oceans\\coral_extent\\14_001_WCMC008_CoralReefs2021_v4_1\\01_Data"
+        dir_wcmc <- paste0(dir_box,"Data\\Oceans\\coral_extent\\14_001_WCMC008_CoralReefs2021_v4_1\\01_Data")
         v4_coral_py <- sf::st_read(dsn = file.path(dir_wcmc), layer = "WCMC008_CoralReef2021_Py_v4_1")
         v4_coral_py <- st_make_valid(v4_coral_py)
         v4_coral_py$id <- seq(1:dim(v4_coral_py)[1])
@@ -24,8 +24,8 @@ if (file.exists(coral_country_file)) {
         #coral_countries <- v4_coral_py %>% st_drop_geometry()
         #glimpse(coral_countries)
 
-            fp <- 'Data/eez_v11.gpkg'
-            valid_fp <- 'Data/eez_v11_valid.gpkg'
+            fp <- 'Data/other/eez_v11.gpkg'
+            valid_fp <- 'Data/other/eez_v11_valid.gpkg'
 
             # Check if the valid geometry file already exists
             if (file.exists(valid_fp)) {
@@ -49,5 +49,5 @@ if (file.exists(coral_country_file)) {
             mutate(countrycode = ISO_SOV1)
             
         glimpse(coral_country)
-        save(coral_country,file="Data/modules/corals/coral_country.Rds")
+        save(coral_country,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\coral_country.Rds")
     }

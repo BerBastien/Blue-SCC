@@ -4,7 +4,7 @@
     x <- c('raster','ggOceanMapsData','ggOceanMaps', 'ggpubr',"reshape",
         'dplyr','ncdf4','ggplot2','tidyverse','RColorBrewer','colorspace','spData','sf',
         'lfe','marginaleffects','rgdal',"rnaturalearth",'rgeos','geosphere','sf','ggthemes',
-        "exactextractr","WDI","ggrepel","viridis","scico","scales","stringr","patchwork",
+        "exactextractr","WDI","ggrepel","viridis","scico","scales","stringr","patchwork", "readxl",
         "countrycode","purrr","tidyr","rlang","rnaturalearthdata","ggalluvial","svglite","ggplot2", "dplyr","WDI","ggpubr","scico","rnaturalearth","scales")
     
     lapply(x, require, character.only = TRUE)

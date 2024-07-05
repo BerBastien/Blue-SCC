@@ -4,28 +4,29 @@
 ## Load Data (start)
     
     #Fig C1
-    load(file="Data/Modules/Corals/corals_tcoeff.Rds") #corals_tcoeff
-    load(file="Data/Modules/Corals/corals_temp_unique.Rds") #corals_temp_unique
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/corals_tcoeff.Rds") #corals_tcoeff
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/corals_temp_unique.Rds") #corals_temp_unique
 
     #Fig C2
-    load(file="Data/Modules/Corals/coral_areas_gulf.Rds") #coral_areas_gulf
-    load(file="Data/Modules/Corals/coral_temp_gulf.Rds") #coral_areas_gulf
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_gulf.Rds") #coral_areas_gulf
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_temp_gulf.Rds") #coral_areas_gulf
 
     #Fig C3
-    load(file="Data/Modules/Corals/coral_areas_keys.Rds")#coral_areas_keys
-    load(file="Data/Modules/Corals/coral_areas_keys_single.Rds")#coral_areas_keys_single
-    load(file="Data/Modules/Corals/coral_areas_keys_single_joined.Rds")#coral_areas_keys_single_joined
-    load(file="Data/Modules/Corals/coral_temp_keys.Rds")#coral_temp_keys
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_keys.Rds")#coral_areas_keys
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_keys_single.Rds")#coral_areas_keys_single
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_keys_single_joined.Rds")#coral_areas_keys_single_joined
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_temp_keys.Rds")#coral_temp_keys
     
     #Fig C4
-    load(file="Data/modules/corals/corals_area_coeff_sf.Rds") #corals_area_coeff_sf
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/corals_area_coeff_sf.Rds") #corals_area_coeff_sf
 
     #Fig C6
-    coefs_with_vcov <- read.csv(file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\coral_GDPdam_coefficients_v4_May2024.csv")
-    ssp_corals_growth <- read.csv(file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\ssp_corals_growth.csv")
-    market_coefficients_by_country3 <- read.csv(file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\market_coefficients_by_country3.csv")
+    coefs_with_vcov <- read.csv(file="Data\\output_modules_input_rice50x\\input_rice50x\\coral_GDPdam_coefficients.csv")
+    ssp_corals_growth <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals/ssp_corals_growth.csv")
+    market_coefficients_by_country3 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")
 
     
+    corals_df_iso <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals_area_damage_value.csv")
     
     continents <- ne_countries(scale = "medium", returnclass = "sf") %>%
                     st_transform(st_crs(corals_area_coeff_sf))  
@@ -279,7 +280,7 @@
             fill = guide_legend(title.position = "top", title.hjust = 0.5),
             color = guide_legend(title.position = "top", title.hjust = 0.5)
         )
-
+    
         
     #ggsave("Figures/SM/corals/Effect1C_coralcover_categories.png",dpi=600) 
 
@@ -322,8 +323,6 @@
 ## Fig. C4 (end)
 
 ##  Fig C5
-    corals_df_iso <- read.csv(file="Data/intermediate_output/corals_area_damage_value.csv")
-    glimpse(corals_df_iso)
     # Get the world map in sf format
     world <- ne_countries(scale = "medium", returnclass = "sf")
 

@@ -1,7 +1,7 @@
 ## Loading Cross-cutting dataframes
 
 
-    regions  <- read.csv('Data\\r5regions.csv')
+    regions  <- read.csv('Data\\other\\r5regions.csv')
     names(regions) <- c("R5","countrycode")
     regions$R5 <- as.character(gsub("R5", "", regions$R5))
     ssp_gdp <- read.csv(file='C:\\Users\\basti\\Box\\Data\\SSPs\\ssp_gdp.csv')

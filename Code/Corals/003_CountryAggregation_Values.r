@@ -1,7 +1,7 @@
 
 
-    load(file="Data/modules/corals/corals_area_coeff_sf.Rds") #corals_area_coeff_sf
-    load(file="Data/modules/corals/coral_country.Rds") 
+    load(file="Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_sf.Rds") #corals_area_coeff_sf
+    load(file="Data/output_modules_input_rice50x/output_modules/corals/coral_country.Rds") 
     
     c_coef <- corals_area_coeff_sf %>% st_drop_geometry()
     c_country <- coral_country  %>% st_drop_geometry()
@@ -9,10 +9,10 @@
     corals_df <- merge(c_coef,c_country,by="id",all.x=T,all.y=F)
     
    
-    #save(corals_df,file="Data/intermediate_output/corals_df.Rds")
-    #write.csv(corals_df,file="Data/intermediate_output/corals_df.csv")
+    #save(corals_df,file="Data/output_modules_input_rice50x/output_modules/corals/corals_df.Rds")
+    #write.csv(corals_df,file="Data/output_modules_input_rice50x/output_modules/corals/corals_df.csv")
     
-    #corals_df <- read.csv(file="Data/intermediate_output/corals_df.csv")
+    #corals_df <- read.csv(file="Data/output_modules_input_rice50x/output_modules/corals/corals_df.csv")
 
     ## Get Mean Coefficient by Country
         corals_df_iso <- corals_df %>% #filter(ssp=="SSP1" & year==2020) %>%
@@ -37,19 +37,22 @@
         corals_df_iso_with_gdp$gdp[which(corals_df_iso_with_gdp$countrycode=="TWN")] <- 28570
         corals_df_iso_with_gdp$gdp[which(corals_df_iso_with_gdp$countrycode=="VEN")] <- 1570
 
-        
+        gamma <- 0.79
+        se_gamma <- 0.09
         corals_df_iso_with_gdp <- corals_df_iso_with_gdp %>% filter(!is.na(countrycode))
         mean_gdp <- mean(corals_df_iso_with_gdp$gdp, na.rm = TRUE)
         corals_df_iso_with_gdp$GDP_asPercentage <- (corals_df_iso_with_gdp$gdp / mean_gdp)
-        corals_df_iso_with_gdp$adjustment_factor <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))*0.37
+        corals_df_iso_with_gdp$adjustment_factor <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* gamma
+        corals_df_iso_with_gdp$adjustment_factor_se <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* se_gamma
 
         
         corals_df_iso_with_gdp$muV_value_perkm2year <- (55724-33048)*100 * corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Provisioning Ecosystem Services for Coral Reefs (Int$/km2/year)
         corals_df_iso_with_gdp$nuV_value_perkm2year <- 268935*100 * corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
-        #corals_df_iso_with_gdp$habitat_value_perkm2year <- 16210*100 * corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
-        #corals_df_iso_with_gdp$cultural_value_perkm2year <- 108837*100 * corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
         corals_df_iso_with_gdp$nV_value_perkm2year <- (27600*100 )* corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
 
+        corals_df_iso_with_gdp$muV_value_perkm2year_se <- (55724-33048)*100 * corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Provisioning Ecosystem Services for Coral Reefs (Int$/km2/year)
+        corals_df_iso_with_gdp$nuV_value_perkm2year_se <- 268935*100 * corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
+        corals_df_iso_with_gdp$nV_value_perkm2year_se <- (27600*100 )* corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
 
         corals_df_iso_with_gdp <- corals_df_iso_with_gdp  %>% dplyr::select(-sum_area_cover_km2,weighted_mean_coeff,gdp,adjustment_factor)
         glimpse(corals_df_iso_with_gdp)
@@ -58,21 +61,27 @@
         corals_df_iso_with_gdp$DamCoef_changeperC_se <- corals_df_iso_with_gdp$DamCoef_changeperC_se*0.01
     
 
-
+        def_mult <- deflator_data %>% 
+        summarize(def_2005_to_2020 =NY.GDP.DEFL.ZS[year==2020]/NY.GDP.DEFL.ZS[year==2005])
 
         corals_df_iso_with_gdp <- corals_df_iso_with_gdp %>% 
         #dplyr::select(-X) %>% 
         rename(CoralArea_2020_km2=area_km2_t0) %>% 
-        mutate(muV_value_perkm2year = muV_value_perkm2year*1.478,
-        nuV_value_perkm2year = nuV_value_perkm2year*1.478,
-        nV_value_perkm2year = nV_value_perkm2year*1.478, 
-        units = "Int2020$_perkm2_peryear") #Cumulative Inflation from 2005 Int Dollars to 2020 Int Dollars, https://data.worldbank.org/indicator/NY.GDP.DEFL.KD.ZG 
-        glimpse(corals_df_iso_with_gdp)
-        write.csv(corals_df_iso_with_gdp,file="Data/intermediate_output/corals_area_damage_value_v4.csv")
+        mutate(muV_value_perkm2year = muV_value_perkm2year*def_mult[[1]],
+        nuV_value_perkm2year = nuV_value_perkm2year*def_mult[[1]],
+        nV_value_perkm2year = nV_value_perkm2year*def_mult[[1]], 
+        muV_value_perkm2year_se = muV_value_perkm2year_se*def_mult[[1]],
+        nuV_value_perkm2year_se = nuV_value_perkm2year_se*def_mult[[1]],
+        nV_value_perkm2year_se = nV_value_perkm2year_se*def_mult[[1]], 
+        units = "Int2020$_perkm2_peryear") 
+
+        corals_df_iso_with_gdp_clean <- corals_df_iso_with_gdp %>% 
+            dplyr::select(-weighted_mean_coeff_cover,gdp,GDP_asPercentage,adjustment_factor,adjustment_factor_se)
+        #write.csv(corals_df_iso_with_gdp_clean,file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
     
     ## Get GDP per Capita and Adjust Values According to income elasticity to WTP (end)
 
-    corals_df_iso_with_gdp <- read.csv(file="Data/intermediate_output/corals_area_damage_value_v4.csv")
+    corals_df_iso_with_gdp <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
     
 
     ### Market Damage Function (start)
@@ -85,11 +94,11 @@
         ## Project Market Values of Corals
         ssp_corals_growth <- ssp_corals %>% 
             ## GDP per Capita:
-            mutate( GDPpc_2020IntUSD = (1.478 * GDP.billion2005USDperYear*10^9) / (Pop.million*10^6)) %>% #Cumulative Inflation from 2005 Int Dollars to 2020 Int Dollars, https://data.worldbank.org/indicator/NY.GDP.DEFL.KD.ZG 
+            mutate( GDPpc_2020IntUSD = (def_mult[[1]]* GDP.billion2005USDperYear*10^9) / (Pop.million*10^6)) %>% #Cumulative Inflation from 2005 Int Dollars to 2020 Int Dollars, https://data.worldbank.org/indicator/NY.GDP.DEFL.KD.ZG 
             group_by(scenario,countrycode) %>% 
             ## Calculating GDPpc Growth for WTP Income Elasticity
             mutate(GDP_growth = GDPpc_2020IntUSD / lag(GDPpc_2020IntUSD) - 1) %>% 
-            mutate(Adjustment= ifelse(year == 2020, 0, GDP_growth * 0.79)) %>% # From Drupp 2024 
+            mutate(Adjustment= ifelse(year == 2020, 0, GDP_growth * 0.79)) %>% # From Drupp et al 2024 
             filter(year >2019)  %>% 
             mutate(Adjustment_cum  = cumsum(Adjustment)) %>% 
             ## Adjusting the Per-Area Values Using GDPpc Growth
@@ -98,11 +107,13 @@
             nV_value_perkm2year_adjusted = nV_value_perkm2year * (1+Adjustment_cum), 
             area = CoralArea_2020_km2 *(1+DamCoef_changeperC*temp) ) %>% 
             mutate(area = ifelse(area>0,area,0)) %>%
+            ## Calculate future market values
             mutate(Market_Use_Values_Undamaged = muV_value_perkm2year_adjusted * CoralArea_2020_km2, 
-            Market_Use_Values_Undamaged_percGDP = 100 * muV_value_perkm2year_adjusted * CoralArea_2020_km2 / (1.478 * GDP.billion2005USDperYear*10^9), 
-            Market_Use_Values_Damaged_percGDP = 100 * muV_value_perkm2year_adjusted * (area ) / (1.478 * GDP.billion2005USDperYear*10^9),
-            nuV_Undamaged_percGDP = 100 * nuV_value_perkm2year_adjusted * CoralArea_2020_km2 / (1.478 * GDP.billion2005USDperYear*10^9), 
-            nV_Undamaged_percGDP = 100 * nV_value_perkm2year_adjusted * CoralArea_2020_km2 / (1.478 * GDP.billion2005USDperYear*10^9) ) %>% 
+            Market_Use_Values_Undamaged_percGDP = 100 * muV_value_perkm2year_adjusted * CoralArea_2020_km2 / (def_mult[[1]]*  GDP.billion2005USDperYear*10^9), 
+            Market_Use_Values_Damaged_percGDP = 100 * muV_value_perkm2year_adjusted * (area ) / (def_mult[[1]]* GDP.billion2005USDperYear*10^9),
+            nuV_Undamaged_percGDP = 100 * nuV_value_perkm2year_adjusted * CoralArea_2020_km2 / (def_mult[[1]]* GDP.billion2005USDperYear*10^9), 
+            nV_Undamaged_percGDP = 100 * nV_value_perkm2year_adjusted * CoralArea_2020_km2 / (def_mult[[1]]* GDP.billion2005USDperYear*10^9) ) %>% 
+            # Calculte Damages
             mutate(Damages_percGDP = Market_Use_Values_Damaged_percGDP - Market_Use_Values_Undamaged_percGDP, 
             fraction_damaged = (Market_Use_Values_Damaged_percGDP - Market_Use_Values_Undamaged_percGDP)/100)
 
@@ -114,7 +125,6 @@
                     data.frame(FractionChangeGDP_perC = coef(model_market_loss)["temp"],
                     FractionChangeGDP_perC_se = summary(model_market_loss)$coefficients[2],
                     variance = summary(model_market_loss)$sigma^2,
-
                     r_sq = summary(model_market_loss)$r.squared
                     )
                 }) %>% ungroup()
@@ -131,9 +141,9 @@
         glimpse(coefs_with_vcov)
         glimpse(market_coefficients_by_country3)
 
-        write.csv(coefs_with_vcov,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\coral_GDPdam_coefficients_v4_May2024.csv")
-        write.csv(ssp_corals_growth,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\ssp_corals_growth.csv")
-        write.csv(market_coefficients_by_country3,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\market_coefficients_by_country3.csv")
+        write.csv(coefs_with_vcov,file="Data\\output_modules_input_rice50x\\input_rice50x\\coral_GDPdam_coefficients.csv")
+        write.csv(ssp_corals_growth,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\ssp_corals_growth.csv")
+        write.csv(market_coefficients_by_country3,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")
  
     ### Market Damagfe Function (end)
         
