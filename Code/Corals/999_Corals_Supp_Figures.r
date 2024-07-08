@@ -264,6 +264,7 @@
         include.lowest = TRUE
     ) 
     custom_colors <- c(hex_maxdam, hex_highdam, hex_meddam, hex_smalldam)
+    
     map_cat <- ggplot(data = data_robinson, aes(fill = damage_category)) +
         geom_sf(aes(color = damage_category), size = 2) +
         scale_color_manual(values = custom_colors, name = "Cover damage (% per Degree C)") +
@@ -280,8 +281,9 @@
             fill = guide_legend(title.position = "top", title.hjust = 0.5),
             color = guide_legend(title.position = "top", title.hjust = 0.5)
         )
-    
-        
+    #glimpse(data_robinson)
+    #geospatial_coral_polygons <- data_robinson
+    #save(geospatial_coral_polygons, file="Data/output_modules_input_rice50x/output_modules/corals/geospatial_coral_polygons.rdat")        
     #ggsave("Figures/SM/corals/Effect1C_coralcover_categories.png",dpi=600) 
 
     

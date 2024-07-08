@@ -27,10 +27,10 @@
     #ggsave("Figures/SM/mangroves/Map_Mangroves_Coef.png",dpi=600)
     library(cartogram)
     projected_data <- st_transform(merged_data, crs = "+proj=robin")
-    projected_data$Damage_at1C_exp <- (10000*projected_data$Damage_at1C)^2
-    summary(projected_data$Damage_at1C_distortion)
-    summary(projected_data$Damage_at1C_exp)
-    cartogram_data <- cartogram_cont(projected_data, weight = "Damage_at1C_exp)")
+    projected_data$Damage_at1C_exp <- (1000*projected_data$Damage_at1C)^2
+    #summary(projected_data$Damage_at1C_distortion)
+    #summary(projected_data$Damage_at1C_exp)
+    #cartogram_data <- cartogram_cont(projected_data, weight = "Damage_at1C_exp)")
     
 
     # Plot the transformed data

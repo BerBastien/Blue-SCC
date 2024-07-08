@@ -2,7 +2,7 @@
 ## Change in nutrient availbaility
 
 ## Read Data (start)
-    datadir <- "Data\\modules\\fish\\nutrition\\"
+    datadir <- "Data\\input_modules\\fish\\nutrition\\"
     nut_proj <- read.csv(paste0(datadir,"Figure4_Cheung_etal_2024.csv"))
     nut_proj_hi <- read.csv(paste0(datadir,"Cheung_etal_2024_Figure4_high_income.csv")) 
     nut_proj_li <- read.csv(paste0(datadir,"Cheung_etal_2024_Figure4_low_income.csv")) 
@@ -36,11 +36,9 @@
         ungroup() %>%
         as.data.frame()
 
-        glimpse(nut_tcoeff)
-
         nut_proj_long_coeff <- nut_proj_long %>% left_join(nut_tcoeff,by=c("nutrient","income"))
         glimpse(nut_proj_long_coeff)
-        #write.csv(nut_proj_long_coeff,"Data/Modules/fish/Nutrition/nut_proj_long_coeff.csv")
+        #write.csv(nut_proj_long_coeff,"Data/output_modules_input_rice50x/output_modules/fish/nut_proj_long_coeff.csv")
             
 
 ## nutrient Damage Fucntion Coefficients (end)
@@ -135,7 +133,7 @@ gbd_deaths_number_doseresponse_pop <- gbd_deaths_number_pop %>%
 
 
 glimpse(gbd_deaths_number_doseresponse_pop)
-
+write.csv(gbd_deaths_number_doseresponse_pop,"Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv")
 
 
 gbd_deaths_number_doseresponse_pop %>% filter(ISO3 %in% c("MEX")) %>% as.data.frame() %>% 
