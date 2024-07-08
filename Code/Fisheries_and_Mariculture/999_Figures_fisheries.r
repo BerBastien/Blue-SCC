@@ -1,6 +1,6 @@
 ## Load data(start)
-    fisheries_df_temp_gdp <- read.csv("Data/modules/fish/Statistical/fisheries_Free_EtAl.csv")
-    fish_tcoeff <- read.csv(file="Data/intermediate_output/fish_tcoeff_v4_june2024.csv")
+    fisheries_df_temp_gdp <- read.csv("Data/input_modules/fish/Statistical/fisheries_Free_EtAl.csv")
+    fish_tcoeff <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff_v4_june2024.csv")
 ## Load data (end)
 
 
@@ -185,7 +185,7 @@
 
 ## Figures Nutrition (start)
     ## Nutrition Change (start)
-      nut_proj_long_coeff <- read.csv("Data/Modules/fish/Nutrition/nut_proj_long_coeff.csv")
+      nut_proj_long_coeff <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/nut_proj_long_coeff.csv")
       
       windows()
       ggplot(nut_proj_long_coeff) +
@@ -207,7 +207,7 @@
     
     ## Risk Change Cardiovascular Omega (start)
       gbd_deaths_number_doseresponse_pop_temp_future <- 
-        read.csv("Data/Modules/fish/Nutrition/gbd_deaths_number_doseresponse_pop_temp_future.csv")
+        read.csv("Data/output_modules_input_rice50x/output_modules/fish/gbd_deaths_number_doseresponse_pop_temp_future.csv")
 
 
       
@@ -282,7 +282,7 @@
     ## future Deaths Global
 
     ## Future Deaths by nutrient
-      deaths_by_nutrient <- write.csv("Data/Modules/fish/Nutrition/deaths_by_nutrient.csv")
+      deaths_by_nutrient <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_nutrient.csv")
       windows()
       ggplot(deaths_by_nutrient %>% filter(ssp=="SSP2",year>2020,ISO3!="LUX")) +
         geom_line(aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000,  color=nutrient, group=interaction(ISO3,nutrient)),alpha=0.1) +
@@ -301,7 +301,7 @@
 
     ## Deaths by Country (start)
       
-      deaths_by_country <- read.csv("Data/Modules/fish/Nutrition/deaths_by_country_vsl.csv")
+      deaths_by_country <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country_Globalvsl.csv")
       #glimpse(deaths_by_country)
       windows()
       ggplot(deaths_by_country %>% filter(ssp=="SSP2",year>2020)) +
@@ -377,7 +377,7 @@
                 scale_fill_manual(values=hex_R5) 
 
           windows()
-          nut <- ggplot(deaths_by_country %>% filter(ssp=="SSP2",year==2020)) +
+          nut <- ggplot(deaths_by_country %>% filter(ssp=="SSP2",year==2020,ISO3!="ISR")) +
               geom_point(aes(size=deaths_base_percapita,y = lives_saved_percapita_future*10^6, x=Nutritional_D,  color=R5, group=interaction(ISO3)),alpha=0.5) +
               geom_text_repel(aes(x=Nutritional_D,y=lives_saved_percapita_future*10^6,label=ISO3),fill="transparent",size=2) +
               theme_minimal() +
@@ -386,7 +386,7 @@
                   scale_fill_manual(values=hex_R5) +                  
                   labs(size="Mortality Rate Baseline", x = "Nutritional Dependency on Fisheries", y = "Avoided premature deaths \nper million persons", title="Avoided premature deaths in 2100")
 
-          zoom_nut <- ggplot(deaths_by_country %>% filter(ssp=="SSP2",year==2020)) +
+          zoom_nut <- ggplot(deaths_by_country %>% filter(ssp=="SSP2",year==2020,ISO3!="ISR")) +
               geom_point(aes(size=deaths_base_percapita,y = lives_saved_percapita_future*10^6, x=Nutritional_D,  color=R5, group=interaction(ISO3)),alpha=0.5) +
               geom_text_repel(aes(x=Nutritional_D,y=lives_saved_percapita_future*10^6,label=ISO3),fill="transparent",size=2) +
               theme_minimal() +
