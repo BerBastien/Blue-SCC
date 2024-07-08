@@ -1,8 +1,8 @@
 
 # Load files (start)
-  port_ssp<- read.csv("Data/modules/ports/ports_ssps_rcps.csv")
-    load(file="Data/Modules/Ports/ports_tcoeff.Rds")
-    port_locations_file <- 'Data\\modules\\ports\\nodes_maritime.gpkg'
+  port_ssp<- read.csv("Data/output_modules_input_rice50x/output_modules/ports/ports_ssps_rcps.csv")
+    load(file="Data/output_modules_input_rice50x/output_modules/ports/ports_tcoeff.Rds")
+    port_locations_file <- 'Data/input_modules/ports/nodes_maritime.gpkg'
 # Load files (end)
 
 ## Fig P1 (start)
@@ -47,7 +47,7 @@
     scale_x_continuous(trans="log10",lim=c(0.5,10^5)) +
     ylab("Value at Risk\n(% of GDP)")+
     ggtitle("A. Present Risk")
-  pr_total_present
+ 
 
 
 
@@ -66,7 +66,7 @@
     ggtitle("B. Future Risk")+
     theme(axis.title.y = element_blank(),  # Removes y-axis label
           axis.text.y = element_blank()) 
-  pr_total_future_1scen
+  
 
 
   fig_p1 <- ggarrange(ggarrange(pr_total_present,pr_total_future_1scen,ncol=2,align="h",widths=c(4,3),common.legend=TRUE,legend="bottom"),
@@ -141,8 +141,7 @@
  
     ports_tcoeff  <- ports_tcoeff %>% dplyr::rename(GDP_FractionChange_perC = tcoeff, 
     GDP_FractionChange_perC_se = se)
-    #write.csv(ports_tcoeff,file="Data/intermediate_output/ports_tcoeff_v3.csv")
-
+    
     world <- ne_countries(scale = "medium", returnclass = "sf")
     merged_data <- left_join(world, ports_tcoeff, by = c("iso_a3" = "iso3"))
 
