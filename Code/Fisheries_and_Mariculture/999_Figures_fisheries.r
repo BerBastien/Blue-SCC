@@ -1,6 +1,6 @@
 ## Load data(start)
-    fisheries_df_temp_gdp <- read.csv("Data/input_modules/fish/Statistical/fisheries_Free_EtAl.csv")
-    fish_tcoeff <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff_v4_june2024.csv")
+    fisheries_df_temp_gdp <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/fisheries_Free_EtAl.csv")
+    fish_tcoeff <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff.csv")
 ## Load data (end)
 
 

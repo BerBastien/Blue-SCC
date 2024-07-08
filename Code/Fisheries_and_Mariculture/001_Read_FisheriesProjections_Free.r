@@ -1,5 +1,5 @@
 ## Load Data (start)
-  datadir <- "Data\\modules\\fish\\Statistical\\"
+  datadir <- "Data/input_modules/fish/Statistical/"
   data <- readRDS(paste0(datadir, "total_catch_profit_timeseries.Rds"))
 ## Load Data (End)
 
@@ -29,14 +29,11 @@
   data_with_baseline <- data_2scen_noduplicates  %>%
     left_join(rcp_26_baseline, by = c("country_iso3", "scenario", "year"))
 
-  glimpse(data_with_baseline)
 
   # Step 3: Calculate the difference between each RCP scenario's profits and the baseline
   data_with_diff <- data_with_baseline %>%
   mutate(profit_diff_from_rcp_26 = profits_usd - profits_usd_baseline,
           profit_percDiff_from_rcp_26 =100* profits_usd / profits_usd_baseline-100)
-
-  glimpse(data_with_diff)
 
 ## Get baseline (end)
 
@@ -51,60 +48,26 @@ fisheries_df <- data_with_diff
 glimpse(fisheries_df)
 
 ## Temp SSPS (start)
-  T_ssp45 <- read.csv("Data/scenarios/SSP245_magicc_202303021423.csv")
-  T_ssp85 <- read.csv("Data/scenarios/SSP585_magicc_202303221353.csv")
-  T_ssp126 <- read.csv("Data/scenarios/SSP126_magicc_202308040902.csv")
-  T_ssp460 <- read.csv("Data/scenarios/SSP460_magicc_202402051249.csv")
-
-  temp1 <- data.frame(temp = t(T_ssp45[17,c(13:length(T_ssp45))]), year = names(T_ssp45[17,c(13:length(T_ssp45))]))
-  temp1$year <- as.integer(sub('X', '', temp1$year))
-  names(temp1)[1] <- "temp"
-  temp1$scenario <- "RCP45"
-
-  temp2 <- data.frame(temp = t(T_ssp85[17,c(13:length(T_ssp85))]), year = names(T_ssp85[17,c(13:length(T_ssp85))]))
-  temp2$year <- as.integer(sub('X', '', temp2$year))
-  names(temp2)[1] <- "temp"
-  temp2$scenario <- "RCP85"
-
-
-  temp3 <- data.frame(temp = t(T_ssp126[7,c(13:length(T_ssp126))]), year = names(T_ssp126[17,c(13:length(T_ssp126))]))
-  glimpse(temp3)
-  temp3$year <- as.integer(sub('X', '', temp3$year))
-  names(temp3)[1] <- "temp"
-  temp3$scenario <- "RCP26"
-
-
-  temp4 <- data.frame(temp = t(T_ssp460[16,c(13:length(T_ssp460))]), year = names(T_ssp460[1,c(13:length(T_ssp460))]))
-  glimpse(temp4)
-  temp4$year <- as.integer(sub('X', '', temp4$year))
-  names(temp4)[1] <- "temp"
-  temp4$scenario <- "RCP60"
-  glimpse(temp4)
-
-  temp <- rbind(temp1,temp2,temp3,temp4)
-  glimpse(temp)
     
-      temp <-temp %>% group_by(scenario) %>%
+      temp <-temp %>% group_by(rcp) %>%
           filter(year > 2011, year<2022) %>%
           mutate(t_12_21 = mean(temp,na.rm=T)) %>%
           filter(year==2012) %>%
-          select(t_12_21,scenario) %>%
-          inner_join(temp, by = c("scenario"))
+          select(t_12_21,rcp) %>%
+          inner_join(temp, by = c("rcp"))
 
       temp$tdif <- temp$temp - temp$t_12_21
   glimpse(temp)
   tdif_rcp26 <- temp %>%
-    filter(scenario == "RCP26") %>%
-    select(year, tdif_rcp26= tdif, -scenario)
+    filter(rcp == "RCP26") %>%
+    select(year, tdif_rcp26= tdif, -rcp)
 
   temp <- temp %>%
-    left_join(tdif_rcp26 , by = "year")%>% select(-scenario.y) %>% dplyr::rename(scenario=scenario.x)
+    left_join(tdif_rcp26 , by = "year")%>% select(-rcp.y) %>% dplyr::rename(scenario=rcp.x)
   glimpse(temp)
 
   temp <- temp %>%
     mutate(tdif_from_rcp26 = tdif - tdif_rcp26)
-
-  ggplot(temp,aes(x=year,y=tdif))+geom_point(aes(color=scenario))    
       
       fisheries_df2 <- fisheries_df %>%
           mutate(across(where(is.character), toupper))
@@ -130,7 +93,6 @@ glimpse(fisheries_df)
     ssp <- melt(ssps, id = c("MODEL","SCENARIO","REGION","VARIABLE","UNIT")) 
     ssp <- ssp[which(!is.na(ssp$value)),]
     ssp <- ssp[which(ssp$VARIABLE %in% c("GDP|PPP","Population")),]
-    glimpse(ssp)    
 
     names(ssp) <- c("model","scenario","region","variable","unit","year","value")
     
@@ -182,7 +144,7 @@ glimpse(fisheries_df)
 
   glimpse(fisheries_df_temp_gdp)
 
-  write.csv(fisheries_df_temp_gdp,"Data/modules/fish/Statistical/fisheries_Free_EtAl.csv")
+  #write.csv(fisheries_df_temp_gdp,"Data/output_modules_input_rice50x/output_modules/fish/fisheries_Free_EtAl.csv")
 
 
 
