@@ -1,9 +1,18 @@
 /Figures
 .idea
 /Data/input_modules
-/Data/output_modules_input_rice50x/output_modules
+
+Data/*
+# Track inputs to RICE50x
+!Data/output_modules_input_rice50x
+Data/output_modules_input_rice50x/*
+!Data/output_modules_input_rice50x/input_rice50x
+!Data/SCC
+Data/SCC/*
+!Data/SCC/out
+Data/SCC/out/*
+!Data/SCC/out/ocean_data.parquet
 /Data/other/all_data
 *.RData
 *.gpkg
-#!Data/**/
-!Data/**/.gitkeep
+**/__pycache__
