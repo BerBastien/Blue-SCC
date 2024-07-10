@@ -20,7 +20,7 @@ context.pdsettings()
 
 
 def scc_mc(mc_id):
-    if (results_folder / f'results_ocean_damage_pulse_{mc_id}.gdx').is_file() == False:
+    if not (results_folder / f'results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
     ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_damage_{mc_id}.gdx')
     ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_damage_pulse_{mc_id}.gdx')

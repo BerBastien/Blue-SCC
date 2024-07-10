@@ -104,24 +104,24 @@ mangrove = reduce(lambda l, r: pd.merge(l, r, on=['iso3'], how='outer'),
                [mangrove_value_km2, mangrove_area, mangrove_value_coef, mangrove_area_damcoef, mangrove_consump_damcoef, mangrove_consump_damcoef_cov])
 mangrove.insert(0, 'oc_capital', 'mangrove')
 # %% Ports
-ports = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/ports.csv') \
+ports = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/ports_tcoeff.csv') \
     .filter(['iso3', 'GDP_FractionChange_perC', 'GDP_FractionChange_perC_se']) \
     .rename(columns={'GDP_FractionChange_perC': 'consump_damcoef', 'GDP_FractionChange_perC_se': 'consump_damcoef_se'})
 ports.insert(0, 'oc_capital', 'ports')
 # %% Fisheries
-fisheries = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/fisheries.csv') \
+fisheries = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff.csv') \
     .filter(['country_iso3', 'GDP_FractionChange_perC', 'GDP_FractionChange_perC_se']) \
     .rename(columns={'country_iso3': 'iso3', 'GDP_FractionChange_perC': 'consump_damcoef', 'GDP_FractionChange_perC_se': 'consump_damcoef_se'})
 # Health coefficients
-fisheries_health_coef = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/health_benefits_tcoeff_GlobalVSL.csv') \
-    .filter(['ISO3', 'HealthBenefit_PercentageGDP_intercept', 'HealthBenefit_PercentageGDP_intercept_se',
-             'HealthBenefit_PercentageGDP_perDegreeC', 'HealthBenefit_PercentageGDP_perDegreeC_se'])\
-    .rename(columns={'ISO3': 'iso3', 'HealthBenefit_PercentageGDP_intercept': 'health_intercept',
-                     'HealthBenefit_PercentageGDP_intercept_se': 'health_intercept_se',
-                     'HealthBenefit_PercentageGDP_perDegreeC': 'health_coef',
-                     'HealthBenefit_PercentageGDP_perDegreeC_se': 'health_coef_se'
+fisheries_health_coef = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv') \
+    .filter(['countrycode', 'beta_nutrient_percChange_perDegreeC', 'beta_nutrient_percChange_perDegreeC_se',
+             'TAME_nutrients_MortalityEffect', 'TAME_nutrients_MortalityEffect_se'])\
+    .rename(columns={'countrycode': 'iso3', 'beta_nutrient_percChange_perDegreeC': 'health_beta',
+                     'beta_nutrient_percChange_perDegreeC_se': 'health_beta_se',
+                     'TAME_nutrients_MortalityEffect': 'health_tame',
+                     'TAME_nutrients_MortalityEffect_se': 'health_tame_se'
                      })
-for col in fisheries_health_coef.filter(like='health').columns:
+for col in fisheries_health_coef.filter(like='health_beta').columns:
     fisheries_health_coef[col] /= 100
 fisheries = pd.merge(fisheries, fisheries_health_coef, on=['iso3'], how='outer').fillna(0)
 fisheries.insert(0, 'oc_capital', 'fisheries')
@@ -141,10 +141,10 @@ df = df.rename(columns={
     'consump_damcoef_sq': 'ocean_consump_damage_coef_sq',
     'consump_damcoef_sq_se': 'ocean_consump_damage_sq_se',
     'consump_damcoef_cov': 'ocean_consump_damage_coef_cov',
-    'health_intercept': 'ocean_health_damage_intercept',
-    'health_intercept_se': 'ocean_health_damage_intercept_se',
-    'health_coef': 'ocean_health_damage_coef',
-    'health_coef_se': 'ocean_health_damage_coef_se',
+    'health_beta': 'ocean_health_beta',
+    'health_beta_se': 'ocean_health_beta_se',
+    'health_tame': 'ocean_health_tame',
+    'health_tame_se': 'ocean_health_tame_se',
     'intercept_um': 'ocean_value_intercept_um',
     'intercept_um_se': 'ocean_value_intercept_um_se',
     'exp_um': 'ocean_value_exp_um',
