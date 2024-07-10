@@ -1,8 +1,17 @@
 #Main Figure
 
+    ## Socioeconomics (start)
+        gdp_data <- WDI(country = "all", indicator = "NY.GDP.MKTP.PP.KD", start = 2020, end = 2020) 
+        population_data <- WDI(country = "all", indicator = "SP.POP.TOTL", start = 2020, end = 2020)
+        
+        glimpse(gdp_data)
+        gdp_data <- gdp_data %>% dplyr::rename(countrycode=iso3c,GDP_2020usd=NY.GDP.MKTP.PP.KD)
+        population_data  <- population_data  %>% dplyr::rename(countrycode=iso3c,Pop2020=SP.POP.TOTL)
+    ## Socioeconomics (end)
+
 
     ## Corals (start)
-        ssp_corals_growth <- read.csv(file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\intermediate_output\\ssp_corals_growth.csv")
+        ssp_corals_growth <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals\\ssp_corals_growth.csv")
         glimpse(ssp_corals_growth)
 
         coral_values <- ssp_corals_growth %>% filter(year==2020,scenario=="SSP2") %>% 
@@ -14,7 +23,8 @@
             pivot_longer(cols = starts_with("market_percGDP") | starts_with("nonmarketuse_percGDP") | starts_with("nonuse_percGDP"), 
                         names_to = "category", 
                         values_to = "value") %>%
-            mutate(category = sub("_percGDP$", "", category),capital="corals")
+            mutate(category = sub("_percGDP$", "", category),capital="Corals") %>% 
+            mutate(category = case_when(category=="nonuse"~"Non-use", category=="market"~"Market",category=="nonmarketuse"~"Non-market Use"))
 
         glimpse(coral_values_long )
     ## Corals (end)
@@ -23,7 +33,7 @@
     
     ## Ports (start)
 
-        port_ssp <- read.csv("Data/modules/ports/ports_ssps_rcps.csv")
+        port_ssp <- read.csv("Data/output_modules_input_rice50x\\output_modules/ports/ports_ssps_rcps.csv")
         glimpse(port_ssp)
         levels(factor(port_ssp$type))
 
@@ -31,7 +41,7 @@
             group_by(iso3) %>% 
             summarize( risk_base_perc = sum(risk_base_perc), iso3=iso3) %>% 
             select(iso3,risk_base_perc) %>% slice(1) %>% 
-            mutate(category= "market",capital="ports")%>% 
+            mutate(category="Market",capital="Ports")%>% 
             dplyr::rename( value = risk_base_perc, countrycode=iso3)  %>% ungroup()
         glimpse(port_values)
 
@@ -40,19 +50,32 @@
 
     ## Fisheries (start)
         
-        fisheries_df_temp_gdp <- read.csv("Data/modules/fish/Statistical/fisheries_Free_EtAl.csv")
+        fisheries_df_temp_gdp <- read.csv("Data/output_modules_input_rice50x\\output_modules/fish/fisheries_Free_EtAl.csv")
         glimpse(fisheries_df_temp_gdp)
 
         fish_values <- fisheries_df_temp_gdp %>% filter(year==2020,rcp=="RCP26",scenario=="Full Adaptation") %>% 
             dplyr::rename(value=profits_usd_percGDP_baseline,countrycode=country_iso3) %>% 
             dplyr::select(value,countrycode)%>% 
-            mutate(category= "market",capital="fisheries")
+            mutate(category="Market",capital="Fisheries & Mariculture")
         glimpse(fish_values)    
+
+        
+        VSL = 10.05 * 10^6
+        nutrition_dep <- read.csv("Data\\output_modules_input_rice50x\\input_rice50x\\seafood_dependence.csv") %>% 
+            mutate(countrycode = countrycode(World_Country,origin="country.name",destination="iso3c"))
+        nutrition_health <- read.csv("Data\\output_modules_input_rice50x\\input_rice50x\\mortality_seafood_nutrition.csv") %>% 
+            left_join(nutrition_dep,by="countrycode") %>% 
+                    left_join(gdp_data %>% dplyr::select(GDP_2020usd,countrycode),by="countrycode")%>% 
+                    left_join(population_data %>% dplyr::select(Pop2020,countrycode),by="countrycode") %>% 
+                    mutate(value = 100*TAME_nutrients_MortalityEffect*Pop2020*Nutritional_D*0.1*VSL/GDP_2020usd) %>% 
+                    select(value,countrycode) %>% 
+                    mutate(category="Non-market Use",capital="Fisheries & Mariculture")
+        glimpse(nutrition_health)
     ## Fisheries (end)
 
     ## Mangroves (start)
-        man_ben_perkm2 <- read.csv(file="Data\\intermediate_output\\weighted_avg_benefits.csv") #read.csv("Data/intermediate_output/mangrove_benefits_per_km2.csv") 
-        area_man <- read.csv("Data\\intermediate_output\\mangrove_area_coefficients_sq_v5April2024_cov.csv")
+        man_ben_perkm2 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\weighted_avg_benefits.csv") #read.csv("Data/intermediate_output/mangrove_benefits_per_km2.csv") 
+        area_man <- read.csv("Data\\output_modules_input_rice50x\\input_rice50x\\mangrove_area_coefficients_sq.csv")
         
         levels(factor(man_ben_perkm2$type))
 
@@ -60,22 +83,17 @@
                         left_join(area_man %>% dplyr::select(countrycode,MangroveArea_2020_km2),by="countrycode") %>% 
                         #dplyr::rename(category=type) %>% 
                         mutate(value =weighted_avg_benefit_perha_percGDP * MangroveArea_2020_km2 * 100, 
-                        category = case_when(type=="cultural"~"nonuse", type=="provision"~"market",type=="regulation"~"nonmarketuse"),
-                        capital = "mangroves") %>% dplyr::select(-MangroveArea_2020_km2,-weighted_avg_benefit_perha_percGDP,-type)
+                        category = case_when(type=="cultural"~"Non-use", type=="provision"~"Market",type=="regulation"~"Non-market Use"),
+                        capital = "Mangroves") %>% dplyr::select(-MangroveArea_2020_km2,-weighted_avg_benefit_perha_percGDP,-type)
         glimpse(man_values)
     ## Mangroves (end)
 
     ## Merge all capitals (start)
-        blue_cap0 <- as.data.frame(rbind(coral_values_long ,port_values,fish_values, man_values))    ## Merge all capitals (end)
+        blue_cap0 <- as.data.frame(rbind(coral_values_long ,port_values,fish_values,nutrition_health, man_values))    ## Merge all capitals (end)
         # Add GDP and GDP per capita in 2020
 
     ## Add co-variates to dataframe (start)
-        gdp_data <- WDI(country = "all", indicator = "NY.GDP.MKTP.PP.KD", start = 2020, end = 2020) 
-        population_data <- WDI(country = "all", indicator = "SP.POP.TOTL", start = 2020, end = 2020)
         
-        glimpse(gdp_data)
-        gdp_data <- gdp_data %>% dplyr::rename(countrycode=iso3c,GDP_2020usd=NY.GDP.MKTP.PP.KD)
-        population_data  <- population_data  %>% dplyr::rename(countrycode=iso3c,Pop2020=SP.POP.TOTL)
         
         blue_cap <- blue_cap0 %>% left_join(regions,by="countrycode") %>% 
                     left_join(gdp_data %>% dplyr::select(GDP_2020usd,countrycode),by="countrycode")%>% 
@@ -89,6 +107,7 @@
     ## Figure
         blue_cap <- blue_cap %>%
                     mutate(value_capped = ifelse(value > 100, 100, ifelse(value < 1, 1, value)))
+        color_capitals
 
         capital_plot <- ggplot(blue_cap %>% filter(value_capped >0 )) +
         geom_point(aes(
@@ -99,14 +118,20 @@
                 color=capital), 
             position = position_jitter(width = 0, height = 0.3),
             alpha=0.5) +
-        scale_color_manual(values=color_capitals)+
+        scale_color_manual(values=Color_capitals)+
         scale_size_continuous(range = c(1, 8)) +
         #scale_color_manual(values=color_ValueTypes)+
         scale_x_continuous(trans="log10")+ ylab("")+xlab("")+
         #theme(legend.position = "none")+
-        theme_bw()
+        theme_bw()+
+        theme(
+            panel.grid.major.y = element_blank(),
+            panel.grid.minor.y = element_blank()
+        ) +
+        labs(size="Value of Benefit\n(shown as %GDP)",shape="Value Category",color="Blue Capital")
   
     capital_plot
+    ggsave("Figures\\Main\\Values_Across_Regions.png",dpi=300)
 
     #svglite::svglite("capital_diagrams.svg", width = 10, height = 7)
     #print(capital_plot)
@@ -132,7 +157,7 @@
         geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
         #scale_x_discrete(limits = c("R5", "Capital"), expand = c(0.15, 0.05)) +
         theme_void() +
-        scale_fill_manual(values=color_capitals)+
+        scale_fill_manual(values=Color_capitals)+
     theme(legend.position = "none")
 
     sankey
@@ -176,7 +201,7 @@ blue_cap_summary2$color = blue_cap_summary2$capital
 blue_cap_summary2$r5 = as.character(blue_cap_summary2$R5)
 
 blue_cap_summary3 <- rbind(blue_cap_summary2,spacing_new) %>%
-  mutate(capital = factor(capital, levels = c( "t1","corals", "t2", "fisheries", "t3", "mangroves", "t4", "ports", "t5"))) %>% 
+  mutate(capital = factor(capital, levels = c( "t1","Corals", "t2", "Fisheries & Mariculture", "t3", "Mangroves", "t4", "Ports", "t5"))) %>% 
   mutate(r5 = factor(r5, levels = c("ASIA","ra","LAM","rl","MAF","rm","OECD","ro","REF","rr")))
 
 
@@ -187,7 +212,7 @@ sankey <- ggplot(data = blue_cap_summary3,
         geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
         #scale_x_discrete(limits = c("R5", "Capital"), expand = c(0.15, 0.05)) +
         theme_void() +
-        scale_fill_manual(values=c(color_capitals,t1="transparent",t2="transparent",t3="transparent",t4="transparent",t5="transparent"))+
+        scale_fill_manual(values=c(Color_capitals,t1="transparent",t2="transparent",t3="transparent",t4="transparent",t5="transparent"))+
         #scale_fill_manual(values=c(color_capitals))+
     theme(legend.position = "none")
 

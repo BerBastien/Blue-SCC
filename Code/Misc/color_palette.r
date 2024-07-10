@@ -3,6 +3,14 @@
     # Value Types 
     color_ValueTypes <- c("#FFD700","#87CEEB","#9370DB")
     color_capitals <- c(corals="#FF6F61",fisheries="#1E90FF",mangroves="#228B22",ports="#000080")
+    Color_capitals<- c(Corals="#FF6F61",`Fisheries & Mariculture`="#1E90FF",Mangroves="#228B22",Ports="#000080")
+    col_man <- "#228B22"
+    col_fis <- "#1E90FF"
+    col_cor <- "#FF6F61"
+    col_por <- "#000080"
+
+    col_fish_low <- "#1E90FF"
+    col_fish_high <- "#A3DFFF"
 
     ## RCPs
     hex_rcp26 <- "#ADD8E6"

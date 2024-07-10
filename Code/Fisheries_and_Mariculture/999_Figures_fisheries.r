@@ -396,7 +396,7 @@
                   scale_fill_manual(values=hex_R5) +                  
                   labs(size="Mortality Rate Baseline", x = "Nutritional Dependency on Fisheries", y = "Avoided premature deaths \nper million persons", title=" (Zoomed in)")
           ggarrange(nut,zoom_nut,ncol=2,common.legend=T,legend="bottom")
-          ggsave("Figures/SM/fisheries/Deaths_dependency.png")  
+          #ggsave("Figures/SM/fisheries/Deaths_dependency.png")  
 
     ## Deaths by Country (end)
 
