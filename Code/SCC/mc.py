@@ -37,7 +37,7 @@ def scc_mc(mc_id):
         _target = target if target != (None, None) else ('total', 'total')
         _scc = _scc.assign(oc_capital=_target[0], valuation=_target[1], id=mc_id)
         _l.append(_scc)
-    mc_sampling_df = pd.read_parquet(context.projectpath() / 'data/out/lhs.parquet').query(f'id=={mc_id}')
+    mc_sampling_df = pd.read_parquet(Path.cwd() / 'Data/SCC/out/lhs.parquet').query(f'id=={mc_id}')
     mc_sampling_df['id'] = mc_sampling_df['id'].astype(str)
     return pd.concat(_l).reset_index().merge(mc_sampling_df, on='id', how='outer')
 
@@ -249,3 +249,21 @@ fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
 plt.tight_layout()
 plt.savefig(context.projectpath() / 'img/pawn.png')
 plt.show()
+
+# %% Missing / nonfeasiblue runs
+mc_sampling_df = pd.read_parquet(Path.cwd() / 'Data/SCC/out/lhs.parquet').assign(id = lambda df: df['id'].astype(str))
+missing_ids = set([str(x) for x in range(500)]) - mc_ids
+mc_sampling_df['missing'] = np.where(mc_sampling_df.id.isin(missing_ids), 1, 0)
+mc_sampling_df.missing.mean()
+
+fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(10,10), sharex=False, sharey=False)
+cols = [c for c in mc_sampling_df.columns if c not in ['id', 'missing']]
+for ax, col in zip(axs.flatten(), cols):
+    # ax.hist(mc_sampling_df.loc[mc_sampling_df.missing==0, col])
+    # ax.hist(mc_sampling_df.loc[mc_sampling_df.missing==1, col], color='silver')
+    ax.scatter(mc_sampling_df[col], mc_sampling_df.missing, color='silver',  marker='+')
+    ax.set_title(col, fontsize=7)
+plt.show()
+mc_sampling_df.drop(columns='baseline').corr()
+
+mc_sampling_df.groupby('missing').describe().T
