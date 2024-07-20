@@ -133,7 +133,7 @@ ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
 h, l = ax.get_legend_handles_labels()
 ax.legend(h[:3] + h[-1:], l[:3] + l[-1:], frameon=False,  title_fontproperties={'weight':'demibold'})
 plt.tight_layout()
-plt.savefig(context.projectpath() / 'img/scc_breakdown.png')
+plt.savefig(Path().cwd() / 'Figures/SCC/scc_breakdown.png')
 plt.show()
 
 # %%
@@ -211,13 +211,6 @@ delta_df = pd.DataFrame(delta.analyze(problem, x, y, seed=3465)).sort_values(by=
 pawn_df = pd.DataFrame(pawn.analyze(problem, x, y)).sort_values(by='mean', ascending=False)
 
 # Plot
-binary_params = ['ocean_value_intercept_unm', 'ocean_value_exp_unm', 'ocean_value_intercept_nu', 'ocean_value_exp_nu',
-                 'ocean_area_damage_coef', 'ocean_consump_damage_coef']
-
-for binary_param in binary_params:
-    delta_df = delta_df.replace({binary_param: binary_param + ' (binary)'})
-    pawn_df = pawn_df.replace({binary_param: binary_param + ' (binary)'})
-
 delta_df = delta_df.rename(columns={'ocean_theta_1': 'ocean_theta'})
 pawn_df = pawn_df.rename(columns={'ocean_theta_1': 'ocean_theta'})
 
@@ -247,22 +240,30 @@ ax2.spines[['top', 'right']].set_visible(False)
 ax2.set_title('PAWN index (mean)')
 fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
 plt.tight_layout()
-plt.savefig(context.projectpath() / 'img/pawn.png')
+plt.savefig(Path().cwd() / 'Figures/SCC/pawn.png')
 plt.show()
-
+# %%
+fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(10,10), sharex=False, sharey=True)
+for ax, col in zip(axs.flatten(), gsa_vars):
+    ax.scatter(df[col], df.scc, color='b',  marker='+', alpha=0.1)
+    ax.set_title(col, fontsize=7)
+plt.tight_layout()
+plt.show()
 # %% Missing / nonfeasiblue runs
 mc_sampling_df = pd.read_parquet(Path.cwd() / 'Data/SCC/out/lhs.parquet').assign(id = lambda df: df['id'].astype(str))
 missing_ids = set([str(x) for x in range(500)]) - mc_ids
 mc_sampling_df['missing'] = np.where(mc_sampling_df.id.isin(missing_ids), 1, 0)
 mc_sampling_df.missing.mean()
 
-fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(10,10), sharex=False, sharey=False)
+fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(10,10), sharex=False, sharey=True)
 cols = [c for c in mc_sampling_df.columns if c not in ['id', 'missing']]
 for ax, col in zip(axs.flatten(), cols):
     # ax.hist(mc_sampling_df.loc[mc_sampling_df.missing==0, col])
     # ax.hist(mc_sampling_df.loc[mc_sampling_df.missing==1, col], color='silver')
     ax.scatter(mc_sampling_df[col], mc_sampling_df.missing, color='silver',  marker='+')
+    ax.set_yticks([0,1], ['OK', 'Unfeasible/Missing'])
     ax.set_title(col, fontsize=7)
+plt.tight_layout()
 plt.show()
 mc_sampling_df.drop(columns='baseline').corr()
 

@@ -46,7 +46,7 @@ lognormal_params = {
     'tcre': [0.5, 0.43]
 }
 
-n = 500  # Sample size
+n = 5000  # Sample size
 
 # Uniformly distributed parameters
 sampler = qmc.LatinHypercube(d=len(uniform_params), seed=1234)
