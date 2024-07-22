@@ -132,7 +132,15 @@
 
 
         glimpse(gbd_deaths_number_doseresponse_pop)
-        write.csv(gbd_deaths_number_doseresponse_pop,"Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv")
+        #gbd_deaths_number_doseresponse_pop <- read.csv("Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv")
+        #nut_dep <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/seafood_dependence.csv")
+        glimpse(gbd_deaths_number_doseresponse_pop)
+        glimpse(nut_dep)
+        gbd_deaths_number_doseresponse_pop2 <- merge(
+                                                    gbd_deaths_number_doseresponse_pop %>% select(-X),
+                                                    nut_dep %>% mutate(countrycode=countrycode(Country.Territory,origin="country.name",destination="iso3c")) %>% select(countrycode,Nutritional_D))
+        glimpse(gbd_deaths_number_doseresponse_pop2)
+        write.csv(gbd_deaths_number_doseresponse_pop2,"Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv")
 
     ### Input Equation RICE50x
 
