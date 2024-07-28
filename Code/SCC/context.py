@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def projectpath():
-    return Path(__file__).parents[1]
+    return Path(__file__).parents[2]
 
 
 def pdsettings():

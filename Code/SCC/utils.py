@@ -343,13 +343,16 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
 
 
 if __name__ == '__main__':
-    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_damage.gdx')
-    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_damage_pulse.gdx')
-    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_today.gdx')
-
-    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx')
-    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx')
-    ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx')
+    try:
+        ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_damage.gdx')
+        ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_damage_pulse.gdx')
+        ocean_today_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_today.gdx')
+    except OSError:
+        ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx')
+        ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx')
+        ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx')
+    except:
+        raise OSError('Files could not be saved.')
 
     targets = [('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), ('mangrove', 'consumption'),
                ('mangrove', 'usenm'), ('mangrove', 'nonuse'), ('ports', 'consumption'), ('fisheries', 'consumption'),

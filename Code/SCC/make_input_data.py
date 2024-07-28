@@ -15,11 +15,11 @@ import context
 context.pdsettings()
 
 # %% Deflator 2020 to 2005
-deflator = pd.read_csv((Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/gdp_deflator_usa_2022.csv').resolve())
+deflator = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/gdp_deflator_usa_2022.csv')
 deflator20_05 = deflator.loc[deflator.year==2005, 'value'].iloc[0] / deflator.loc[deflator.year==2020, 'value'].iloc[0]
 deflator07_05 = deflator.loc[deflator.year==2005, 'value'].iloc[0] / deflator.loc[deflator.year==2007, 'value'].iloc[0]
 # %% GDP per capita
-gdx_dict = gdxpds.read_gdx.to_dataframes((Path.cwd() /'..' / 'RICE50x\input\data\ssp_navigate-ssp_base.gdx').resolve())
+gdx_dict = gdxpds.read_gdx.to_dataframes(context.projectpath().parent / 'RICE50x\input\data\ssp_navigate-ssp_base.gdx')
 gdp = gdx_dict['gdp_base_navigate'].rename(columns={'Value': 'gdp'})
 popu = gdx_dict['pop_base_navigate'].rename(columns={'Value': 'popu'})
 gdppc = pd.merge(gdp, popu).query("ssp=='SSP2'").drop(columns=['ssp'])\
@@ -28,7 +28,7 @@ gdppc = pd.merge(gdp, popu).query("ssp=='SSP2'").drop(columns=['ssp'])\
     .filter(['iso3', 'year', 'gdppc', 'log_gdppc'])
 # %% Coral
 # Values per km2
-coral_value_km2 = pd.read_csv((Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv'))\
+coral_value_km2 = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv')\
     .filter(['countrycode', 'muV_value_perkm2year',  'nuV_value_perkm2year', 'nV_value_perkm2year'])\
     .rename(columns={'countrycode': 'iso3', 'muV_value_perkm2year': 'um',  'nuV_value_perkm2year': 'unm', 'nV_value_perkm2year': 'nu'})
 # convert to trillion 2005 USD
@@ -36,15 +36,15 @@ coral_value_km2['um'] *= deflator20_05 / 1e12
 coral_value_km2['unm'] *= deflator20_05 / 1e12
 coral_value_km2['nu'] *= deflator20_05 / 1e12
 # Area
-coral_area = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv')\
+coral_area = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv')\
     .filter(['countrycode', 'CoralArea_2020_km2'])\
     .rename(columns={'countrycode': 'iso3', 'CoralArea_2020_km2': 'area'})
 # Area damage coefficients
-coral_area_damcoef = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv')\
+coral_area_damcoef = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv')\
     .filter(['countrycode', 'DamCoef_changeperC', 'DamCoef_changeperC_se'])\
     .rename(columns={'countrycode': 'iso3', 'DamCoef_changeperC': 'area_damcoef', 'DamCoef_changeperC_se': 'area_damcoef_se'})
 # Consumption damage coefficients
-coral_consump_damcoef = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/coral_GDPdam_coefficients.csv')\
+coral_consump_damcoef = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/coral_GDPdam_coefficients.csv')\
     .filter(['countrycode', 'FractionChangeGDP_perC', 'FractionChangeGDP_perC_se_adj'])\
     .rename(columns={'countrycode': 'iso3', 'FractionChangeGDP_perC': 'consump_damcoef', 'FractionChangeGDP_perC_se_adj': 'consump_damcoef_se'})
 coral = reduce(lambda l, r: pd.merge(l, r, on=['iso3'], how='outer'),
@@ -52,7 +52,7 @@ coral = reduce(lambda l, r: pd.merge(l, r, on=['iso3'], how='outer'),
 coral.insert(0, 'oc_capital', 'coral')
 # %% Mangroves
 # Values per km2
-mangrove_value_km2 = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_benefits_per_km2.csv')\
+mangrove_value_km2 = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_benefits_per_km2.csv')\
     .filter(['countrycode', 'year', 'use_market_perkm2', 'use_nonmarket_perkm2', 'nonuse_perkm2'])\
     .rename(columns={'countrycode': 'iso3', 'use_market_perkm2': 'um', 'use_nonmarket_perkm2': 'unm', 'nonuse_perkm2': 'nu'})
 # Convert to trillion 2005 USD
@@ -86,34 +86,34 @@ mangrove_value_coef = pd.DataFrame(l, columns=[ 'iso3',
 mangrove_value_km2 = mangrove_value_km2.loc[
     mangrove_value_km2.year == mangrove_value_km2.year.min(), ['iso3', 'um', 'unm', 'nu']]
 # Area
-mangrove_area = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_area_coefficients_sq.csv')\
+mangrove_area = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_area_coefficients_sq.csv')\
     .filter(['countrycode', 'MangroveArea_2020_km2'])\
     .rename(columns={'countrycode': 'iso3', 'MangroveArea_2020_km2': 'area'})
 # Area damage coefficients
-mangrove_area_damcoef = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_area_coefficients_sq.csv')\
+mangrove_area_damcoef = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_area_coefficients_sq.csv')\
     .filter(['countrycode', 'FractionChange_perC', 'FractionChange_perC_se', 'FractionChange_perC_sq', 'FractionChange_perC_sq_se'])\
     .rename(columns={'countrycode': 'iso3', 'FractionChange_perC': 'area_damcoef', 'FractionChange_perC_se': 'area_damcoef_se', 'FractionChange_perC_sq': 'area_damcoef_sq', 'FractionChange_perC_sq_se': 'area_damcoef_sq_se'})
 # Consumption damage coefficients
-mangrove_consump_damcoef = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_GDPdam_coefficients.csv')\
+mangrove_consump_damcoef = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_GDPdam_coefficients.csv')\
     .filter(['countrycode', 'GDPDam_perC', 'GDPDam_perC_se_adj', 'GDPDam_perC_sq', 'GDPDam_perC_sq_se_adj'])\
     .rename(columns={'countrycode': 'iso3', 'GDPDam_perC': 'consump_damcoef', 'GDPDam_perC_se_adj': 'consump_damcoef_se', 'GDPDam_perC_sq': 'consump_damcoef_sq', 'GDPDam_perC_sq_se_adj': 'consump_damcoef_sq_se'})
-mangrove_consump_damcoef_cov = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_GDPdam_coefficients.csv')\
+mangrove_consump_damcoef_cov = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/mangrove_GDPdam_coefficients.csv')\
     .filter(['countrycode', 'cov_t_t2_adj'])\
     .rename(columns={'countrycode': 'iso3', 'cov_t_t2_adj': 'consump_damcoef_cov'})
 mangrove = reduce(lambda l, r: pd.merge(l, r, on=['iso3'], how='outer'),
                [mangrove_value_km2, mangrove_area, mangrove_value_coef, mangrove_area_damcoef, mangrove_consump_damcoef, mangrove_consump_damcoef_cov])
 mangrove.insert(0, 'oc_capital', 'mangrove')
 # %% Ports
-ports = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/ports_tcoeff.csv') \
+ports = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/ports_tcoeff.csv') \
     .filter(['iso3', 'GDP_FractionChange_perC', 'GDP_FractionChange_perC_se']) \
     .rename(columns={'GDP_FractionChange_perC': 'consump_damcoef', 'GDP_FractionChange_perC_se': 'consump_damcoef_se'})
 ports.insert(0, 'oc_capital', 'ports')
 # %% Fisheries
-fisheries = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff.csv') \
+fisheries = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff.csv') \
     .filter(['country_iso3', 'GDP_FractionChange_perC', 'GDP_FractionChange_perC_se']) \
     .rename(columns={'country_iso3': 'iso3', 'GDP_FractionChange_perC': 'consump_damcoef', 'GDP_FractionChange_perC_se': 'consump_damcoef_se'})
 # Health coefficients
-fisheries_health_coef = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv') \
+fisheries_health_coef = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv') \
     .filter(['countrycode', 'beta_nutrient_percChange_perDegreeC', 'beta_nutrient_percChange_perDegreeC_se',
              'TAME_nutrients_MortalityEffect', 'TAME_nutrients_MortalityEffect_se','Nutritional_D'])\
     .rename(columns={'countrycode': 'iso3', 'beta_nutrient_percChange_perDegreeC': 'health_beta',
@@ -160,6 +160,9 @@ df = df.rename(columns={
     'exp_nu': 'ocean_value_exp_nu',
     'exp_nu_se': 'ocean_value_exp_nu_se',
 })
-df.to_parquet(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\blue_rice\data\out\ocean_data.parquet")
-df.to_parquet(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x\input\data\ocean_data.parquet")
-df.to_parquet(r"C:\Users\basti\Documents\GitHub\RICE50x\input\data\ocean_data.parquet")
+try:
+    df.to_parquet(context.projectpath().parent / "RICE50x/input/data/ocean_data.parquet")
+except OSError:
+    df.to_parquet(r"C:\Users\basti\Documents\GitHub\RICE50x\input\data\ocean_data.parquet")
+except:
+    raise OSError('File could not be saved.')
