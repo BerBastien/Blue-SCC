@@ -1,6 +1,7 @@
 # %% Imports
 from sympy import symbols
 import functools
+import pathlib
 from pathlib import Path
 import numpy as np
 import gdxpds
@@ -346,6 +347,10 @@ if __name__ == '__main__':
     ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_damage_pulse.gdx')
     ocean_today_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_today.gdx')
 
+    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx')
+    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx')
+    ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx')
+
     targets = [('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), ('mangrove', 'consumption'),
                ('mangrove', 'usenm'), ('mangrove', 'nonuse'), ('ports', 'consumption'), ('fisheries', 'consumption'),
                ('fisheries', 'usenm'), (None, None)]
@@ -357,3 +362,7 @@ if __name__ == '__main__':
         l.append(_scc)
     df = pd.concat(l)
     print(df[df.index==2020].round(3))
+    print(df)
+    #df.to_csv('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/analysis_output/BlueSCC_updated_Mu.csv')
+    
+   

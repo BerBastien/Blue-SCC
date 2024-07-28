@@ -115,11 +115,12 @@ fisheries = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_ri
 # Health coefficients
 fisheries_health_coef = pd.read_csv(Path.cwd() / 'Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv') \
     .filter(['countrycode', 'beta_nutrient_percChange_perDegreeC', 'beta_nutrient_percChange_perDegreeC_se',
-             'TAME_nutrients_MortalityEffect', 'TAME_nutrients_MortalityEffect_se'])\
+             'TAME_nutrients_MortalityEffect', 'TAME_nutrients_MortalityEffect_se','Nutritional_D'])\
     .rename(columns={'countrycode': 'iso3', 'beta_nutrient_percChange_perDegreeC': 'health_beta',
                      'beta_nutrient_percChange_perDegreeC_se': 'health_beta_se',
                      'TAME_nutrients_MortalityEffect': 'health_tame',
-                     'TAME_nutrients_MortalityEffect_se': 'health_tame_se'
+                     'TAME_nutrients_MortalityEffect_se': 'health_tame_se',
+                     'Nutritional_D': 'health_mu'
                      })
 for col in fisheries_health_coef.filter(like='health_beta').columns:
     fisheries_health_coef[col] /= 100
@@ -141,6 +142,7 @@ df = df.rename(columns={
     'consump_damcoef_sq': 'ocean_consump_damage_coef_sq',
     'consump_damcoef_sq_se': 'ocean_consump_damage_sq_se',
     'consump_damcoef_cov': 'ocean_consump_damage_coef_cov',
+    'health_mu': 'ocean_health_mu',
     'health_beta': 'ocean_health_beta',
     'health_beta_se': 'ocean_health_beta_se',
     'health_tame': 'ocean_health_tame',
@@ -160,3 +162,4 @@ df = df.rename(columns={
 })
 df.to_parquet(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\blue_rice\data\out\ocean_data.parquet")
 df.to_parquet(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x\input\data\ocean_data.parquet")
+df.to_parquet(r"C:\Users\basti\Documents\GitHub\RICE50x\input\data\ocean_data.parquet")
