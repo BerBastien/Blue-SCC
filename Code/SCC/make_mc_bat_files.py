@@ -8,14 +8,16 @@ import pandas as pd
 import numpy as np
 from scipy.stats import qmc, truncnorm, lognorm
 
+import context
+
 # Deterministic run
 deterministic_run = r"""
     cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
-            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --nameout=ocean_damage_9999 --mod_ocean=1
-            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --nameout=ocean_damage_pulse_9999 --mod_ocean=1 --mod_emission_pulse=ocean_damage_9999
-            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --nameout=ocean_today_9999 --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1
+            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_9999 --mod_ocean=1
+            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_9999 --mod_ocean=1 --mod_emission_pulse=ocean_damage_9999
+            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_9999 --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1
 """
-with open(Path.cwd() / 'Data/SCC/tmp/mc_seed_9999.bat', 'w') as f:
+with open(context.projectpath() / 'Data/SCC/tmp/mc_seed_9999.bat', 'w') as f:
     f.write(deterministic_run)
 
 
@@ -106,12 +108,12 @@ for i, row in sample_df.iterrows():
             echo File exists.
         ) ELSE (
             echo not 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --nameout=ocean_damage_{i} {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_{i} {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} {s} 
         )
     """
     l.append(txt)
-with open(Path.cwd() / 'Data/SCC/tmp/mc_lhs.bat', 'w') as f:
+with open(context.projectpath() / 'Data/SCC/tmp/mc_lhs.bat', 'w') as f:
     f.write('\n'.join(l))
-sample_df.reset_index().rename(columns={'index':'id'}).to_parquet(Path.cwd() / 'Data/SCC/out/lhs.parquet')
+sample_df.reset_index().rename(columns={'index':'id'}).to_parquet(context.projectpath() / 'Data/SCC/out/lhs.parquet')
