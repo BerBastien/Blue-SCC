@@ -26,8 +26,8 @@ uniform_params = {
                   'prstp': [0.01, 0.02],
                   'elasmu': [1.1, 1.6],
                   'baseline': [0, 1],
-                  'health_mu': [0.01, 0.2],
-                  'health_eta': [0.01, 0.2]
+                  'ocean_health_mu': [-0.25, 0.25],
+                  'ocean_health_eta': [0.01, 0.2]
                   }
 normal_params = [
     'ocean_value_intercept_unm',
@@ -91,7 +91,7 @@ sample_df['baseline'] = 'ssp' + (sample_df['baseline']*5+0.5).round(0).astype(in
 sample_df.hist(figsize=(12,12), grid=False)
 fig = plt.gcf()
 fig.suptitle('MC parameter distribution')
-plt.savefig(Path.cwd() / 'Figures/SCC/MC_distributions.png')
+plt.savefig(context.projectpath() / 'Figures/SCC/MC_distributions.png')
 plt.show()
 
 # ocean_theta_1 = ocean_theta_2 = theta
