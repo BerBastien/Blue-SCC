@@ -250,21 +250,65 @@ for ax, col in zip(axs.flatten(), gsa_vars):
 plt.tight_layout()
 plt.show()
 # %% Missing / nonfeasiblue runs
-mc_sampling_df = pd.read_parquet(Path.cwd() / 'Data/SCC/out/lhs.parquet').assign(id = lambda df: df['id'].astype(str))
-missing_ids = set([str(x) for x in range(500)]) - mc_ids
-mc_sampling_df['missing'] = np.where(mc_sampling_df.id.isin(missing_ids), 1, 0)
-mc_sampling_df.missing.mean()
+import statsmodels.formula.api as smf
+from pathlib import Path
+import matplotlib.pyplot as plt
+import pandas as pd
+from matplotlib import ticker
 
-fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(10,10), sharex=False, sharey=True)
-cols = [c for c in mc_sampling_df.columns if c not in ['id', 'missing']]
-for ax, col in zip(axs.flatten(), cols):
-    # ax.hist(mc_sampling_df.loc[mc_sampling_df.missing==0, col])
-    # ax.hist(mc_sampling_df.loc[mc_sampling_df.missing==1, col], color='silver')
-    ax.scatter(mc_sampling_df[col], mc_sampling_df.missing, color='silver',  marker='+')
-    ax.set_yticks([0,1], ['OK', 'Unfeasible/Missing'])
-    ax.set_title(col, fontsize=7)
+import context
+
+context.pdsettings()
+
+lhs = pd.read_parquet(Path.cwd() / 'Data/SCC/out/lhs.parquet')
+
+debug_folder = Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x\debug_ocean")
+l = []
+for file in list(debug_folder.glob('debug_ocean_damage*.gdx')):
+    id = int(file.stem.split('_')[-1])
+    l.append(lhs[lhs.id==id])
+debug = pd.concat(l)
+
+ok_folder = Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x\results_ocean")
+l = []
+for file in list(ok_folder.glob('results_ocean_damage*.gdx')):
+    id = int(file.stem.split('_')[-1])
+    l.append(lhs[lhs.id==id])
+ok = pd.concat(l)
+
+df = pd.concat([ok.assign(missing=0), debug.assign(missing=1)])
+
+xvars =  list(set(df.select_dtypes('number').columns) - set(['missing', 'id']))
+for xvar in xvars:
+    mod = smf.ols(f"{xvar} ~ missing", df).fit()
+    print(mod.summary2())
+
+# %%
+fig, axs = plt.subplots(nrows=5, ncols=4, figsize=(10,10), sharex=False, sharey=True)
+for ax, xvar in zip(axs.flatten(), df.select_dtypes('number').columns):
+    if xvar in ['missing', 'id']:
+        continue
+    ax.hist(df.loc[df.missing==0, xvar], histtype='step')
+    ax.hist(df.loc[df.missing==1, xvar], histtype='step')
+    ax.axvline(df.loc[df.missing==0, xvar].mean(), color='tab:blue')
+    ax.axvline(df.loc[df.missing==1, xvar].mean(), color='tab:orange')
+    ax.set_title(xvar)
 plt.tight_layout()
 plt.show()
-mc_sampling_df.drop(columns='baseline').corr()
-
-mc_sampling_df.groupby('missing').describe().T
+mod = smf.ols(f"tcre ~ missing", df).fit()
+mod.summary2()
+mod.params['missing'] / df.tcre.mean()
+# %%
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+"""Probability of missing by TCRE"""
+df['tcre_bin'] = pd.qcut(df.tcre, [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1]).apply(lambda x: x.mid)
+avg = df.groupby('tcre_bin').missing.mean()
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5,5), sharex=False, sharey=False)
+ax.plot(avg.index, avg, zorder=1)
+ax.axhline(0, color='k', linewidth=0.75, zorder=0)
+ax.yaxis.set_major_formatter(ticker.PercentFormatter(1))
+ax.set_xlabel('TCRE')
+ax.set_ylabel('Fraction unfeasible')
+ax2 = ax.twinx()
+ax2.hist(df.tcre, alpha=0.5)
+plt.show()
