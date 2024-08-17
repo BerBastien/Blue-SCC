@@ -13,9 +13,9 @@ import context
 # Deterministic run
 deterministic_run = r"""
     cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
-            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_9999 --mod_ocean=1
-            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_9999 --mod_ocean=1 --mod_emission_pulse=ocean_damage_9999
-            gams run_rice50x.gms --policy=bau --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_9999 --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1
+            gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_9999 --mod_ocean=1
+            gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_9999 --mod_ocean=1 --mod_emission_pulse=ocean_damage_9999
+            gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_9999 --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1
 """
 with open(context.projectpath() / 'Data/SCC/tmp/mc_seed_9999.bat', 'w') as f:
     f.write(deterministic_run)
@@ -108,9 +108,9 @@ for i, row in sample_df.iterrows():
             echo File exists.
         ) ELSE (
             echo not 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_{i} {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_{i} {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} {s} 
         )
     """
     l.append(txt)
