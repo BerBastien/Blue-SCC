@@ -36,8 +36,8 @@ normal_params = [
     'ocean_value_exp_nu',
     'ocean_area_damage_coef',
     'ocean_consump_damage_coef',
-    'ocean_health_damage_coef',
-    'ocean_health_damage_intercept',
+    'ocean_health_tame',
+    'ocean_health_beta',
 ]
 positive_normal_params = {
     'vsl_start': [7.4, 4.7],
@@ -88,11 +88,13 @@ sample_df = pd.concat([
 sample_df['baseline'] = 'ssp' + (sample_df['baseline']*5+0.5).round(0).astype(int).astype(str)
 
 # Plot parameter distributions
-sample_df.hist(figsize=(12,12), grid=False)
-fig = plt.gcf()
-fig.suptitle('MC parameter distribution')
-plt.savefig(context.projectpath() / 'Figures/SCC/MC_distributions.png')
-plt.show()
+plot_dist = False
+if plot_dist:
+    sample_df.hist(figsize=(12,12), grid=False)
+    fig = plt.gcf()
+    fig.suptitle('MC parameter distribution')
+    plt.savefig(context.projectpath() / 'Figures/SCC/MC_distributions.png')
+    plt.show()
 
 # ocean_theta_1 = ocean_theta_2 = theta
 if 'theta' in sample_df.columns:
@@ -103,9 +105,12 @@ if 'theta' in sample_df.columns:
 l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']
 for i, row in sample_df.iterrows():
     s = ' '.join(('--' + row.index + '=' + row.astype(str)).tolist())
-    txt = f"""        
-    IF EXIST "results_ocean\ocean_damage_{i}.gdx" (
-            echo File exists.
+    txt = fr"""        
+    SET do_stuff=false
+    IF EXIST "results_ocean\results_ocean_damage_{i}.gdx" SET do_stuff=true
+    IF EXIST "debug_ocean\debug_ocean_damage_{i}.gdx" SET do_stuff=true
+    IF %do_stuff% == true (
+            echo {i}.
         ) ELSE (
             echo not 
             gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} 
