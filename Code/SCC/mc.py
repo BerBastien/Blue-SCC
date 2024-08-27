@@ -20,7 +20,7 @@ context.pdsettings()
 
 
 def scc_mc(mc_id):
-    if not (results_folder / f'results_ocean_damage_pulse_{mc_id}.gdx').is_file():
+    if not (Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x\results_ocean") / f'results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
     ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_damage_{mc_id}.gdx')
     ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_damage_pulse_{mc_id}.gdx')
@@ -50,10 +50,11 @@ l = Parallel(n_jobs=5)(delayed(scc_mc)(mc_id) for mc_id in tqdm(mc_ids))
 df = pd.concat(l)
 df = df[df.t==2020]
 
-# %% Plot
 df['oc_capital'] = df.oc_capital.replace({'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
                        'total': 'Total'})
-
+df.to_parquet(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\blue_rice\data\out\MC.parquet")
+df = pd.read_parquet(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\blue_rice\data\out\MC.parquet")
+# %% Baseline
 baseline = scc_mc(9999).query('t==2020')
 baseline['oc_capital'] = baseline.oc_capital.replace({'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
                        'total': 'Total'})
@@ -61,7 +62,7 @@ baseline['valuation'] = baseline['valuation']\
     .replace({'consumption': 'Market value', 'usenm': 'Non-market use value', 'nonuse': 'Nonuse value', 'total': 'Total'})
 oc_capital_totals = baseline.query('oc_capital!="Total"').groupby('oc_capital').scc.sum().reset_index()
 valuation_totals = baseline.query('oc_capital!="Total"').groupby('valuation').scc.sum().reset_index()
-# %%
+# %% SCC distribution
 plot_df = df.groupby(['oc_capital', 'id']).scc.sum().unstack().T
 plot_df = plot_df[plot_df.median().sort_values(ascending=False).index]
 color_dict = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green', 'Total': 'tab:red'}
@@ -88,7 +89,7 @@ ax.legend(h[:3] + h[-1:], l[:3] + l[-1:])
 plt.tight_layout()
 plt.show()
 
-# %%
+# %% SCC distribution
 plot_df = df.groupby(['oc_capital', 'id']).scc.sum().unstack().T
 plot_df = plot_df[plot_df.median().sort_values(ascending=False).index]
 plot_df = plot_df.rename(columns={'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves', 'total': 'Total'})
@@ -105,12 +106,15 @@ ax.axvline(0, c='k')
 ax.set_xlim(0, ax.get_xlim()[1])
 ax.set_xlabel('Social Cost of Carbon (2020 USD)')
 ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+ax.set_xscale('asinh')
+ax.axvline(baseline.loc[baseline.oc_capital=='Total', 'scc'].iat[0], c='tab:red', label='Total SCC, main result')
 # h, l = ax.get_legend_handles_labels()
 # ax.legend(h[:3] + h[-1:], l[:3] + l[-1:])
+ax.legend(frameon=False)
 plt.tight_layout()
 plt.show()
 
-# %%
+# %% Baseline
 cmap = plt.get_cmap('tab20c')
 color_dict = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green', 'Total': 'tab:red'}
 marker_dict = {'Market value': 'x', 'Non-market use value': '+', 'Nonuse value': '*', 'Total': 'o'}
@@ -211,8 +215,24 @@ delta_df = pd.DataFrame(delta.analyze(problem, x, y, seed=3465)).sort_values(by=
 pawn_df = pd.DataFrame(pawn.analyze(problem, x, y)).sort_values(by='mean', ascending=False)
 
 # Plot
-delta_df = delta_df.rename(columns={'ocean_theta_1': 'ocean_theta'})
-pawn_df = pawn_df.rename(columns={'ocean_theta_1': 'ocean_theta'})
+params_names_dict = {'tcre': 'TCRE', 'prstp': 'PRTP', 'vsl_start': 'VSL',
+                     'ocean_theta_1': r'$\theta$',
+                     'ocean_theta_2': r'$\theta_2$',
+                     'ocean_health_tame': 'Total avoided\nmortality effect',
+                     'ocean_consump_damage_coef': 'Consumption damage coef',
+                     'ocean_area_damage_coef': 'Area damage coef',
+                     'ocean_income_elasticity': 'Income elasticity\nof coral value',
+                     'ocean_health_eta': '$\eta$',
+                     'ocean_value_exp_nu': '$a$ (Mangroves\nnonuse)',
+                     'ocean_value_intercept_nu': '$b$ (Mangroves\nnonuse)',
+                     'ocean_health_mu': r'$\mu$',
+                     'ocean_health_beta': r'$\beta$ (Fisheries)',
+                     'ocean_value_intercept_unm': '$a$ (Mangroves\nnonmarket use)',
+                     'elasmu': 'Elasticity of marginal utility\nof consumption',
+                     'ocean_value_exp_unm': '$b$ (Mangroves\nnonmarket use)'
+                     }
+delta_df = delta_df.replace(params_names_dict)
+pawn_df = pawn_df.replace(params_names_dict)
 
 fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8,5), sharex=False, sharey=True)
 ax1.bar(delta_df.names, delta_df.delta)
@@ -231,9 +251,9 @@ fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
 plt.tight_layout()
 plt.show()
 
-fig, ax2 = plt.subplots(nrows=1, ncols=1, figsize=(8,5), sharex=False, sharey=True)
+fig, ax2 = plt.subplots(nrows=1, ncols=1, figsize=(10,5), sharex=False, sharey=True)
 ax2.bar(pawn_df.names, pawn_df['mean'])
-ax2.set_xticklabels(ax2.get_xticklabels(), rotation='vertical')
+ax2.set_xticklabels(ax2.get_xticklabels(), rotation=90, ha='center')
 ax2.axhline(0, c='k')
 ax2.spines[['top', 'right']].set_visible(False)
 # ax2.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
@@ -242,6 +262,60 @@ fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
 plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/pawn.png')
 plt.show()
+# %% GSA no fisheries
+df_nofisheries = df.query("oc_capital!='Total' & oc_capital!='Fisheries'")
+df_nofisheries['scc_sum'] = df_nofisheries.groupby(['oc_capital', 'id']).scc.transform('sum')
+df_nofisheries.groupby(['oc_capital', 'id']).first()
+gsa_df = df_nofisheries.copy()
+gsa_vars = list(set(df_nofisheries.columns) - set(['t', 'scc', 'scc_sum', 'oc_capital', 'valuation', 'id', 'baseline', 'ocean_theta_2']))
+problem = {
+    'num_vars': len(gsa_vars),
+    'names': gsa_vars,
+    # 'bounds': [[0,1], [0 , 1]]
+}
+x = gsa_df[gsa_vars].values
+y = gsa_df.scc_sum.values
+print(x.shape, y.shape)
+pawn_df = pd.DataFrame(pawn.analyze(problem, x, y)).sort_values(by='mean', ascending=False).replace(params_names_dict)
+
+fig, ax2 = plt.subplots(nrows=1, ncols=1, figsize=(10,5), sharex=False, sharey=True)
+ax2.bar(pawn_df.names, pawn_df['mean'])
+ax2.set_xticklabels(ax2.get_xticklabels(), rotation=90, ha='center')
+ax2.axhline(0, c='k')
+ax2.spines[['top', 'right']].set_visible(False)
+# ax2.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
+ax2.set_title('PAWN index (mean)\n\nNo fisheries')
+fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
+plt.tight_layout()
+plt.show()
+
+# %% GSA only fisheries
+df_fisheries = df.query("oc_capital=='Fisheries'")
+df_fisheries['scc_sum'] = df_fisheries.groupby(['oc_capital', 'id']).scc.transform('sum')
+df_fisheries.groupby(['oc_capital', 'id']).first()
+gsa_df = df_fisheries.copy()
+gsa_vars = list(set(df_fisheries.columns) - set(['t', 'scc', 'scc_sum', 'oc_capital', 'valuation', 'id', 'baseline', 'ocean_theta_2']))
+problem = {
+    'num_vars': len(gsa_vars),
+    'names': gsa_vars,
+    # 'bounds': [[0,1], [0 , 1]]
+}
+x = gsa_df[gsa_vars].values
+y = gsa_df.scc_sum.values
+print(x.shape, y.shape)
+pawn_df = pd.DataFrame(pawn.analyze(problem, x, y)).sort_values(by='mean', ascending=False).replace(params_names_dict)
+
+fig, ax2 = plt.subplots(nrows=1, ncols=1, figsize=(10,5), sharex=False, sharey=True)
+ax2.bar(pawn_df.names, pawn_df['mean'])
+ax2.set_xticklabels(ax2.get_xticklabels(), rotation=90, ha='center')
+ax2.axhline(0, c='k')
+ax2.spines[['top', 'right']].set_visible(False)
+# ax2.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
+ax2.set_title('PAWN index (mean)\n\nOnly fisheries')
+fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
+plt.tight_layout()
+plt.show()
+
 # %%
 fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(10,10), sharex=False, sharey=True)
 for ax, col in zip(axs.flatten(), gsa_vars):
@@ -271,7 +345,7 @@ debug = pd.concat(l)
 
 ok_folder = Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x\results_ocean")
 l = []
-for file in list(ok_folder.glob('results_ocean_damage*.gdx')):
+for file in list(ok_folder.glob('results_ocean_damage_pulse*.gdx')):
     id = int(file.stem.split('_')[-1])
     l.append(lhs[lhs.id==id])
 ok = pd.concat(l)
@@ -292,7 +366,9 @@ for ax, xvar in zip(axs.flatten(), df.select_dtypes('number').columns):
     ax.hist(df.loc[df.missing==1, xvar], histtype='step')
     ax.axvline(df.loc[df.missing==0, xvar].mean(), color='tab:blue')
     ax.axvline(df.loc[df.missing==1, xvar].mean(), color='tab:orange')
-    ax.set_title(xvar)
+    ax.set_title(params_names_dict[xvar])
+for i in [0, -2, -1]:
+    axs.flatten()[i].set_axis_off()
 plt.tight_layout()
 plt.show()
 mod = smf.ols(f"tcre ~ missing", df).fit()
