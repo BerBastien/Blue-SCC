@@ -40,7 +40,7 @@ normal_params = [
     'ocean_health_beta',
 ]
 positive_normal_params = {
-    'vsl_start': [7.4, 4.7],
+    'vsl_start': [7.4 / 1e6, 4.7 / 1e6],
     'theta': [0.21, 0.09],
     'ocean_income_elasticity': [0.79, 0.09]
 }
@@ -48,7 +48,7 @@ lognormal_params = {
     'tcre': [0.5, 0.43]
 }
 
-n = 5000  # Sample size
+n = 1000  # Sample size
 
 # Uniformly distributed parameters
 sampler = qmc.LatinHypercube(d=len(uniform_params), seed=1234)
@@ -122,3 +122,26 @@ for i, row in sample_df.iterrows():
 with open(context.projectpath() / 'Data/SCC/tmp/mc_lhs.bat', 'w') as f:
     f.write('\n'.join(l))
 sample_df.reset_index().rename(columns={'index':'id'}).to_parquet(context.projectpath() / 'Data/SCC/out/lhs.parquet')
+
+# Create minibatches for parallel computations
+l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']
+for i, row in sample_df.iterrows():
+    s = ' '.join(('--' + row.index + '=' + row.astype(str)).tolist())
+    txt = fr"""        
+    SET do_stuff=false
+    IF EXIST "results_ocean\results_ocean_damage_{i}.gdx" SET do_stuff=true
+    IF EXIST "debug_ocean\debug_ocean_damage_{i}.gdx" SET do_stuff=true
+    IF %do_stuff% == true (
+            echo {i}.
+        ) ELSE (
+            echo {i} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} > nul
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_{i} {s}  > nul
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} {s}  > nul
+        )
+    """
+    l.append(txt)
+    if i % 100 == 0:
+        with open(context.projectpath() / f'Data/SCC/tmp/mc_lhs_{i}.bat', 'w') as f:
+            f.write('\n'.join(l))
+        l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']

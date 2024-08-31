@@ -106,20 +106,22 @@ ax.axvline(0, c='k')
 ax.set_xlim(0, ax.get_xlim()[1])
 ax.set_xlabel('Social Cost of Carbon (2020 USD)')
 ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-ax.set_xscale('asinh')
-ax.axvline(baseline.loc[baseline.oc_capital=='Total', 'scc'].iat[0], c='tab:red', label='Total SCC, main result')
+# ax.set_xscale('asinh')
+# ax.axvline(baseline.loc[baseline.oc_capital=='Total', 'scc'].iat[0], c='tab:red', label='Total SCC, main result')
 # h, l = ax.get_legend_handles_labels()
 # ax.legend(h[:3] + h[-1:], l[:3] + l[-1:])
 ax.legend(frameon=False)
 plt.tight_layout()
+plt.savefig(Path().cwd() / 'Figures/SCC/scc_distribution.png')
 plt.show()
 
 # %% Baseline
 cmap = plt.get_cmap('tab20c')
 color_dict = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green', 'Total': 'tab:red'}
 marker_dict = {'Market value': 'x', 'Non-market use value': '+', 'Nonuse value': '*', 'Total': 'o'}
+baseline['scc_sum'] = baseline.groupby('oc_capital').scc.transform('sum')
+baseline = baseline.sort_values(['scc_sum', 'valuation'], ascending=[False, True])
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8,4), sharex=False, sharey=False)
-baseline_s = baseline.sort_values(['oc_capital', 'valuation'], ascending=[False, True])
 for h, (v, g) in enumerate(baseline.groupby('oc_capital', sort=False)):
     left = 0
     for i, row in g.iterrows():
@@ -130,12 +132,12 @@ for h, (v, g) in enumerate(baseline.groupby('oc_capital', sort=False)):
 ax.spines[['top', 'right']].set_visible(False)
 for line in ["left","bottom"]:
     ax.spines[line].set_position(("outward", 10))
-ax.axhline(3.5, c='k', linewidth=1)
+ax.axhline(0.5, c='k', linewidth=1)
 ax.set_xlim(0, ax.get_xlim()[1])
 ax.set_xlabel('Social Cost of Carbon (2020 USD)')
 ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
 h, l = ax.get_legend_handles_labels()
-ax.legend(h[:3] + h[-1:], l[:3] + l[-1:], frameon=False,  title_fontproperties={'weight':'demibold'})
+ax.legend(h[1:4] + h[:1], l[1:4] + l[:1], frameon=False,  title_fontproperties={'weight':'demibold'})
 plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc_breakdown.png')
 plt.show()
