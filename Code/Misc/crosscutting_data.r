@@ -12,7 +12,6 @@
     ssp_temp <- read.csv(file="C:\\Users\\basti\\Box\\Data\\SSPs\\CO2Pulse\\SSP245_magicc_202303021423.csv")
     countries_in_ssps <- unique(ssp_pop$ISO3)            
 
-    ssp_temp %>% dplyr::select(scenario)
     ssp_gdp$countrycode <- ssp_gdp$ISO3
     ssp_pop$countrycode <- ssp_pop$ISO3
     ssp_temp_long <- ssp_temp %>%
@@ -29,6 +28,8 @@
     ssp_temp_long$temp <- ssp_temp_long$value - ssp_temp_long$temp2020
 
 
+    
+    corals_df_iso_with_gdp <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
     ssp_corals <- ssp_gdp %>% left_join(corals_df_iso_with_gdp,by="countrycode")
         ssp_corals <- ssp_corals %>% left_join(ssp_pop,by=c("countrycode","scenario","year"))
         ssp_corals <- ssp_corals %>% left_join(ssp_temp_long %>% dplyr::select(-scenario),by="year")
@@ -119,6 +120,48 @@ find_surpass_year <- function(df, country_col, year_col, c_dif_col, threshold = 
     var_names <- c("C","ocean_consump_damage_coef","YNET")
     exp_names <- c("today","damage")
 
+    process_var_table <- function(var_table, exp_name, var_name) {
+        var_table <- var_table[3:nrow(var_table), ]
+        var_table <- as.data.frame(var_table)
+        print(var_name)
+        
+        if (ncol(var_table) < 4) {
+            if (var_name %in%  c("scc","pop")) {
+                names(var_table) <- c("year", "country", var_name)
+                var_table$country <- as.factor(var_table$country)
+                var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
+                var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
+                var_table$exp <- exp_name
+                var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
+            } else {
+                names(var_table) <- c("capital", "country", var_name)
+                var_table$country <- as.factor(var_table$country)
+                var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
+                var_table$exp <- exp_name
+                var_table$capital <- as.factor(var_table$capital)
+            }
+        } else {
+            if (ncol(var_table) < 7) {
+                if(var_name=="VSL"){
+                    names(var_table) <- c("year", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+                }else{
+                names(var_table) <- c("year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+                    var_table$country <- as.factor(var_table$country)
+                }
+            } else {
+                names(var_table) <- c("capital", "year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+                var_table$capital <- as.factor(var_table$capital)
+                var_table$country <- as.factor(var_table$country)
+            }
+            var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
+            var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
+            var_table$exp <- exp_name
+            #var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
+        }
+        
+        return(var_table)
+    }
+
 
     process_data <- function(exp_names, var_names, input_path = 'Data/output_rice50x/results_ocean_') {
     
@@ -148,17 +191,17 @@ find_surpass_year <- function(df, country_col, year_col, c_dif_col, threshold = 
                     names(var_table) <- c("year", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
                 }else{
                 names(var_table) <- c("year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
-            var_table$country <- as.factor(var_table$country)
+                    var_table$country <- as.factor(var_table$country)
                 }
             } else {
                 names(var_table) <- c("capital", "year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
                 var_table$capital <- as.factor(var_table$capital)
-            var_table$country <- as.factor(var_table$country)
+                var_table$country <- as.factor(var_table$country)
             }
             var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
             var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
             var_table$exp <- exp_name
-            var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
+            #var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
         }
         
         return(var_table)
@@ -181,7 +224,3 @@ find_surpass_year <- function(df, country_col, year_col, c_dif_col, threshold = 
 }
 
 
-var_table <- read_excel('Data/output_rice50x/results_ocean_damage.xlsx', sheet = "VSL")
-glimpse(var_table)
-            var_table <- process_var_table(var_table, exp_names[i], var_names[j])
-## Functions

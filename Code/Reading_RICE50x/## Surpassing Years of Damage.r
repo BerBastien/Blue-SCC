@@ -1,22 +1,12 @@
+## Surpassing Years of Damage
+
+
 #Data Arrange (start)
 
-    ## Socioeconomics (start)
-        # gdp_data <- WDI(country = "all", indicator = "NY.GDP.MKTP.PP.KD", start = 2020, end = 2020) 
-        # population_data <- WDI(country = "all", indicator = "SP.POP.TOTL", start = 2020, end = 2020)
-        # gdp_data <- gdp_data %>% dplyr::rename(countrycode=iso3c,GDP_2020usd=NY.GDP.MKTP.PP.KD)
-        # saveRDS(gdp_data, "Data/other/gdp_data_2020.rds")
-        # population_data  <- population_data  %>% dplyr::rename(countrycode=iso3c,Pop2020=SP.POP.TOTL)
-        # saveRDS(population_data, "Data/other/population_data_2020.rds")
 
-        population_data <- readRDS("Data/other/population_data_2020.rds")
-        gdp_data <- readRDS("Data/other/gdp_data_2020.rds")
-
-        
-    ## Socioeconomics (end)
 
     ## Temperature from RICE50x
-        # Load and preprocess data
-        tatm <- read_excel(paste0('Data/output_rice50x/results_ocean_damage_9999.xlsx'), sheet = "TATM") %>%
+        tatm <- read_excel(paste0('Data/output_rice50x/results_ocean_', exp_names[i], '.xlsx'), sheet = "TATM") %>%
         select(year = 1, tatm = 3) %>%
         mutate(year = 1980 + (as.integer(year) - 1) * 5, tatm = as.double(tatm)) %>%
         filter(!is.na(year)) %>%
@@ -191,7 +181,7 @@
         nutrition_dep <- read.csv("Data\\output_modules_input_rice50x\\input_rice50x\\seafood_dependence.csv") %>% 
             mutate(countrycode = countrycode(World_Country,origin="country.name",destination="iso3c"))
         nutrition_health <- read.csv("Data\\output_modules_input_rice50x\\input_rice50x\\mortality_seafood_nutrition.csv") %>% 
-            #left_join(nutrition_dep,by="countrycode") %>% 
+            left_join(nutrition_dep,by="countrycode") %>% 
                     left_join(gdp_data %>% dplyr::select(GDP_2020usd,countrycode),by="countrycode")%>% 
                     left_join(population_data %>% dplyr::select(Pop2020,countrycode),by="countrycode") %>% 
                     mutate(value = 100*TAME_nutrients_MortalityEffect*Pop2020*Nutritional_D*0.1*VSL/GDP_2020usd) %>% 
@@ -213,9 +203,8 @@
             ungroup()
             
             
-            nutrition_health2 <- read.csv("Data\\output_modules_input_rice50x\\input_rice50x\\mortality_seafood_nutrition.csv")
-                #left_join(nutrition_dep,by="countrycode")#         
-            glimpse(nutrition_health2)
+            nutrition_health2 <- read.csv("Data\\output_modules_input_rice50x\\input_rice50x\\mortality_seafood_nutrition.csv") %>% 
+                left_join(nutrition_dep,by="countrycode")#         
             nutrition_health2 <- nutrition_health2 %>% left_join(ssp_corals_growth_ssp2, by = "countrycode") %>% 
                 mutate(damages = - temp * (beta_nutrient_percChange_perDegreeC/100)* TAME_nutrients_MortalityEffect*Pop.million*10^6*Nutritional_D*0.1*VSL) %>% 
                 group_by(countrycode) %>%      
@@ -361,7 +350,7 @@
             #windows()
             
             print(fig_M2)
-            #ggsave("Figures/Main2.png")
+            ggsave("Figures/Main2.png")
 
             surpass_all <- surpass_all %>%
          mutate(year_surpass_transformed = log(as.integer(year_surpass) - 2019))
@@ -385,7 +374,7 @@
                 ))
             #windows()v2
 
-            #ggsave("Figures/Main2.png")
+            ggsave("Figures/Main2.png")
             
             print(fig_M2v2)
 
@@ -417,151 +406,5 @@
                 frame.colour = "black"
                 )
             )
-            #ggsave("Figures/Main2vlog.png")
+            ggsave("Figures/Main2vlog.png")
     ## Merge all surpasses (end)
-
-    ## Merge all capitals (start)
-        blue_cap0 <- as.data.frame(rbind(coral_values_long ,port_values,fish_values,nutrition_health, man_values0))    ## Merge all capitals (end)
-        # Add GDP and GDP per capita in 2020
-
-    ## Add co-variates to dataframe (start)
-        
-        
-        blue_cap <- blue_cap0 %>% left_join(regions,by="countrycode") %>% 
-                    left_join(gdp_data %>% dplyr::select(GDP_2020usd,countrycode),by="countrycode")%>% 
-                    left_join(population_data %>% dplyr::select(Pop2020,countrycode),by="countrycode") %>%
-                    mutate(R5 = factor(R5, levels = rev(sort(unique(R5)))))
-
-        glimpse(blue_cap)
-    ## Add co-variates to dataframe (end)
-#Data Arrange (send)
-
-## Figure 1 bottom (start)
-    ## Scatter plot ----
-        blue_cap <- blue_cap %>%
-                    mutate(value_capped = ifelse(value > 100, 100, ifelse(value < 1, 1, value)))
-        color_capitals
-
-        capital_plot <- ggplot(blue_cap %>% filter(value_capped >0 )) +
-        geom_point(aes(
-                x = (GDP_2020usd/Pop2020)/1000, 
-                y = R5, 
-                shape = category, 
-                size = value_capped, 
-                color=capital), 
-            position = position_jitter(width = 0, height = 0.3),
-            alpha=0.5) +
-        scale_color_manual(values=Color_capitals)+
-        scale_size_continuous(range = c(1, 8)) +
-        #scale_color_manual(values=color_ValueTypes)+
-        scale_x_continuous(trans="log10")+ ylab("")+xlab("")+
-        #theme(legend.position = "none")+
-        theme_bw()+
-        theme(
-            panel.grid.major.y = element_blank(),
-            panel.grid.minor.y = element_blank()
-        ) +
-        labs(size="Value of Benefit\n(shown as %GDP)",shape="Value Category",color="Blue Capital")
-  
-        capital_plot
-        #ggsave("Figures\\Main\\Values_Across_Regions.png",dpi=300)
-
-        #svglite::svglite("capital_diagrams.svg", width = 10, height = 7)
-        #print(capital_plot)
-        #dev.off()
-            
-            #ggsave("Figures/Main/Fig1_a_corals.png",dpi=600)
-
-    ## Sankey diagram ----
-        blue_cap_summary <- blue_cap %>%
-            filter(!is.na(R5) & !is.na(capital) & !is.na(value)) %>%
-            group_by(R5, capital) %>%
-            summarise(count = n()) %>%
-            ungroup()%>%
-        mutate(R5 = factor(R5, levels = rev(sort(unique(R5)))))
-
-        glimpse(blue_cap_summary)
-
-        blue_cap_summary 
-        sankey <- ggplot(data = blue_cap_summary,
-        aes(axis1 = capital, axis2 = R5, y = count)) +
-            geom_alluvium(aes(fill = capital), width = 0.1, knot.pos = 0.4) +
-            geom_stratum(width = 0.1, fill = "transparent", color = "transparent") +
-            geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
-            #scale_x_discrete(limits = c("R5", "Capital"), expand = c(0.15, 0.05)) +
-            theme_void() +
-            scale_fill_manual(values=Color_capitals)+
-        theme(legend.position = "none")
-
-        sankey
-
-        mixed_plot <- ggarrange(sankey,capital_plot)
-
-
-        svglite::svglite("combined_diagrams_v3.svg", width = 7.5, height = 4)
-        print(mixed_plot )
-        dev.off()
-
-        # Calculate total count for each region
-        total_counts <- blue_cap_summary %>%
-        group_by(R5) %>%
-        summarise(total_count = sum(count)) %>%
-        arrange(total_count)
-
-        # Determine the spacing based on total counts
-        total_counts <- total_counts %>%
-        mutate(region_spacing = 500 - (cumsum(total_count) / sum(total_count) * 100))
-
-        # Join the total counts and spacing back to the original data
-        blue_cap_summary2 <- blue_cap_summary %>%
-        left_join(total_counts, by = "R5") %>%
-        mutate(R5 = factor(R5, levels = total_counts$R5)) 
-
-        spacing_new <- blue_cap_summary2 %>% group_by(R5) %>% slice(1)  %>% mutate(capital="transparent") %>% 
-        mutate(count=252*(region_spacing/100), color=capital)%>% mutate(r5 = as.character(R5))
-        spacing_new$capital <- c("t5","t2","t3","t4","t1") 
-
-        spacing_new$r5[spacing_new$R5=="ASIA"] <- "ra" 
-        spacing_new$r5[spacing_new$R5=="MAF"] <- "rm" 
-        spacing_new$r5[spacing_new$R5=="LAM"] <- "rl" 
-        spacing_new$r5[spacing_new$R5=="OECD"] <- "ro" 
-        spacing_new$r5[spacing_new$R5=="REF"] <- "rr" 
-
-
-        #spacing_new$capital <- c("corals","fisheries","mangroves","ports","ports")
-        blue_cap_summary2$color = blue_cap_summary2$capital
-
-        blue_cap_summary2$r5 = as.character(blue_cap_summary2$R5)
-
-        blue_cap_summary3 <- rbind(blue_cap_summary2,spacing_new) %>%
-        mutate(capital = factor(capital, levels = c( "t1","Corals", "t2", "Fisheries & Mariculture", "t3", "Mangroves", "t4", "Ports", "t5"))) %>% 
-        mutate(r5 = factor(r5, levels = c("ASIA","ra","LAM","rl","MAF","rm","OECD","ro","REF","rr")))
-
-
-        sankey <- ggplot(data = blue_cap_summary3,
-            aes(axis1 = capital, axis2 = r5, y = count)) +
-                geom_alluvium(aes(fill = capital), width = 0.1, knot.pos = 0.4, alpha=0.3) +
-                geom_stratum(width = 0.1, fill = "transparent", color = "transparent") +
-                geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
-                #scale_x_discrete(limits = c("R5", "Capital"), expand = c(0.15, 0.05)) +
-                theme_void() +
-                scale_fill_manual(values=c(Color_capitals,t1="transparent",t2="transparent",t3="transparent",t4="transparent",t5="transparent"))+
-                #scale_fill_manual(values=c(color_capitals))+
-            theme(legend.position = "none")
-
-            sankey
-
-
-
-            mixed_plot <- ggarrange(sankey,capital_plot,legend=FALSE,ncol=2,widths=c(1,2))
-            ggarrange(sankey,capital_plot,legend=FALSE,ncol=2,widths=c(1,2))
-
-            #svglite::svglite("combined_diagrams_separatedv4_mastransparente.svg", width = 7.5, height = 6)
-
-            print(mixed_plot )
-            #dev.off()
-
-
-## Figure 1 bottom (end)
-
-# Year of the Trillion Damages ----

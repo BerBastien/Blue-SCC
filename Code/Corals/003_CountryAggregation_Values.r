@@ -45,14 +45,15 @@
         corals_df_iso_with_gdp$adjustment_factor <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* gamma
         corals_df_iso_with_gdp$adjustment_factor_se <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* se_gamma
 
-        
-        corals_df_iso_with_gdp$muV_value_perkm2year <- (55724-33048)*100 * corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Provisioning Ecosystem Services for Coral Reefs (Int$/km2/year)
-        corals_df_iso_with_gdp$nuV_value_perkm2year <- 268935*100 * corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
-        corals_df_iso_with_gdp$nV_value_perkm2year <- (27600*100 )* corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
 
-        corals_df_iso_with_gdp$muV_value_perkm2year_se <- (55724-33048)*100 * corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Provisioning Ecosystem Services for Coral Reefs (Int$/km2/year)
-        corals_df_iso_with_gdp$nuV_value_perkm2year_se <- 268935*100 * corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
-        corals_df_iso_with_gdp$nV_value_perkm2year_se <- (27600*100 )* corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
+
+        corals_df_iso_with_gdp$muV_value_perkm2year <- 100*(741+18514+34) * corals_df_iso_with_gdp$adjustment_factor #Total Monetary Value of the Bundle of: Food, Raw Materials, Ornamental (Int$/km2/year) in Brander et al (2024)
+        corals_df_iso_with_gdp$nuV_value_perkm2year <- 100*(2+14369+4078+3418+1551+5580+6271+917) * corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of: climate reg, moderation of extreme events, waste tratment, erosion prevention, maintenanco of soil fertility, aesthetic information, recreation, inspiration (Int$/km2/year) in Brander et al (2024)
+        corals_df_iso_with_gdp$nV_value_perkm2year <- 100*(1385+9432+18793)* corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
+
+        corals_df_iso_with_gdp$muV_value_perkm2year_se <-  100*(21783)* corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Provisioning Ecosystem Services for Coral Reefs (Int$/km2/year)
+        corals_df_iso_with_gdp$nuV_value_perkm2year_se <- 100*(51218)  * corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
+        corals_df_iso_with_gdp$nV_value_perkm2year_se <- 100*(56536) * corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
 
         corals_df_iso_with_gdp <- corals_df_iso_with_gdp  %>% dplyr::select(-sum_area_cover_km2,weighted_mean_coeff,gdp,adjustment_factor)
         glimpse(corals_df_iso_with_gdp)
