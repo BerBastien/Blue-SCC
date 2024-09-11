@@ -194,7 +194,6 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
     ocean_s2_2 = var_from_gdx(ocean_damage_gdx, 'ocean_s2_2').values[0][0]
     ocean_consump_damage_coef = var_from_gdx(ocean_damage_gdx, 'ocean_consump_damage_coef', vars=['oc_capital'])
     ocean_consump_damage_coef_sq = var_from_gdx(ocean_damage_gdx, 'ocean_consump_damage_coef_sq', vars=['oc_capital'])
-    ocean_income_elasticity = var_from_gdx(ocean_damage_gdx, 'ocean_income_elasticity', vars=['oc_capital']).values[0][0]
     elasmu = var_from_gdx(ocean_damage_gdx, 'elasmu', vars=['oc_capital']).values[0][0]
 
     if target_valuation == 'consumption':
