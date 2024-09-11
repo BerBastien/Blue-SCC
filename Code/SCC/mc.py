@@ -43,6 +43,8 @@ def scc_mc(mc_id):
 
 # %%
 results_folder = Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x\results_ocean")
+results_folder = Path(r"C:\Users\basti\Documents\GitHub\BlueDICE\Data\output_rice50x")
+
 files = list(results_folder.glob('*.gdx'))
 mc_ids = set(re.sub('results_ocean_damage_pulse_|results_ocean_damage_|results_ocean_today_', '', x.stem) for x in files)
 mc_ids = mc_ids - set([9999])  # Baseline

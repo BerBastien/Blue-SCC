@@ -37,23 +37,31 @@
         corals_df_iso_with_gdp$gdp[which(corals_df_iso_with_gdp$countrycode=="TWN")] <- 28570
         corals_df_iso_with_gdp$gdp[which(corals_df_iso_with_gdp$countrycode=="VEN")] <- 1570
 
-        gamma <- 0.79
-        se_gamma <- 0.09
+        # gamma <- 0.79 #Drupp 2023
+        # se_gamma <- 0.09 #Drupp 2023
+        corals_df_iso_with_gdp$gamma_um <- 0.129 #As given by ESDV Analysis specific to corals, same data as in Brander et al (2024)
+        corals_df_iso_with_gdp$gamma_um_se <- 0.062 #As given by ESDV Analysis specific to corals, same data as in Brander et al (2024)
+        corals_df_iso_with_gdp$gamma_unm <- 0.129 #As given by ESDV Analysis specific to corals, same data as in Brander et al (2024)
+        corals_df_iso_with_gdp$gamma_unm_se <- 0.222 #As given by ESDV Analysis specific to corals, same data as in Brander et al (2024)
+        corals_df_iso_with_gdp$gamma_nu <- 0.243 #As given by ESDV Analysis specific to corals, same data as in Brander et al (2024)
+        corals_df_iso_with_gdp$gamma_nu_se <- 0.068 #As given by ESDV Analysis specific to corals, same data as in Brander et al (2024)
         corals_df_iso_with_gdp <- corals_df_iso_with_gdp %>% filter(!is.na(countrycode))
         mean_gdp <- mean(corals_df_iso_with_gdp$gdp, na.rm = TRUE)
         corals_df_iso_with_gdp$GDP_asPercentage <- (corals_df_iso_with_gdp$gdp / mean_gdp)
-        corals_df_iso_with_gdp$adjustment_factor <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* gamma
-        corals_df_iso_with_gdp$adjustment_factor_se <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* se_gamma
+        corals_df_iso_with_gdp$adjustment_factor_um <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* corals_df_iso_with_gdp$gamma_um
+        corals_df_iso_with_gdp$adjustment_factor_unm <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* corals_df_iso_with_gdp$gamma_unm
+        corals_df_iso_with_gdp$adjustment_factor_nu <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* corals_df_iso_with_gdp$gamma_nu
+        #corals_df_iso_with_gdp$adjustment_factor_se <- ((corals_df_iso_with_gdp$gdp) / (mean_gdp))* se_gamma
 
 
 
-        corals_df_iso_with_gdp$muV_value_perkm2year <- 100*(741+18514+34) * corals_df_iso_with_gdp$adjustment_factor #Total Monetary Value of the Bundle of: Food, Raw Materials, Ornamental (Int$/km2/year) in Brander et al (2024)
-        corals_df_iso_with_gdp$nuV_value_perkm2year <- 100*(2+14369+4078+3418+1551+5580+6271+917) * corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of: climate reg, moderation of extreme events, waste tratment, erosion prevention, maintenanco of soil fertility, aesthetic information, recreation, inspiration (Int$/km2/year) in Brander et al (2024)
-        corals_df_iso_with_gdp$nV_value_perkm2year <- 100*(1385+9432+18793)* corals_df_iso_with_gdp$adjustment_factor#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
+        corals_df_iso_with_gdp$muV_value_perkm2year <- 100*(741+18514+34) * corals_df_iso_with_gdp$adjustment_factor_um #Total Monetary Value of the Bundle of: Food, Raw Materials, Ornamental (Int$/km2/year) in Brander et al (2024)
+        corals_df_iso_with_gdp$nuV_value_perkm2year <- 100*(2+14369+4078+3418+1551+5580+6271+917) * corals_df_iso_with_gdp$adjustment_factor_unm#Total Monetary Value of the Bundle of: climate reg, moderation of extreme events, waste tratment, erosion prevention, maintenanco of soil fertility, aesthetic information, recreation, inspiration (Int$/km2/year) in Brander et al (2024)
+        corals_df_iso_with_gdp$nV_value_perkm2year <- 100*(1385+9432+18793)* corals_df_iso_with_gdp$adjustment_factor_nu#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
 
-        corals_df_iso_with_gdp$muV_value_perkm2year_se <-  100*(21783)* corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Provisioning Ecosystem Services for Coral Reefs (Int$/km2/year)
-        corals_df_iso_with_gdp$nuV_value_perkm2year_se <- 100*(51218)  * corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
-        corals_df_iso_with_gdp$nV_value_perkm2year_se <- 100*(56536) * corals_df_iso_with_gdp$adjustment_factor_se#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
+        corals_df_iso_with_gdp$muV_value_perkm2year_se <-  100*(21783)* corals_df_iso_with_gdp$adjustment_factor_um#Total Monetary Value of the Bundle of Provisioning Ecosystem Services for Coral Reefs (Int$/km2/year)
+        corals_df_iso_with_gdp$nuV_value_perkm2year_se <- 100*(51218)  * corals_df_iso_with_gdp$adjustment_factor_unm#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
+        corals_df_iso_with_gdp$nV_value_perkm2year_se <- 100*(56536) * corals_df_iso_with_gdp$adjustment_factor_nu#Total Monetary Value of the Bundle of Ecosystem Services for Coral Reefs (Int$/km2/year)
 
         corals_df_iso_with_gdp <- corals_df_iso_with_gdp  %>% dplyr::select(-sum_area_cover_km2,weighted_mean_coeff,gdp,adjustment_factor)
         glimpse(corals_df_iso_with_gdp)
@@ -68,17 +76,13 @@
         corals_df_iso_with_gdp <- corals_df_iso_with_gdp %>% 
         #dplyr::select(-X) %>% 
         rename(CoralArea_2020_km2=area_km2_t0) %>% 
-        mutate(muV_value_perkm2year = muV_value_perkm2year*def_mult[[1]],
-        nuV_value_perkm2year = nuV_value_perkm2year*def_mult[[1]],
-        nV_value_perkm2year = nV_value_perkm2year*def_mult[[1]], 
-        muV_value_perkm2year_se = muV_value_perkm2year_se*def_mult[[1]],
-        nuV_value_perkm2year_se = nuV_value_perkm2year_se*def_mult[[1]],
-        nV_value_perkm2year_se = nV_value_perkm2year_se*def_mult[[1]], 
-        units = "Int2020$_perkm2_peryear") 
+        mutate(units = "Int2020$_perkm2_peryear") 
 
         corals_df_iso_with_gdp_clean <- corals_df_iso_with_gdp %>% 
-            dplyr::select(-weighted_mean_coeff_cover,gdp,GDP_asPercentage,adjustment_factor,adjustment_factor_se)
-        #write.csv(corals_df_iso_with_gdp_clean,file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
+            dplyr::select(-weighted_mean_coeff_cover,gdp,GDP_asPercentage,muV_value_perkm2year,nuV_value_perkm2year,nV_value_perkm2year,muV_value_perkm2year_se,nuV_value_perkm2year_se,nV_value_perkm2year_se, 
+            gamma_um, gamma_um_se,gamma_unm,gamma_unm_se,gamma_nu,gamma_nu_se)
+        write.csv(corals_df_iso_with_gdp_clean,file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
+        glimpse(corals_df_iso_with_gdp )
     
     ## Get GDP per Capita and Adjust Values According to income elasticity to WTP (end)
 
@@ -99,7 +103,7 @@
             group_by(scenario,countrycode) %>% 
             ## Calculating GDPpc Growth for WTP Income Elasticity
             mutate(GDP_growth = GDPpc_2020IntUSD / lag(GDPpc_2020IntUSD) - 1) %>% 
-            mutate(Adjustment= ifelse(year == 2020, 0, GDP_growth * 0.79)) %>% # From Drupp et al 2024 
+            mutate(Adjustment= ifelse(year == 2020, 0, GDP_growth * 0.129)) %>% # From Brander et al 2024
             filter(year >2019)  %>% 
             mutate(Adjustment_cum  = cumsum(Adjustment)) %>% 
             ## Adjusting the Per-Area Values Using GDPpc Growth
