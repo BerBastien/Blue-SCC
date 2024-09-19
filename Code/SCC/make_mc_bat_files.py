@@ -34,30 +34,33 @@ normal_params = [
     'ocean_value_exp_unm',
     'ocean_value_intercept_nu',
     'ocean_value_exp_nu',
-    'ocean_area_damage_coef',
+
     'ocean_area_damage_coef_coral',
     'ocean_area_damage_coef_mangrove',
-    'ocean_consump_damage_coef',
+
     'ocean_consump_damage_coef_coral',
     'ocean_consump_damage_coef_mangrove',
     'ocean_consump_damage_coef_ports',
     'ocean_consump_damage_coef_fisheries',
     'ocean_consump_damage_coef_sq',
+
     'ocean_health_tame',
     'ocean_health_beta',
+
+    'ocean_unm_start',
+    'ocean_nu_start',
 ]
 positive_normal_params = {
     'vsl_start': [7.4 / 1e6, 4.7 / 1e6],
     'theta': [0.21, 0.09],
-    'ocean_income_elasticity': [0.79, 0.09],
-    'ocean_unm_start': [0, 1],
-    'ocean_nu_start': [0, 1],
+    'ocean_income_elasticity_usenm': [0.222, 0.09],
+    'ocean_income_elasticity_nonuse': [0.243, 0.09],
 }
 lognormal_params = {
     # 'tcre': [0.5, 0.43]
 }
 
-n = 500  # Sample size
+n = 100  # Sample size
 
 # Uniformly distributed parameters
 sampler = qmc.LatinHypercube(d=len(uniform_params), seed=1234)
@@ -134,6 +137,7 @@ sample_df.reset_index().rename(columns={'index':'id'}).to_parquet(context.projec
 
 # Create minibatches for parallel computations
 l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']
+sample_df.index +=1
 for i, row in sample_df.iterrows():
     s = ' '.join(('--' + row.index + '=' + row.astype(str)).tolist())
     txt = fr"""        
@@ -150,7 +154,7 @@ for i, row in sample_df.iterrows():
         )
     """
     l.append(txt)
-    if i % 100 == 0:
+    if i % 10 == 0:
         with open(context.projectpath() / f'Data/SCC/tmp/mc_lhs_{i}.bat', 'w') as f:
             f.write('\n'.join(l))
         l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']
