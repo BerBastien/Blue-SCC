@@ -53,8 +53,8 @@ normal_params = [
 positive_normal_params = {
     'vsl_start': [7.4 / 1e6, 4.7 / 1e6],
     'theta': [0.21, 0.09],
-    'ocean_income_elasticity_usenm': [0.222, 0.09],
-    'ocean_income_elasticity_nonuse': [0.243, 0.09],
+    'ocean_income_elasticity_usenm': [0.222, 0.058],
+    'ocean_income_elasticity_nonuse': [0.243, 0.068],
 }
 lognormal_params = {
     # 'tcre': [0.5, 0.43]
