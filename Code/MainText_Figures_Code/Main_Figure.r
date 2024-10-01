@@ -387,7 +387,6 @@
 
             #ggsave("Figures/Main2.png")
             
-            print(fig_M2v2)
 
 
             ggplot(data = surpass_all %>% filter(continent != "Antarctica")) +
@@ -451,7 +450,7 @@
                 color=capital), 
             position = position_jitter(width = 0, height = 0.3),
             alpha=0.5) +
-        scale_color_manual(values=Color_capitals)+
+        scale_color_manual(values=Color_capitals_black)+
         scale_size_continuous(range = c(1, 8)) +
         #scale_color_manual(values=color_ValueTypes)+
         scale_x_continuous(trans="log10")+ ylab("")+xlab("")+
@@ -540,12 +539,12 @@
 
         sankey <- ggplot(data = blue_cap_summary3,
             aes(axis1 = capital, axis2 = r5, y = count)) +
-                geom_alluvium(aes(fill = capital), width = 0.1, knot.pos = 0.4, alpha=0.3) +
+                geom_alluvium(aes(fill = capital), width = 0.1, knot.pos = 0.4, alpha=01) +
                 geom_stratum(width = 0.1, fill = "transparent", color = "transparent") +
                 geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
                 #scale_x_discrete(limits = c("R5", "Capital"), expand = c(0.15, 0.05)) +
                 theme_void() +
-                scale_fill_manual(values=c(Color_capitals,t1="transparent",t2="transparent",t3="transparent",t4="transparent",t5="transparent"))+
+                scale_fill_manual(values=c(Color_capitals_black,t1="transparent",t2="transparent",t3="transparent",t4="transparent",t5="transparent"))+
                 #scale_fill_manual(values=c(color_capitals))+
             theme(legend.position = "none")
 
@@ -553,12 +552,13 @@
 
 
 
-            mixed_plot <- ggarrange(sankey,capital_plot,legend=FALSE,ncol=2,widths=c(1,2))
-            ggarrange(sankey,capital_plot,legend=FALSE,ncol=2,widths=c(1,2))
 
-            #svglite::svglite("combined_diagrams_separatedv4_mastransparente.svg", width = 7.5, height = 6)
+            mixed_plot <- ggarrange(sankey,capital_plot+guides(legend.position="right"),ncol=2,widths=c(1,2))
+            ggarrange(sankey,capital_plot+guides(legend.position="right"),ncol=2,widths=c(1,2))
 
-            print(mixed_plot )
+            #svglite::svglite("Figures/sankey_capital.svg", width = 7.5, height = 6)
+
+            #print(mixed_plot )
             #dev.off()
 
 

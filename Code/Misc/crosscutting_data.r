@@ -98,17 +98,43 @@
 
 ## Functions
 
+# find_surpass_year <- function(df, country_col, year_col, c_dif_col, threshold = 1) {
+#   df %>%
+#     arrange(!!sym(country_col), !!sym(year_col)) %>%
+#     group_by(!!sym(country_col)) %>%
+#     summarize(
+#       year_surpass = approx(
+#         x = !!sym(c_dif_col), 
+#         y = !!sym(year_col), 
+#         xout = threshold, 
+#         rule = 2 # if set to 2 Allows extrapolation if the threshold is not within the data range
+#       )$y[1]
+#     ) %>%
+#     ungroup()
+# }
+
 find_surpass_year <- function(df, country_col, year_col, c_dif_col, threshold = 1) {
   df %>%
     arrange(!!sym(country_col), !!sym(year_col)) %>%
     group_by(!!sym(country_col)) %>%
+    mutate(
+      # Check if the sign of the value at year 2100 is different from the threshold
+      is_opposite_sign_in_2100 = ifelse(
+        any(!!sym(year_col) == 2100 & sign(!!sym(c_dif_col)) != sign(threshold)),
+        TRUE, FALSE
+      )
+    ) %>%
     summarize(
-      year_surpass = approx(
-        x = !!sym(c_dif_col), 
-        y = !!sym(year_col), 
-        xout = threshold, 
-        rule = 2 # if set to 2 Allows extrapolation if the threshold is not within the data range
-      )$y[1]
+      year_surpass = if_else(
+        is_opposite_sign_in_2100, 
+        99999,  # Assign 9999 if the sign is opposite in year 2100
+        approx(
+          x = !!sym(c_dif_col), 
+          y = !!sym(year_col), 
+          xout = threshold, 
+          rule = 2  # Allows extrapolation if the threshold is not within the data range
+        )$y[1]
+      )
     ) %>%
     ungroup()
 }
