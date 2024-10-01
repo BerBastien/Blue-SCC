@@ -23,10 +23,10 @@ with open(context.projectpath() / 'Data/SCC/tmp/mc_seed_9999.bat', 'w') as f:
 
 #%% Latin hypercube sampling
 uniform_params = {
-                  'prstp': [0.01, 0.02],
-                  'elasmu': [1.1, 1.6],
+                  # 'prstp': [0.01, 0.02],
+                  # 'elasmu': [1.1, 1.6],
                   'baseline': [0, 1],
-                  'ocean_health_mu': [-0.25, 0.25],
+                  'ocean_health_mu': [-0.5, 0.5],
                   'ocean_health_eta': [0.01, 0.2]
                   }
 normal_params = [
@@ -34,21 +34,33 @@ normal_params = [
     'ocean_value_exp_unm',
     'ocean_value_intercept_nu',
     'ocean_value_exp_nu',
-    'ocean_area_damage_coef',
-    'ocean_consump_damage_coef',
+
+    'ocean_area_damage_coef_coral',
+    'ocean_area_damage_coef_mangrove',
+
+    'ocean_consump_damage_coef_coral',
+    'ocean_consump_damage_coef_mangrove',
+    'ocean_consump_damage_coef_ports',
+    'ocean_consump_damage_coef_fisheries',
+    'ocean_consump_damage_coef_sq',
+
     'ocean_health_tame',
     'ocean_health_beta',
+
+    'ocean_unm_start',
+    'ocean_nu_start',
 ]
 positive_normal_params = {
     'vsl_start': [7.4 / 1e6, 4.7 / 1e6],
     'theta': [0.21, 0.09],
-    'ocean_income_elasticity': [0.79, 0.09]
+    'ocean_income_elasticity_usenm': [0.222, 0.058],
+    'ocean_income_elasticity_nonuse': [0.243, 0.068],
 }
 lognormal_params = {
-    'tcre': [0.5, 0.43]
+    # 'tcre': [0.5, 0.43]
 }
 
-n = 1000  # Sample size
+n = 100  # Sample size
 
 # Uniformly distributed parameters
 sampler = qmc.LatinHypercube(d=len(uniform_params), seed=1234)
@@ -71,19 +83,19 @@ a, b = -mean/std, 3
 lhd = qmc.LatinHypercube(d=len(positive_normal_params), optimization="random-cd", seed=1234).random(n=n)
 sample = truncnorm(a, 3, loc=mean, scale=std).ppf(lhd)
 positive_normal_params_sample = sample
-# Log-normally distributed params.
-lognormal_params_values = np.array(list(lognormal_params.values()))
-s, mu = lognormal_params_values[:, 0], lognormal_params_values[:, 1]
-lhd = qmc.LatinHypercube(d=len(lognormal_params), optimization="random-cd", seed=1234).random(n=n)
-sample = lognorm(s=s, scale=np.exp(mu)).ppf(lhd)
-lognormal_params_sample = sample
+# # Log-normally distributed params.
+# lognormal_params_values = np.array(list(lognormal_params.values()))
+# s, mu = lognormal_params_values[:, 0], lognormal_params_values[:, 1]
+# lhd = qmc.LatinHypercube(d=len(lognormal_params), optimization="random-cd", seed=1234).random(n=n)
+# sample = lognorm(s=s, scale=np.exp(mu)).ppf(lhd)
+# lognormal_params_sample = sample
 
 # Combine
 sample_df = pd.concat([
     pd.DataFrame(uniform_params_sample, columns=list(uniform_params.keys())),
     pd.DataFrame(normal_params_sample, columns=list(normal_params)),
     pd.DataFrame(positive_normal_params_sample, columns=list(positive_normal_params)),
-    pd.DataFrame(lognormal_params_sample, columns=list(lognormal_params)),
+    # pd.DataFrame(lognormal_params_sample, columns=list(lognormal_params)),
 ], axis=1)
 sample_df['baseline'] = 'ssp' + (sample_df['baseline']*5+0.5).round(0).astype(int).astype(str)
 
@@ -125,6 +137,7 @@ sample_df.reset_index().rename(columns={'index':'id'}).to_parquet(context.projec
 
 # Create minibatches for parallel computations
 l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']
+sample_df.index +=1
 for i, row in sample_df.iterrows():
     s = ' '.join(('--' + row.index + '=' + row.astype(str)).tolist())
     txt = fr"""        
@@ -141,7 +154,7 @@ for i, row in sample_df.iterrows():
         )
     """
     l.append(txt)
-    if i % 100 == 0:
+    if i % 10 == 0:
         with open(context.projectpath() / f'Data/SCC/tmp/mc_lhs_{i}.bat', 'w') as f:
             f.write('\n'.join(l))
         l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']

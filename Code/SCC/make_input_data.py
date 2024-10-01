@@ -29,12 +29,17 @@ gdppc = pd.merge(gdp, popu).query("ssp=='SSP2'").drop(columns=['ssp'])\
 # %% Coral
 # Values per km2
 coral_value_km2 = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv')\
-    .filter(['countrycode', 'muV_value_perkm2year',  'nuV_value_perkm2year', 'nV_value_perkm2year'])\
-    .rename(columns={'countrycode': 'iso3', 'muV_value_perkm2year': 'um',  'nuV_value_perkm2year': 'unm', 'nV_value_perkm2year': 'nu'})
+    .filter(['countrycode', 'muV_value_perkm2year',  'nuV_value_perkm2year', 'nV_value_perkm2year', 
+             'muV_value_perkm2year_se', 'nuV_value_perkm2year_se', 'nV_value_perkm2year_se'])\
+    .rename(columns={'countrycode': 'iso3', 'muV_value_perkm2year': 'um',  'nuV_value_perkm2year': 'unm', 'nV_value_perkm2year': 'nu',
+                     'muV_value_perkm2year_se': 'um_se', 'nuV_value_perkm2year_se': 'unm_se', 'nV_value_perkm2year_se': 'nu_se'})
 # convert to trillion 2005 USD
 coral_value_km2['um'] *= deflator20_05 / 1e12
 coral_value_km2['unm'] *= deflator20_05 / 1e12
 coral_value_km2['nu'] *= deflator20_05 / 1e12
+coral_value_km2['um_se'] *= deflator20_05 / 1e12
+coral_value_km2['unm_se'] *= deflator20_05 / 1e12
+coral_value_km2['nu_se'] *= deflator20_05 / 1e12
 # Area
 coral_area = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv')\
     .filter(['countrycode', 'CoralArea_2020_km2'])\
@@ -132,6 +137,9 @@ df = df.rename(columns={
     'um': 'ocean_um_start',
     'unm': 'ocean_unm_start',
     'nu': 'ocean_nu_start',
+    'um_se': 'ocean_um_start_se',
+    'unm_se': 'ocean_unm_start_se',
+    'nu_se': 'ocean_nu_start_se',
     'area': 'ocean_area_start',
     'area_damcoef': 'ocean_area_damage_coef',
     'area_damcoef_se': 'ocean_area_damage_se',
