@@ -50,7 +50,7 @@ results_folder = root / 'results_ocean'
 # results_folder = Path(r"C:\Users\basti\Documents\GitHub\BlueDICE\Data\output_rice50x")
 
 if (context.projectpath() / 'Data/SCC/out/mc.parquet').exists():
-    df = pd.read_parquet(context.projectpath() / 'Data/SCC/out/mc.parquet')
+    df = pd.read_parquet(context.projectpath() / 'Data/SCC/out/mc_distribution.parquet')
 else:
     files = list(results_folder.glob('*.gdx'))
     mc_ids = set(re.sub('results_ocean_damage_pulse_|results_ocean_damage_|results_ocean_today_', '', x.stem) for x in files)
@@ -138,6 +138,7 @@ ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
 # ax.axvline(baseline.loc[baseline.oc_capital=='Total', 'scc'].iat[0], c='tab:red', label='Total SCC, main result')
 # h, l = ax.get_legend_handles_labels()
 # ax.legend(h[:3] + h[-1:], l[:3] + l[-1:])
+ax.set_xlim(0, 250)
 ax.legend(frameon=False)
 plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc_distribution.png')

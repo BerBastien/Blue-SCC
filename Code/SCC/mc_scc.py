@@ -15,6 +15,7 @@ if platform.system() == 'Windows':
 else:
     root = Path('/work/seme/fg12520/RICE50x')
 
+
 def scc_mc(mc_id, input_df):
     if not (root / f'results_ocean/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
@@ -39,14 +40,15 @@ def scc_mc(mc_id, input_df):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        mc_id = str(sys.argv[1])
-        folder = str(sys.argv[2])
-        input_df = str(sys.argv[3])
+    if len(sys.argv) > 3:
+        folder = str(sys.argv[1])
+        input_df = str(sys.argv[2])
+        mc_id = str(sys.argv[3])
         try:
             scc_mc(mc_id, input_df).to_parquet(root / f'{folder}/{mc_id}.parquet')
         except:
             pass
     else:
-        files = list((root / f'scc').glob('*'))
-        pd.concat([pd.read_parquet(f) for f in files]).to_parquet(root / f'mc.parquet')
+        folder = str(sys.argv[1])
+        files = list((root / f'{folder}').glob('*'))
+        pd.concat([pd.read_parquet(f) for f in files]).to_parquet(root / f'{folder}.parquet')
