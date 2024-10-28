@@ -78,4 +78,4 @@ for v in ['ports', 'coral', 'mangrove', 'fisheries']:
     plt.show()
 
 # Export
-df.drop(columns='iso_a3').to_parquet(context.projectpath() / 'Data/other/projected_damages.parquet')
+df.drop(columns='iso_a3').to_parquet(context.projectpath() / 'Data/other/damage_projections.parquet')
