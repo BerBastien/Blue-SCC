@@ -13,6 +13,20 @@ import context
 
 context.pdsettings()
 
+def palette(pub=True):
+    if pub:
+        value_color = {'Market value': '#89cc1f', 'Non-market use value': '#1d4cce', 'Nonuse value': '#1dcece',
+                       'Total': '#ff005c'}
+        capital_color = {'Normative parameter': 'silver', 'Corals': '#ff00c5', 'Corals/Mangroves': '#ff00c5',
+                         'Mangroves': '#1ad29b', 'Fisheries': '#0a3e7b', 'Ports': '#ffbf00'}
+        capital_color_edge = {'Normative parameter': 'silver', 'Corals': '#ff00c5', 'Corals/Mangroves': '#1ad29b',
+                              'Mangroves': '#1ad29b', 'Fisheries': '#0a3e7b', 'Ports': '#ffbf00'}
+    else:
+        value_color = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green','Total': 'tab:red'}
+        capital_color = {'Normative parameter': 'silver', 'Corals': 'gold', 'Corals/Mangroves': 'gold', 'Mangroves': 'yellowgreen', 'Fisheries': 'tab:cyan', 'Ports': 'tab:purple'}
+        capital_color_edge = {'Normative parameter': 'silver', 'Corals': 'gold', 'Corals/Mangroves': 'yellowgreen', 'Mangroves': 'yellowgreen', 'Fisheries': 'tab:cyan', 'Ports': 'tab:purple'}
+    return value_color, capital_color, capital_color
+
 
 def var_from_gdx(gdx_dict, var, vars=[]):
     df = gdx_dict[var]
@@ -143,7 +157,7 @@ def scc(damage_gdx, damage_pulse_gdx, today_gdx):
     return scc
 
 
-def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None):
+def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None, server_scale_factor=1):
     """
     Main idea: Replace with the baseline (no pulse) values all the values of consumption, usenm and nonuse except for
     the target oc_capital and target_valuation.
@@ -157,6 +171,7 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
     :param ocean_damage_pulse_gdx: gams run_rice50x.gms --mod_ocean=1 --nameout=ocean_damage_pulse  --mod_emission_pulse=ocean_damage
     :param target_oc_capital: one of 'coral', 'mangrove', 'fisheries', 'ports', None. None for overall SCC
     :param target_valuation: one of 'consumption', 'usenm', 'nonuse', None. None for overall SCC
+    :param server_scale_factor: When running on server, usenm and nonuse are multiplied by server_scale_factor to prevent low-number truncation. The parameter corrects for thath
     :return: pd.DataFrame of SCC
     """
     # Variables
@@ -164,13 +179,13 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
     UTARG_base = var_from_gdx(ocean_damage_gdx, 'UTARG').rename(columns={'UTARG': 'UTARG_base'})
     UTARG_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'UTARG').rename(columns={'UTARG': 'UTARG_pulse'})
 
-    OCEAN_USENM_VALUE_today = var_from_gdx(ocean_today_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_today'})
-    OCEAN_USENM_VALUE_base = var_from_gdx(ocean_damage_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_base'})
-    OCEAN_USENM_VALUE_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_pulse'})
+    OCEAN_USENM_VALUE_today = var_from_gdx(ocean_today_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).assign(OCEAN_USENM_VALUE=lambda x: x.OCEAN_USENM_VALUE/server_scale_factor).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_today'})
+    OCEAN_USENM_VALUE_base = var_from_gdx(ocean_damage_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).assign(OCEAN_USENM_VALUE=lambda x: x.OCEAN_USENM_VALUE/server_scale_factor).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_base'})
+    OCEAN_USENM_VALUE_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).assign(OCEAN_USENM_VALUE=lambda x: x.OCEAN_USENM_VALUE/server_scale_factor).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_pulse'})
 
-    OCEAN_NONUSE_VALUE_today = var_from_gdx(ocean_today_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_today'})
-    OCEAN_NONUSE_VALUE_base = var_from_gdx(ocean_damage_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_base'})
-    OCEAN_NONUSE_VALUE_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_pulse'})
+    OCEAN_NONUSE_VALUE_today = var_from_gdx(ocean_today_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).assign(OCEAN_NONUSE_VALUE=lambda x: x.OCEAN_NONUSE_VALUE/server_scale_factor).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_today'})
+    OCEAN_NONUSE_VALUE_base = var_from_gdx(ocean_damage_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).assign(OCEAN_NONUSE_VALUE=lambda x: x.OCEAN_NONUSE_VALUE/server_scale_factor).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_base'})
+    OCEAN_NONUSE_VALUE_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).assign(OCEAN_NONUSE_VALUE=lambda x: x.OCEAN_NONUSE_VALUE/server_scale_factor).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_pulse'})
 
     CPC_today = var_from_gdx(ocean_today_gdx, 'CPC').rename(columns={'CPC': 'CPC_today'})
     CPC_base = var_from_gdx(ocean_damage_gdx, 'CPC').rename(columns={'CPC': 'CPC_base'})
@@ -221,7 +236,7 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
         OCEAN_USENM_VALUE_pulse = OCEAN_USENM_VALUE_base.groupby(['t', 'n']).OCEAN_USENM_VALUE_base.sum().reset_index().rename(columns={'OCEAN_USENM_VALUE_base': 'OCEAN_USENM_VALUE_pulse'})
         OCEAN_NONUSE_VALUE_pulse = OCEAN_NONUSE_VALUE_base.groupby(['t', 'n']).OCEAN_NONUSE_VALUE_base.sum().reset_index().rename(columns={'OCEAN_NONUSE_VALUE_base': 'OCEAN_NONUSE_VALUE_pulse'})
 
-    if target_valuation == 'usenm':
+    elif target_valuation == 'usenm':
         # OCEAN_USENM_VALUE_pulse
         _OCEAN_USENM_VALUE = OCEAN_USENM_VALUE_base.merge(OCEAN_USENM_VALUE_pulse, on=['t', 'n', 'oc_capital'])
         # OCEAN_USENM_VALUE_pulse is set to OCEAN_USENM_VALUE_base (i.e. no pulse) where oc_capital is not the target
@@ -234,7 +249,7 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
         CPC_OCEAN_DAM_pulse = CPC_OCEAN_DAM_base[['n', 't', 'CPC_OCEAN_DAM_base']].sort_values(['t', 'n']).rename(columns={'CPC_OCEAN_DAM_base': 'CPC_OCEAN_DAM_pulse'})
         OCEAN_NONUSE_VALUE_pulse = OCEAN_NONUSE_VALUE_base.groupby(['t', 'n']).OCEAN_NONUSE_VALUE_base.sum().reset_index().rename(columns={'OCEAN_NONUSE_VALUE_base': 'OCEAN_NONUSE_VALUE_pulse'})
 
-    if target_valuation == 'nonuse':
+    elif target_valuation == 'nonuse':
         # OCEAN_NONUSE_VALUE_pulse
         _OCEAN_NONUSE_VALUE = OCEAN_NONUSE_VALUE_base.merge(OCEAN_NONUSE_VALUE_pulse, on=['t', 'n', 'oc_capital'])
         # OCEAN_NONUSE_VALUE_pulse is set to OCEAN_NONUSE_VALUE_base (i.e. no pulse) where oc_capital is not the target
