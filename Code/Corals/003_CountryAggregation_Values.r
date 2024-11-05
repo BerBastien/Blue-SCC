@@ -81,7 +81,7 @@
         corals_df_iso_with_gdp_clean <- corals_df_iso_with_gdp %>% 
             dplyr::select(-weighted_mean_coeff_cover,gdp,GDP_asPercentage,muV_value_perkm2year,nuV_value_perkm2year,nV_value_perkm2year,muV_value_perkm2year_se,nuV_value_perkm2year_se,nV_value_perkm2year_se, 
             gamma_um, gamma_um_se,gamma_unm,gamma_unm_se,gamma_nu,gamma_nu_se)
-        write.csv(corals_df_iso_with_gdp_clean,file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
+        #write.csv(corals_df_iso_with_gdp_clean,file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
         glimpse(corals_df_iso_with_gdp )
     
     ## Get GDP per Capita and Adjust Values According to income elasticity to WTP (end)
@@ -120,7 +120,8 @@
             nV_Undamaged_percGDP = 100 * nV_value_perkm2year_adjusted * CoralArea_2020_km2 / (def_mult[[1]]* GDP.billion2005USDperYear*10^9) ) %>% 
             # Calculte Damages
             mutate(Damages_percGDP = Market_Use_Values_Damaged_percGDP - Market_Use_Values_Undamaged_percGDP, 
-            fraction_damaged = (Market_Use_Values_Damaged_percGDP - Market_Use_Values_Undamaged_percGDP)/100)
+            fraction_damaged = (Market_Use_Values_Damaged_percGDP - Market_Use_Values_Undamaged_percGDP)/100, 
+            lambda =  muV_value_perkm2year_adjusted * CoralArea_2020_km2 *DamCoef_changeperC*temp/ (def_mult[[1]]* GDP.billion2005USDperYear*10^9))
 
 
         market_coefficients_by_country <- ssp_corals_growth %>% filter(!is.na(fraction_damaged)) %>%
@@ -135,17 +136,22 @@
                 }) %>% ungroup()
         
         market_coefficients_by_country2 <- ssp_corals_growth %>% left_join(market_coefficients_by_country,by="countrycode")
+        # glimpse(market_coefficients_by_country2)
         
+        
+        market_coefficients_by_country3 <- market_coefficients_by_country2 %>% group_by(countrycode) %>% 
+            mutate(FractionChangeGDP_perC =mean(lambda), 
+            FractionChangeGDP_perC_se_adj = mean(lambda)*DamCoef_changeperC_se/DamCoef_changeperC)
+        #  ggplot(validation, aes(x=coef,y=lambda)) + geom_point()       
+        #  ggplot(validation, aes(x=lambda,y=lambda_se)) + geom_point()       
 
-        market_coefficients_by_country3 <- market_coefficients_by_country2 %>% 
-            mutate(
-                SE_dam = fraction_damaged * DamCoef_changeperC_se/DamCoef_changeperC) %>% 
-                mutate(FractionChangeGDP_perC_se_adj = FractionChangeGDP_perC_se * ((variance + SE_dam^2)/(variance))^0.5)
+        # market_coefficients_by_country3 <- market_coefficients_by_country2 %>% 
+        #     mutate(
+        #         SE_dam = fraction_damaged * DamCoef_changeperC_se/DamCoef_changeperC) %>% 
+        #         mutate(FractionChangeGDP_perC_se_adj = FractionChangeGDP_perC_se * ((variance + SE_dam^2)/(variance))^0.5)
         
         coefs_with_vcov <- market_coefficients_by_country3 %>% ungroup() %>% filter(year==2100,scenario=="SSP1") %>% dplyr::select(countrycode,FractionChangeGDP_perC,FractionChangeGDP_perC_se_adj) %>% as.data.frame()
-        glimpse(coefs_with_vcov)
-        glimpse(market_coefficients_by_country3)
-
+       
         write.csv(coefs_with_vcov,file="Data\\output_modules_input_rice50x\\input_rice50x\\coral_GDPdam_coefficients.csv")
         write.csv(ssp_corals_growth,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\ssp_corals_growth.csv")
         write.csv(market_coefficients_by_country3,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")

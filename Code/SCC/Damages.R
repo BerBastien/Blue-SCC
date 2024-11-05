@@ -10,7 +10,7 @@
 ## Read BLUERICE50x Results
     # Key variables
     var_names <- c("C","ocean_consump_damage_coef","ocean_consump_damage_coef_sq","YNET","OCEAN_USENM_VALUE_PERKM2","VSL","CPC",
-        "OCEAN_NONUSE_VALUE_PERKM2","OCEAN_AREA","OCEAN_AREA[year==2025]","ocean_value_intercept_unm","ocean_value_exp_unm","ocean_value_intercept_nu","ocean_value_exp_nu","pop", 
+        "OCEAN_NONUSE_VALUE_PERKM2","OCEAN_AREA","ocean_area_start","ocean_value_intercept_unm","ocean_value_exp_unm","ocean_value_intercept_nu","ocean_value_exp_nu","pop", 
         "ocean_health_beta", "ocean_health_mu","ocean_health_tame")
     exp_names <- "damage" # c("today","damage")
 
@@ -183,7 +183,6 @@
         filter(year %in% c(2020,2025,2030),country=="brb", capital=="fisheries") %>% 
         select(ocean_health_beta,ocean_health_tame,pop,year,ocean_health_mu)
     
-    glimpse(fish_dam)
     ocean_health_eta = 0.05
     fish_dam <- exp_data_damage %>% 
         filter(capital =="fisheries",year>2024) %>% 
@@ -285,70 +284,7 @@
             #windows()
             
             print(surpass_year_plot)
-        #     #ggsave("Figures/Main2.png")
-
-        #     surpass_all <- surpass_all %>%
-        #     mutate(year_capped = ifelse(year_surpass>2100,2100,year_surpass))%>%
-        #  mutate(year_surpass_transformed = log(as.integer(year_capped ) - 2019))
-
-        #     ggplot(data = surpass_all %>% filter(continent != "Antarctica")) +
-        #     geom_sf(aes(fill = as.integer(year_surpass))) +
-        #     facet_wrap(~capital)+
-        #     scale_fill_scico(palette="batlow",
-        #         direction=-1, end=0.8,
-        #         "Year surpassing \n$1 Billion in Losses",
-        #         na.value="transparent")+
-        #     coord_sf(crs = "+proj=robin") + # Robinson projection
-        #     theme_void() +
-        #     labs(fill = "Year surpassing \n$1 Billion in Losses")+
-        #     guides(fill = guide_colorbar(
-        #         title.position = "top",
-        #         title.hjust = 0.5,
-        #         label.position = "bottom",
-        #         barwidth = 20,
-        #         barheight = 1,direction="horizontal",position="bottom",ticks.colour = "black", frame.colour = "black"
-        #         ))
-        #     #windows()v2
-
-            #ggsave("Figures/Main2.png")
-            
-
-
-            # surpass_year_plot <- ggplot(data = surpass_all %>% filter(continent != "Antarctica")) +
-            # geom_sf(aes(fill = year_surpass_transformed)) +
-            # facet_wrap(~capital) +
-            # scale_fill_scico(
-            #     palette = "batlow",
-            #     direction = -1,
-            #     end = 0.8,
-            #     name = "Year",
-            #     na.value = "transparent",
-            #     breaks = log(c(2019, 2030, 2040, 2050, 2070, 2099) - 2025),
-            #     labels = c(2020,2030,2040, 2050,2070,2100)
-            # ) +
-            # coord_sf(crs = "+proj=robin") + # Robinson projection
-            # theme_void() +
-            # guides(
-            #     fill = guide_colorbar(
-            #     title.position = "top",
-            #     title.hjust = 0.5,
-            #     label.position = "bottom",
-            #     barwidth = 20,
-            #     barheight = 1,
-            #     direction = "horizontal",
-            #     position = "bottom",
-            #     ticks.colour = "black",
-            #     frame.colour = "black"
-            #     )
-            # ) + labs(title="B. Cumulative damages exceeding 1% of 2025 GDP")+
-            # theme(
-            #     plot.title = element_text(hjust = 0.5)
-            # )
-
-            # surpass_year_plot
-            # surpass_all %>% filter(iso_a3 == "MNG")
-            # ed57 %>% filter(ed57=="osea")
-            #ggsave("Figures/Main_fig2.png")
+       
 ####
 ## Across Time
 
@@ -396,7 +332,7 @@ ggplot(plot_data %>% filter(year < end_year+1, value<0), aes(x = CPC, y = -value
     geom_text_repel(data = plot_data %>% filter(year == end_year), 
              aes(label=country), size = 2) +
   scale_shape_manual(values = shapes) +
-  scale_color_manual(values=Color_capitals_dark)+
+  scale_color_manual(values=Color_capitals_black)+
   facet_wrap(~capital,scales="free")+ 
   scale_y_log10(labels = scales::dollar_format(suffix = "B")) +
   #scale_x_log10() +
@@ -437,3 +373,83 @@ ggplot(plot_data %>% filter(year < end_year+1, value<0), aes(x = CPC, y = -value
 ggarrange(time_damages_plot,surpass_year_plot,ncol=1)
 ggsave("Figures/Main/Fig2_Damages_v2.jpg",dpi=300)
 
+glimpse(plot_data)
+Fig2_bottom_data <- plot_data %>% 
+    filter(value<0,year < end_year+1) %>% 
+    mutate(value_type = variable, damages_billion2020USD = value*1000*def_mult[[1]], 
+        gdp_percapita_thousand2020USD=CPC*def_mult[[1]]/1000, 
+        GDP_trill2020USD=YNET*def_mult[[1]], 
+        country=toupper(country)) %>% 
+    dplyr::select(CPC, damages_billion2020USD, country, capital, gdp_percapita_thousand2020USD, year, GDP_trill2020USD,value_type) %>% 
+    left_join(regions, by = c("country"="countrycode"))
+
+glimpse(Fig2_bottom_data)
+
+
+Fig2_bottom_data %>% filter(year==2100) %>% group_by(value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
+
+
+Fig2_bottom_data %>% filter(year==2030,value_type=="Market") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
+Fig2_bottom_data %>% filter(year==2030,value_type=="Non-market Use") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
+Fig2_bottom_data %>% filter(year==2030,value_type=="Non-use") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
+
+Fig2_bottom_data %>% filter(year==2100,value_type=="Market") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
+Fig2_bottom_data %>% filter(year==2100,value_type=="Non-market Use") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
+Fig2_bottom_data %>% filter(year==2100,value_type=="Non-use") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
+
+total_dam_all <- Fig2_bottom_data %>% 
+    filter(year == 2100, value_type == "Market") %>% 
+    summarize(total_dam_all = sum(damages_billion2020USD, na.rm = TRUE)) %>% 
+    pull(total_dam_all)
+
+Fig2_bottom_data %>% 
+    filter(year == 2100, value_type == "Market") %>% 
+    group_by(R5) %>% 
+    summarize(total_dam = sum(damages_billion2020USD, na.rm = TRUE) / total_dam_all)
+
+total_dam_all <- Fig2_bottom_data %>% 
+    filter(year == 2100, value_type == "Non-market Use") %>% 
+    summarize(total_dam_all = sum(damages_billion2020USD, na.rm = TRUE)) %>% 
+    pull(total_dam_all)
+
+Fig2_bottom_data %>% 
+    filter(year == 2100, value_type == "Non-market Use") %>% 
+    group_by(R5) %>% 
+    summarize(total_dam = sum(damages_billion2020USD, na.rm = TRUE) / total_dam_all)
+
+total_dam_all <- Fig2_bottom_data %>% 
+    filter(year == 2030, value_type == "Non-use") %>% 
+    summarize(total_dam_all = sum(damages_billion2020USD, na.rm = TRUE)) %>% 
+    pull(total_dam_all)
+
+Fig2_bottom_data %>% 
+    filter(year == 2030, value_type == "Non-use") %>% 
+    group_by(R5) %>% 
+    summarize(total_dam = sum(damages_billion2020USD, na.rm = TRUE) / total_dam_all)
+
+glimpse(surpass_all)
+surpass_all %>% filter(capital=="Corals") %>% dplyr::select(country,year_surpass,name_en) %>% group_by(country) %>% slice(1) %>% ungroup() %>%  arrange(year_surpass)
+surpass_all %>% filter(capital=="Fisheries & Mariculture") %>% dplyr::select(country,year_surpass,name_en) %>% group_by(country) %>% slice(1) %>% ungroup() %>%  arrange(-year_surpass)
+surpass_all %>% filter(capital=="Mangroves") %>% dplyr::select(country,year_surpass,name_en) %>% group_by(country) %>% slice(1) %>% ungroup() %>%  
+arrange(-year_surpass)
+surpass_all %>% filter(capital=="Ports") %>% dplyr::select(country,year_surpass,name_en) %>% group_by(country) %>% slice(1) %>% ungroup() %>% 
+ arrange(-year_surpass) 
+
+glimpse(Fig2_bottom_data)
+
+surpass_all_withgdp <- surpass_all %>% 
+    dplyr::select(country,year_surpass,name_en,capital) %>% group_by(country,capital) %>% slice(1) %>% 
+    mutate(country=toupper(country)) %>% ungroup() %>% left_join(Fig2_bottom_data %>% filter(year==2030,capital=="Ports") %>% select(-capital),by="country") %>%
+    mutate(year_surpass_capped = ifelse(year_surpass<2301,year_surpass,2300))
+
+
+glimpse(surpass_all_withgdp)
+ggplot(surpass_all_withgdp,aes(y=year_surpass_capped,x=log(GDP_trill2020USD),color=capital)) + 
+geom_point()+
+geom_smooth(formula=y~x,method="lm",aes(fill=capital)) + theme_minimal() +
+scale_color_manual(values=Color_capitals_black)+scale_fill_manual(values=Color_capitals_black)+
+labs(x="Log GDP in 2030", y="Surpass Year of 1% 2025 GDP Loss")
+
+ggplot(surpass_all_withgdp) + geom_point(aes(y=year_surpass_capped,x=(gdp_percapita_thousand2020USD)))
+
+ggsave("Figures/Main/FigS_UnequalityofDamages.jpg",dpi=300)
