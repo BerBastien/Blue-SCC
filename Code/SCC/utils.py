@@ -157,7 +157,7 @@ def scc(damage_gdx, damage_pulse_gdx, today_gdx):
     return scc
 
 
-def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None, server_scale_factor=1):
+def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None, server_scale_factor=1, return_data=False):
     """
     Main idea: Replace with the baseline (no pulse) values all the values of consumption, usenm and nonuse except for
     the target oc_capital and target_valuation.
@@ -309,7 +309,7 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
 
     # Delta utility
     df = df.assign(delta_UTARG=1 / (1 - eta) * (df.UTARG_pulse ** (1 - eta) - df.UTARG_base ** (1 - eta)))
-
+    print(df.query('t==8').delta_UTARG.describe())
     # Marginal utility of consumption
     C = df.CPC_OCEAN_DAM_today
     V = df.OCEAN_USENM_VALUE_today_PC
@@ -353,7 +353,10 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
     scc.index = scc.index * 5 + 2010
     scc.columns = ['scc']
 
-    return scc #, (s1_1, s1_2, s2_1, s2_2, theta1, theta2, ocean_income_elasticity)
+    if return_data:
+        return scc, df
+    else:
+        return scc #, (s1_1, s1_2, s2_1, s2_2, theta1, theta2, ocean_income_elasticity)
 
 
 if __name__ == '__main__':

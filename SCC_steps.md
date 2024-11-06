@@ -6,10 +6,10 @@ To run the Monte Carlo:
 cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\Blue-SCC\Data\SCC\tmp"
 del /Q /S *.*
 
-    cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\Blue-SCC\Code\SCC"
-    conda activate bluerice
-    python make_mc_bat_files.py Distribution 10000
-    python make_mc_bat_files.py GSA 10000
+cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\Blue-SCC\Code\SCC"
+conda activate bluerice
+python make_mc_bat_files.py Distribution 10000
+python make_mc_bat_files.py GSA 10000
 ```
 
 Zeus: clean

@@ -1,5 +1,7 @@
 """Create .bat files to run a Monte Carlo analysis"""
 
+import os
+import shutil
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -8,7 +10,22 @@ from scipy.stats import qmc, truncnorm, lognorm
 import context
 
 
-def run(run_type, n=10_000):
+def run(run_type, n=10_000, experiment_id='', chunk=100):
+    """
+
+    :param run_type:
+    :param n:
+    :param experiment_id:
+    :param chunk:
+    :return:
+    """
+    n = int(n)
+
+    if experiment_id != '':
+        experiment_id = '_' + experiment_id
+
+    chunk = int(chunk)
+
     assert run_type in ['Distribution', 'GSA']
     # %% Baseline run
     baseline_run = r"""
@@ -37,20 +54,20 @@ def run(run_type, n=10_000):
 
     # GSA or Distribution
     if run_type == 'GSA':
-        results_folder = 'results_ocean_GSA'
-        input_df = 'input_GSA'
-        sh_folder = 'GSA'
-        scc_folder = 'scc_GSA'
+        results_folder = 'results_ocean_GSA' + experiment_id
+        input_df = 'input_GSA' + experiment_id
+        sh_folder = 'GSA' + experiment_id
+        scc_folder = 'scc_GSA' + experiment_id
         uniform_params = {
             'ocean_health_mu': [-0.5, 0.5],
             'ocean_health_eta': [0.01, 0.2]
         }
         lognormal_params = {}
     if run_type == 'Distribution':
-        results_folder = 'results_ocean_distribution'
-        input_df = 'input_distribution'
-        sh_folder = 'distribution'
-        scc_folder = 'scc_distribution'
+        results_folder = 'results_ocean_distribution' + experiment_id
+        input_df = 'input_distribution' + experiment_id
+        sh_folder = 'distribution' + experiment_id
+        scc_folder = 'scc_distribution' + experiment_id
         uniform_params = {
             'prstp': [0.01, 0.02],
             'elasmu': [1.1, 1.6],
@@ -61,6 +78,12 @@ def run(run_type, n=10_000):
         lognormal_params = {
             'tcre': [0.5, 0.43]
         }
+
+    if os.path.exists(context.projectpath() / f'Data/SCC/tmp/{sh_folder}'):
+        # Delete the folder and its contents
+        shutil.rmtree(context.projectpath() / f'Data/SCC/tmp/{sh_folder}')
+    # Create the folder
+    os.makedirs(context.projectpath() / f'Data/SCC/tmp/{sh_folder}')
 
     # %% Latin hypercube sampling
     normal_params = [
@@ -147,8 +170,6 @@ def run(run_type, n=10_000):
     # Save inputs
     sample_df.reset_index().rename(columns={'index': 'id'}).to_parquet(
         context.projectpath() / f'Data/SCC/out/{input_df}.parquet')
-    sample_df.reset_index().rename(columns={'index': 'id'}).to_parquet(
-        rf'C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x\bluerice_server\{sh_folder}\{input_df}.parquet')
 
     # %% Create scripts for parallel computing
     # Remote
@@ -170,12 +191,12 @@ def run(run_type, n=10_000):
             gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} 
             gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_damage_{i} {s} 
             gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} {s} 
-            python bluerice_server/mc_scc.py {scc_folder} {input_df} {i} \
+            python bluerice_server/mc_scc.py {scc_folder} {input_df} {i} {results_folder} \
     
         fi
         """
         l.append(txt)
-        if (i + 1) % 100 == 0:
+        if (i + 1) % chunk == 0:
             with open(context.projectpath() / f'Data/SCC/tmp/{sh_folder}/mc_lhs_{i + 1}.sh', 'w', newline='\n') as f:
                 f.write('\n'.join(l))
             l = [r"""cd /work/seme/fg12520/RICE50x
@@ -188,8 +209,4 @@ def run(run_type, n=10_000):
 
 if __name__ == "__main__":
     import sys
-
-    if len(sys.argv) > 2:
-        run(sys.argv[1], int(sys.argv[2]))
-    else:
-        run(sys.argv[1])
+    run(*sys.argv[1:])

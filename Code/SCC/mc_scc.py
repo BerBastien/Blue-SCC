@@ -16,12 +16,12 @@ else:
     root = Path('/work/seme/fg12520/RICE50x')
 
 
-def scc_mc(mc_id, input_df):
+def scc_mc(mc_id, input_df, results_folder):
     if not (root / f'results_ocean/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
-    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean/results_ocean_damage_{mc_id}.gdx')
-    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean/results_ocean_damage_pulse_{mc_id}.gdx')
-    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean/results_ocean_today_{mc_id}.gdx')
+    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / f'{results_folder}/results_ocean_damage_{mc_id}.gdx')
+    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(root / f'{results_folder}/results_ocean_damage_pulse_{mc_id}.gdx')
+    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(root / f'{results_folder}/results_ocean_today_{mc_id}.gdx')
     _l = []
     targets = [('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), ('mangrove', 'consumption'),
                ('mangrove', 'usenm'), ('mangrove', 'nonuse'), ('ports', 'consumption'), ('fisheries', 'consumption'),
@@ -44,8 +44,9 @@ if __name__ == "__main__":
         folder = str(sys.argv[1])
         input_df = str(sys.argv[2])
         mc_id = str(sys.argv[3])
+        results_folder = str(sys.argv[4])
         try:
-            scc_mc(mc_id, input_df).to_parquet(root / f'{folder}/{mc_id}.parquet')
+            scc_mc(mc_id, input_df, results_folder).to_parquet(root / f'{folder}/{mc_id}.parquet')
         except:
             pass
     else:

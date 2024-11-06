@@ -216,16 +216,10 @@ def sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_p
     return results.sort_values('t')
 
 if __name__ == '__main__':
-    try:
-        ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx')
-        ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx')
-        ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx')
-    except OSError:
-        ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx')
-        ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx')
-        ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx')
-    except:
-        raise OSError('Files could not be saved.')
+    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(r"C:\Users\Granella\Downloads\results_ocean_damage_9999.gdx")
+    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(
+        r"C:\Users\Granella\Downloads\results_ocean_damage_pulse_9999.gdx")
+    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(r"C:\Users\Granella\Downloads\results_ocean_today_9999.gdx")
 
     # Define target sectors and valuations
     targets = [('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), 

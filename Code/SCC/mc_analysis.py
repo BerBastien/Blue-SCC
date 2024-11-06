@@ -49,8 +49,8 @@ def scc_mc(mc_id, baseline=False):
 results_folder = root / 'results_ocean'
 # results_folder = Path(r"C:\Users\basti\Documents\GitHub\BlueDICE\Data\output_rice50x")
 
-if (context.projectpath() / 'Data/SCC/out/mc.parquet').exists():
-    df = pd.read_parquet(context.projectpath() / 'Data/SCC/out/mc_distribution.parquet')
+if (context.projectpath() / 'Data/SCC/out/scc_GSA.parquet').exists():
+    df = pd.read_parquet(context.projectpath() / 'Data/SCC/out/scc_GSA.parquet')
 else:
     files = list(results_folder.glob('*.gdx'))
     mc_ids = set(re.sub('results_ocean_damage_pulse_|results_ocean_damage_|results_ocean_today_', '', x.stem) for x in files)
@@ -90,35 +90,18 @@ fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 plt.show()
-# %% SCC distribution with baseline
-plot_df = df.groupby(['oc_capital', 'id']).scc.sum().unstack().T
-plot_df = plot_df[plot_df.median().sort_values(ascending=False).index]
-color_dict = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green', 'Total': 'tab:red'}
-marker_dict = {'Market value': 'x', 'Non-market use value': '+', 'Nonuse value': '*', 'Total': 'o'}
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8,4), sharex=False, sharey=False)
-ax.boxplot(plot_df, vert=False)
-ax.set_yticklabels(plot_df.columns)
-posdict = {x._text: x._y for x in ax.get_yticklabels()}
-for i, row in baseline.iterrows():
-    ax.scatter(row.scc, posdict[row.oc_capital], c=color_dict[row['valuation']], label=row['valuation'], marker=marker_dict[row.valuation])
-for i, row in oc_capital_totals.iterrows():
-    ax.scatter(row.scc, posdict[row.oc_capital], c=color_dict['Total'], marker=marker_dict['Total'])
-for i, row in valuation_totals.iterrows():
-    ax.scatter(row.scc, posdict['Total'], c=color_dict[row['valuation']], marker=marker_dict[row.valuation])
-ax.spines[['top', 'right']].set_visible(False)
-for line in ["left","bottom"]:
-    ax.spines[line].set_position(("outward", 10))
-ax.axvline(0)
-ax.set_xlim(0, ax.get_xlim()[1])
-ax.set_xlabel('Social Cost of Carbon (2020 USD)')
-ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-h, l = ax.get_legend_handles_labels()
-ax.legend(h[:3] + h[-1:], l[:3] + l[-1:])
-plt.tight_layout()
-plt.show()
-
 # %% SCC distribution
-plot_df = df.groupby(['oc_capital', 'id']).scc.sum().unstack().T
+df_dist = pd.read_parquet(context.projectpath() / 'Data/SCC/out/scc_distribution.parquet')
+df_dist = df_dist[df_dist.t==2020]
+df_dist['oc_capital'] = df_dist.oc_capital.replace({'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
+                        'total': 'Total'})
+
+df_dist_sum = df_dist.query('oc_capital!="Total"').groupby('id').scc.sum().reset_index().rename(columns={'scc': 'scc_sum'})
+df_dist_tot = df_dist.query('oc_capital=="Total"').filter(['id', 'scc']).rename(columns={'scc': 'scc_tot'})
+ids = pd.merge(df_dist_sum, df_dist_tot).assign(d = lambda x: x.scc_sum - x.scc_tot).query('d<1').id.unique()
+df_dist = df_dist[df_dist.id.isin(ids)]
+
+plot_df = df_dist.groupby(['oc_capital', 'id']).scc.sum().unstack().T
 plot_df = plot_df[plot_df.median().sort_values(ascending=False).index]
 plot_df = plot_df.rename(columns={'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves', 'total': 'Total'})
 color_dict = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green', 'Total': 'tab:red'}
@@ -138,10 +121,32 @@ ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
 # ax.axvline(baseline.loc[baseline.oc_capital=='Total', 'scc'].iat[0], c='tab:red', label='Total SCC, main result')
 # h, l = ax.get_legend_handles_labels()
 # ax.legend(h[:3] + h[-1:], l[:3] + l[-1:])
-ax.set_xlim(0, 250)
 ax.legend(frameon=False)
 plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc_distribution.png')
+plt.show()
+
+# Distribution of SCC from the GSA Monte Carlo runs
+plot_df = df.groupby(['oc_capital', 'id']).scc.sum().unstack().T
+plot_df = plot_df[plot_df.median().sort_values(ascending=False).index]
+plot_df = plot_df.rename(columns={'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves', 'total': 'Total'})
+color_dict = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green', 'Total': 'tab:red'}
+marker_dict = {'Market value': 'x', 'Non-market use value': '+', 'Nonuse value': '*', 'Total': 'o'}
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8,4), sharex=False, sharey=False)
+ax.boxplot(plot_df, vert=False)
+ax.set_yticklabels(plot_df.columns)
+posdict = {x._text: x._y for x in ax.get_yticklabels()}
+ax.spines[['top', 'right']].set_visible(False)
+for line in ["left","bottom"]:
+    ax.spines[line].set_position(("outward", 10))
+ax.axvline(0, c='k')
+ax.set_xlim(0, ax.get_xlim()[1])
+ax.set_xlabel('Social Cost of Carbon (2020 USD)')
+ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+ax.legend(frameon=False)
+plt.title('Distribution of SCC - GSA runs')
+plt.tight_layout()
+plt.savefig(Path().cwd() / 'Figures/SCC/scc_distribution_ GSA.png')
 plt.show()
 
 # %% Baseline
@@ -171,11 +176,64 @@ plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc_breakdown.pdf')
 plt.show()
 
+# %% Baseline and distribution, one figure with two panels
+baseline['scc_sum'] = baseline.groupby('oc_capital').scc.transform('sum')
+baseline = baseline.sort_values(['scc_sum', 'valuation'], ascending=[False, True])
+
+distribtuion = pd.read_parquet(context.projectpath() / 'Data/SCC/out/scc_distribution.parquet')
+distribtuion = distribtuion[distribtuion.t==2020]
+distribtuion['oc_capital'] = distribtuion.oc_capital.replace({'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves','total': 'Total'})
+distribtuion_sum = distribtuion.query('oc_capital!="Total"').groupby('id').scc.sum().reset_index().rename(columns={'scc': 'scc_sum'})
+distribtuion_tot = distribtuion.query('oc_capital=="Total"').filter(['id', 'scc']).rename(columns={'scc': 'scc_tot'})
+ids = pd.merge(distribtuion_sum, distribtuion_tot).assign(d = lambda x: x.scc_sum - x.scc_tot).query('d<1').id.unique()
+distribtuion = distribtuion[distribtuion.id.isin(ids)]
+
+distribtuion = distribtuion.groupby(['oc_capital', 'id']).scc.sum().unstack().T
+distribtuion = distribtuion[distribtuion.median().sort_values(ascending=False).index]
+distribtuion = distribtuion.rename(columns={'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves', 'total': 'Total'})
+
+fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,8), sharex=False, sharey=False)
+ax1, ax2 = axs
+# Upper panel
+color_dict, _, _ = palette()
+for h, (v, g) in enumerate(baseline.groupby('oc_capital', sort=False)):
+    left = 0
+    for i, row in g.iterrows():
+        ax1.barh(v, row.scc, left=left, color=color_dict[row['valuation']], label=row['valuation'])
+        left += row.scc
+        print(v, row['valuation'], left)
+    ax1.text(left + 3, h, f'${left:.1f}')
+ax1.spines[['top', 'right']].set_visible(False)
+for line in ["left","bottom"]:
+    ax1.spines[line].set_position(("outward", 10))
+ax1.axhline(0.5, c='k', linewidth=1)
+ax1.set_xlim(0, ax1.get_xlim()[1])
+ax1.set_xlabel('Social Cost of Carbon (2020 USD)')
+ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+h, l = ax1.get_legend_handles_labels()
+ax1.legend(h[3:6] + h[:1], l[3:6] + l[:1], frameon=False,  title_fontproperties={'weight':'demibold'})
+ax1.text(-0.1, 1.1, 'A. Blue social cost of carbon in 2020', fontsize=12, transform=ax1.transAxes, fontweight='bold', color='k') #, transform=ax.transAxes, fontsize=12, va='top', ha='right')
+# Lower panel
+color_dict = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green', 'Total': 'tab:red'}
+marker_dict = {'Market value': 'x', 'Non-market use value': '+', 'Nonuse value': '*', 'Total': 'o'}
+ax2.boxplot(distribtuion, vert=False)
+ax2.set_yticklabels(distribtuion.columns)
+posdict = {x._text: x._y for x in ax2.get_yticklabels()}
+ax2.spines[['top', 'right']].set_visible(False)
+for line in ["left","bottom"]:
+    ax2.spines[line].set_position(("outward", 10))
+ax2.axvline(0, c='k')
+ax2.set_xlim(0, ax2.get_xlim()[1])
+ax2.set_xlabel('Social Cost of Carbon (2020 USD)')
+ax2.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+ax2.legend(frameon=False)
+ax2.text(-0.1, 1.1, 'B. Uncertatinty in the Blue social cost of carbon in 2020', fontsize=12, transform=ax2.transAxes, fontweight='bold', color='k') #, transform=ax.transAxes, fontsize=12, va='top', ha='right')
+
+plt.tight_layout()
+plt.savefig(Path().cwd() / 'Figures/SCC/scc.pdf')
+plt.show()
+
 # %% Other SSPs
-i = 1
-ssp1 = scc_mc(f'ssp{i}', baseline=True)
-ssp1.query('t==2020').replace({'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
-                        'total': 'Total'})
 l = []
 for i in range(1,5):
     l.append(scc_mc(f'ssp{i}', baseline=True).assign(ssp=f'SSP{i}'))
@@ -183,7 +241,6 @@ ssps = pd.concat(l).query('t==2020').replace({'coral': 'Corals', 'fisheries': 'F
                         'total': 'Total'})\
     .replace({'consumption': 'Market value', 'usenm': 'Non-market use value', 'nonuse': 'Nonuse value', 'total': 'Total'})
 
-cmap = plt.get_cmap('tab20c')
 color_dict = palette()[0]
 marker_dict = {'Market value': 'x', 'Non-market use value': '+', 'Nonuse value': '*', 'Total': 'o'}
 ssps['scc_sum'] = ssps.groupby(['ssp', 'oc_capital']).scc.transform('sum')
@@ -213,60 +270,60 @@ plt.savefig(Path().cwd() / 'Figures/SCC/scc_breakdown_ssps.pdf')
 plt.show()
 
 # %%
-total = df[df.oc_capital == 'total']
-total20 = total[(total.index == 2020) & (total.id.str.startswith('theta')==False)]
-theta20 = df[(df.oc_capital == 'total') & (df.index==2020) & (df.id.str.startswith('theta'))].sort_values('theta1')
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5,5), sharex=False, sharey=False)
-ax.plot(theta20.theta1, theta20.scc)
-ax.set_xlabel(r'$\theta_1, \theta_2$')
-ax.set_ylabel('2020 USD', loc='top', rotation='horizontal', fontweight='normal')
-ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-ax.set_ylim(0, ax.get_ylim()[1])
-ax.set_title('2020 SCC')
-ax.spines[['top', 'right']].set_visible(False)
-plt.tight_layout()
-plt.show()
-
-
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6,5), sharex=False, sharey=False)
-ax.scatter(total20.theta1, total20.scc)
-ax.scatter(total20[total20.id==0].theta1, total20[total20.id==0].scc)
-ax.set_xlabel(r'$\theta_1, \theta_2$')
-ax.set_ylabel('2020 USD', loc='top', rotation='horizontal', fontweight='normal')
-ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-ax.set_ylim(0, ax.get_ylim()[1])
-ax.set_title('2020 SCC')
-ax.spines[['top', 'right']].set_visible(False)
-plt.tight_layout()
-plt.show()
-
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6,5), sharex=False, sharey=False)
-ax.hist(total20[total20.id!='0'].scc, bins=10)
-# ax.axvline(total20[total20.id==0].at[2020, 'scc'], color='tab:orange')
-ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-ax.annotate('$28.9', (32, 20), color='k')
-# ax.set_xlabel('2020 USD', loc='center', rotation='horizontal', fontweight='normal')
-ax.set_ylabel('Density', loc='center')
-ax.set_title('2020 SCC')
-ax.spines[['top', 'right']].set_visible(False)
-plt.tight_layout()
-plt.show()
-
-fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8,5), sharex=False, sharey=False)
-ax1.hist(total20[total20.id!='0'].scc, bins=7, color='silver')
-ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-ax1.annotate('$28.9', (32, 20), color='k')
-ax1.set_ylabel('A', loc='top', rotation='horizontal', fontweight='bold')
-ax1.set_yticklabels([])
-ax1.spines[['top', 'right']].set_visible(False)
-ax2.plot(theta20.theta1, theta20.scc)
-ax2.set_xlabel(r'$\theta_1, \theta_2$')
-ax2.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
-ax2.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-ax2.spines[['top', 'right']].set_visible(False)
-fig.suptitle('2020 SCC in 2020 USD')
-plt.tight_layout()
-plt.show()
+# total = df[df.oc_capital == 'total']
+# total20 = total[(total.index == 2020) & (total.id.str.startswith('theta')==False)]
+# theta20 = df[(df.oc_capital == 'total') & (df.index==2020) & (df.id.str.startswith('theta'))].sort_values('theta1')
+# fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5,5), sharex=False, sharey=False)
+# ax.plot(theta20.theta1, theta20.scc)
+# ax.set_xlabel(r'$\theta_1, \theta_2$')
+# ax.set_ylabel('2020 USD', loc='top', rotation='horizontal', fontweight='normal')
+# ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+# ax.set_ylim(0, ax.get_ylim()[1])
+# ax.set_title('2020 SCC')
+# ax.spines[['top', 'right']].set_visible(False)
+# plt.tight_layout()
+# plt.show()
+#
+#
+# fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6,5), sharex=False, sharey=False)
+# ax.scatter(total20.theta1, total20.scc)
+# ax.scatter(total20[total20.id==0].theta1, total20[total20.id==0].scc)
+# ax.set_xlabel(r'$\theta_1, \theta_2$')
+# ax.set_ylabel('2020 USD', loc='top', rotation='horizontal', fontweight='normal')
+# ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+# ax.set_ylim(0, ax.get_ylim()[1])
+# ax.set_title('2020 SCC')
+# ax.spines[['top', 'right']].set_visible(False)
+# plt.tight_layout()
+# plt.show()
+#
+# fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6,5), sharex=False, sharey=False)
+# ax.hist(total20[total20.id!='0'].scc, bins=10)
+# # ax.axvline(total20[total20.id==0].at[2020, 'scc'], color='tab:orange')
+# ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+# ax.annotate('$28.9', (32, 20), color='k')
+# # ax.set_xlabel('2020 USD', loc='center', rotation='horizontal', fontweight='normal')
+# ax.set_ylabel('Density', loc='center')
+# ax.set_title('2020 SCC')
+# ax.spines[['top', 'right']].set_visible(False)
+# plt.tight_layout()
+# plt.show()
+#
+# fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8,5), sharex=False, sharey=False)
+# ax1.hist(total20[total20.id!='0'].scc, bins=7, color='silver')
+# ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+# ax1.annotate('$28.9', (32, 20), color='k')
+# ax1.set_ylabel('A', loc='top', rotation='horizontal', fontweight='bold')
+# ax1.set_yticklabels([])
+# ax1.spines[['top', 'right']].set_visible(False)
+# ax2.plot(theta20.theta1, theta20.scc)
+# ax2.set_xlabel(r'$\theta_1, \theta_2$')
+# ax2.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
+# ax2.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+# ax2.spines[['top', 'right']].set_visible(False)
+# fig.suptitle('2020 SCC in 2020 USD')
+# plt.tight_layout()
+# plt.show()
 
 # %% GSA
 from SALib.analyze import delta, pawn
