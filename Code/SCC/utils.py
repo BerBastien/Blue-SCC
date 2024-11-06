@@ -309,7 +309,7 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
 
     # Delta utility
     df = df.assign(delta_UTARG=1 / (1 - eta) * (df.UTARG_pulse ** (1 - eta) - df.UTARG_base ** (1 - eta)))
-    print(df.query('t==8').delta_UTARG.describe())
+
     # Marginal utility of consumption
     C = df.CPC_OCEAN_DAM_today
     V = df.OCEAN_USENM_VALUE_today_PC
