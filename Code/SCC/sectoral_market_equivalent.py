@@ -173,15 +173,7 @@ def sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_p
                     s2_2 * (W ** theta2)
             ) ** (1 / theta2)
         df['UTARG_base'] = _UTARG_base
-
-    # Delta utility
-    df = df.assign(delta_UTARG=1 / (1 - eta) * (df.UTARG_base ** (1 - eta) - df.UTARG_today** (1 - eta)))
-
-    # Marginal utility of consumption
-    C = df.CPC_OCEAN_DAM_today
-    V = df.OCEAN_USENM_VALUE_today_PC
-    W = df.OCEAN_NONUSE_VALUE_today_PC
-
+        
     muc = (s1_1 * s2_1 * C ** (theta1 - 1) *
                  (s1_1 * C ** theta1 + V ** theta1 * s1_2) ** ((theta2 / theta1) - 1) *
                  ((s2_1 * (s1_1 * C ** theta1 + V ** theta1 * s1_2) ** (theta2 / theta1) +
@@ -190,6 +182,22 @@ def sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_p
                    W ** theta2 * s2_2)
 
     df['muc'] = muc
+
+    # Delta utility
+    #df = df.assign(delta_UTARG=1 / (1 - eta) * (df.UTARG_base ** (1 - eta) - df.UTARG_today** (1 - eta)))
+
+    # Marginal utility of consumption
+    C = df.CPC_OCEAN_DAM_today
+    V = df.OCEAN_USENM_VALUE_today_PC
+    W = df.OCEAN_NONUSE_VALUE_today_PC
+    _UTARG_today = \
+            (
+                    s2_1 * (s1_1 * (C ** theta1) + s1_2 * (V ** theta1)) ** (theta2 / theta1) +
+                    s2_2 * (W ** theta2)
+            ) ** (1 / theta2)
+    df['UTARG_today'] = _UTARG_today
+
+    
     # Calculate delta_UTARG as the change in utility
     UTARG_base_values = df['UTARG_base'] ** (1 - eta)
     UTARG_today_values = df['UTARG_today'] ** (1 - eta)
@@ -203,7 +211,7 @@ def sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_p
     df['target_oc_capital'] = target_oc_capital
 
     # Select the relevant columns to return
-    results = df[['t', 'delta_UTARG_in_consumption', 'target_valuation', 'target_oc_capital','n']]
+    results = df[['t', 'delta_UTARG', 'muc','delta_UTARG_in_consumption', 'target_valuation', 'target_oc_capital','n']]
 
     return results.sort_values('t')
 
