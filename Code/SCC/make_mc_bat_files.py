@@ -13,7 +13,7 @@ import context
 def run(run_type, n=10_000, experiment_id='', chunk=100):
     """
 
-    :param run_type:
+    :param run_type: ['Distribution', 'GSA']
     :param n:
     :param experiment_id:
     :param chunk:
@@ -32,7 +32,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
         cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_BASELINE --mod_ocean=1
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_BASELINE --mod_ocean=1 --mod_emission_pulse=ocean_damage_BASELINE
-                gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_BASELINE --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1
+                gams run_rice50x.gms --policy=bau --n=maxiso3                    --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_BASELINE --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1
     """
     with open(context.projectpath() / 'Data/SCC/tmp/mc_BASELINE.bat', 'w') as f:
         f.write(baseline_run)
@@ -44,7 +44,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
         cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_ssp{i} --mod_ocean=1  --baseline=ssp{i}
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_damage_pulse_ssp{i} --mod_ocean=1 --mod_emission_pulse=ocean_damage_ssp{i}  --baseline=ssp{i}
-                gams run_rice50x.gms --policy=bau --n=maxiso3 --climate=cbsimple --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_ssp{i} --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1  --baseline=ssp{i}
+                gams run_rice50x.gms --policy=bau --n=maxiso3                    --workdir=results_ocean --debugdir=debug_ocean --nameout=ocean_today_ssp{i} --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1  --baseline=ssp{i}
         """
         l.append(txt)
     with open(context.projectpath() / 'Data/SCC/tmp/mc_SSPs.bat', 'w') as f:
@@ -188,7 +188,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
             echo 0.
         else\
             echo not
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3                    --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 {s} 
             gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_damage_{i} {s} 
             gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --climate=cbsimple --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} {s} 
             python bluerice_server/mc_scc.py {scc_folder} {input_df} {i} {results_folder} \
