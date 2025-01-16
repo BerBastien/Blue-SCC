@@ -5,11 +5,11 @@
     names(regions) <- c("R5","countrycode")
     ed57  <- read.csv('Data/other/ed57regions.csv')
     regions$R5 <- as.character(gsub("R5", "", regions$R5))
-    ssp_gdp <- read.csv(file='C:\\Users\\basti\\Box\\Data\\SSPs\\ssp_gdp.csv')
-    ssp_pop <- read.csv(file='C:\\Users\\basti\\Box\\Data\\SSPs\\ssp_pop.csv')
-    ssp_gdp_pop <- ssp_pop %>% left_join(ssp_gdp,by=c("scenario","ISO3","year")) %>% rename(ssp=scenario)
-            
-    ssp_temp <- read.csv(file="C:\\Users\\basti\\Box\\Data\\SSPs\\CO2Pulse\\SSP245_magicc_202303021423.csv")
+    ssp_gdp <- read.csv(file=paste0(dir_box,"\\SSPs\\ssp_gdp.csv"))
+    ssp_pop <- read.csv(file=paste0(dir_box,'\\SSPs\\ssp_pop.csv'))
+    
+    ssp_gdp_pop <- ssp_pop %>% left_join(ssp_gdp,by=c("scenario","ISO3","year")) %>% dplyr::rename(ssp=scenario)
+    ssp_temp <- read.csv(file=paste0(dir_box,"SSPs\\CO2Pulse\\SSP245_magicc_202303021423.csv"))
     countries_in_ssps <- unique(ssp_pop$ISO3)            
 
     ssp_gdp$countrycode <- ssp_gdp$ISO3

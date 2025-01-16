@@ -51,3 +51,24 @@ if (file.exists(coral_country_file)) {
         glimpse(coral_country)
         save(coral_country,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\coral_country.Rds")
     }
+glimpse(coral_country)
+
+# MALDIVES CASE STUDY
+    mdv <- coral_country %>% filter(countrycode=="MDV")
+    # ggplot(data =  mdv) +
+    #     geom_sf(aes(fill = GIS_AREA_K), color = "black", size = 0.1) +
+    #     scale_fill_viridis_c(option = "plasma", name = "Area (km²)") +
+    #     theme_minimal() +
+    #     labs(
+    #         title = "Coral Areas in the Maldives",
+    #         subtitle = "GIS Mapped Coral Reefs",
+    #         x = "Longitude",
+    #         y = "Latitude"
+    #     ) +
+    #     theme(
+    #         plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    #         plot.subtitle = element_text(hjust = 0.5, size = 12),
+    #         legend.position = "bottom"
+    #     )
+
+# MALDIVES CASE STUDY

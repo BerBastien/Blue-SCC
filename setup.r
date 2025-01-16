@@ -5,7 +5,7 @@
         'dplyr','ncdf4','ggplot2','tidyverse','RColorBrewer','colorspace','spData','sf',
         'lfe','marginaleffects','rgdal',"rnaturalearth",'rgeos','geosphere','sf','ggthemes',
         "exactextractr","WDI","ggrepel","viridis","scico","scales","stringr","patchwork", "readxl",
-        "countrycode","purrr","tidyr","rlang","rnaturalearthdata","ggalluvial","svglite","ggplot2", "dplyr","WDI","ggpubr","scico","rnaturalearth","scales","readxlsx","tidyquant")
+        "countrycode","purrr","tidyr","rlang","rnaturalearthdata","ggalluvial","svglite","ggplot2", "dplyr","WDI","ggpubr","scico","rnaturalearth","scales","readxlsx","tidyquant","dplyr")
     
     lapply(x, require, character.only = TRUE)
 
@@ -17,7 +17,7 @@
     setwd(script_path)
 
     #external directories for datasets
-    dir_box <- "C:\\Users\\basti\\Box\\Data"
+    dir_box <- "G:\\My Drive\\Data\\"
     dir_wcmc <- paste0(dir_box,"\\Oceans\\coral_extent\\14_001_WCMC008_CoralReefs2021_v4_1\\01_Data")
     dir_ssps <- paste0(dir_box,"\\SSPs\\Gridded\\Pop\\")
 

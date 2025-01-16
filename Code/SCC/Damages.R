@@ -1,10 +1,7 @@
 # Convert GDX Files to XLSX ----
-
-
-
-    system("gdx2xls Data/output_rice50x/results_ocean_today.gdx")
-    system("gdx2xls Data/output_rice50x/results_ocean_damage_pulse.gdx")
-    system("gdx2xls Data/output_rice50x/results_ocean_damage.gdx")
+    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx")
+    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx")
+    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx")
 
 
 ## Read BLUERICE50x Results
@@ -19,7 +16,7 @@
 
     ## Temperature
     tatm <- read_excel(paste0('Data/output_rice50x/results_ocean_damage.xlsx'), sheet = "TATM") %>%
-    select(year = 1, tatm = 3) %>%  # Select the first and third columns and rename them
+    dplyr::select(year = 1, tatm = 3) %>%  # Select the first and third columns and rename them
     mutate(year = 1980 + (as.integer(year) - 1) * 5, 
     tatm = as.double(tatm))  %>% # Modify the 'year' column
     filter(!is.na(year)) %>% as.data.frame()
@@ -54,8 +51,8 @@
         filter(!all(cumulative_YNET_dam_mkt_dif == 0))
 
     glimpse(ports_dam)
-    ggplot(ports_dam, aes(x = year, y= YNET_dam_mkt_dif_perc)) + geom_point()
-    ggplot(ports_dam, aes(x = year, y= cumulative_YNET_dam_mkt_dif_perc2025)) + geom_point()
+    # ggplot(ports_dam, aes(x = year, y= YNET_dam_mkt_dif_perc)) + geom_point()
+    # ggplot(ports_dam, aes(x = year, y= cumulative_YNET_dam_mkt_dif_perc2025)) + geom_point()
 
     surpass_year_data <- find_surpass_year(ports_dam, "country", "year", "cumulative_YNET_dam_mkt_dif_perc2025", threshold = -1) %>% 
         as.data.frame() #%>% 
@@ -70,7 +67,7 @@
     ports_year_1perc_map <- left_join(world, ports_year_1perc)%>% filter(continent != "Antarctica")
 
     glimpse(ports_year_1perc_map )
-    ggplot(ports_year_1perc_map)+geom_sf(aes(fill=year_surpass))+scale_fill_viridis()
+    #ggplot(ports_year_1perc_map)+geom_sf(aes(fill=year_surpass))+scale_fill_viridis()
 ## Ports Year Surpass
 
 ## Corals Year Surpass
@@ -125,7 +122,7 @@
 ## Mangroves Year Surpass
     glimpse(exp_data_damage)
 
-    exp_data_damage %>% filter(country=="ind") %>% select(YNET,year)
+    exp_data_damage %>% filter(country=="ind") %>% dplyr::select(YNET,year)
 
     man_dam <- exp_data_damage %>% 
         filter(capital =="mangrove",year>2024,!is.na(ocean_consump_damage_coef_sq)) %>% 
@@ -181,7 +178,7 @@
     glimpse(exp_data_damage)
     exp_data_damage %>% 
         filter(year %in% c(2020,2025,2030),country=="brb", capital=="fisheries") %>% 
-        select(ocean_health_beta,ocean_health_tame,pop,year,ocean_health_mu)
+        dplyr::select(ocean_health_beta,ocean_health_tame,pop,year,ocean_health_mu)
     
     ocean_health_eta = 0.05
     fish_dam <- exp_data_damage %>% 
@@ -301,14 +298,12 @@ cor_dam <- cor_dam %>% mutate(capital = "Corals")
 ports_dam <- ports_dam %>% mutate(capital = "Ports")
 
 merged_df <- bind_rows(fish_dam, man_dam, cor_dam, ports_dam)
-
 # Filter data for the year 2100
 end_year <- 2100
 
-
 # Reshape data to long format
 plot_data <- merged_df %>%
-  select(year, country,YNET,pop, capital, usenm_dif, nonuse_dif, YNET_dam_mkt_dif,CPC) %>%
+  dplyr::select(year, country,YNET,pop, capital, usenm_dif, nonuse_dif, YNET_dam_mkt_dif,CPC) %>%
   pivot_longer(cols = c(usenm_dif, nonuse_dif, YNET_dam_mkt_dif), 
                names_to = "variable", 
                values_to = "value")%>%
@@ -371,7 +366,11 @@ ggplot(plot_data %>% filter(year < end_year+1, value<0), aes(x = CPC, y = -value
 
 
 ggarrange(time_damages_plot,surpass_year_plot,ncol=1)
-ggsave("Figures/Main/Fig2_Damages_v2.jpg",dpi=300)
+#ggsave("Figures/Main/Fig2_Damages_v2.jpg",dpi=300)
+
+#Make plot in Plot_MarketEquivalentDamages.r
+ggarrange(time_damages_plot,plot_sectoral_damages,ncol=1)
+#ggsave("Figures/Main/Fig2_Damages2050_v3.jpg",dpi=300)
 
 glimpse(plot_data)
 Fig2_bottom_data <- plot_data %>% 
@@ -389,7 +388,7 @@ glimpse(Fig2_bottom_data)
 Fig2_bottom_data %>% filter(year==2100) %>% group_by(value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
 
 
-Fig2_bottom_data %>% filter(year==2030,value_type=="Market") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
+Fig2_bottom_data %>% filter(year==2030,value_type=="Market") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE)) %>% ungroup() %>% mutate(total_dam_perc = total_dam / sum(total_dam) * 100)
 Fig2_bottom_data %>% filter(year==2030,value_type=="Non-market Use") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
 Fig2_bottom_data %>% filter(year==2030,value_type=="Non-use") %>% group_by(capital,value_type) %>% summarize(total_dam =sum(damages_billion2020USD,na.rm=TRUE))
 
@@ -452,4 +451,4 @@ labs(x="Log GDP in 2030", y="Surpass Year of 1% 2025 GDP Loss")
 
 ggplot(surpass_all_withgdp) + geom_point(aes(y=year_surpass_capped,x=(gdp_percapita_thousand2020USD)))
 
-ggsave("Figures/Main/FigS_UnequalityofDamages.jpg",dpi=300)
+#ggsave("Figures/Main/FigS_UnequalityofDamages.jpg",dpi=300)

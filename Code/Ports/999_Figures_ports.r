@@ -3,6 +3,7 @@
   port_ssp<- read.csv("Data/output_modules_input_rice50x/output_modules/ports/ports_ssps_rcps.csv")
     load(file="Data/output_modules_input_rice50x/output_modules/ports/ports_tcoeff.Rds")
     port_locations_file <- 'Data/input_modules/ports/nodes_maritime.gpkg'
+    library(scales)
 # Load files (end)
 
 ## Fig P1 (start)
@@ -10,7 +11,7 @@
   density_RCP_ssp <- ggplot(data=port_ssp %>%
       group_by(iso3, RCP, SSP) %>% 
       summarise(risk_change_percGDP = sum(risk_change_percGDP,na.rm=TRUE),GDP_ppp_2050=first(GDP_ppp_2050)),
-    aes(x = log(GDP_ppp_2050), y = risk_change_percGDP)) +
+    aes(x = (GDP_ppp_2050/10^12), y = risk_change_percGDP)) +
     geom_hline(aes(yintercept=0),linetype="dashed")+
     geom_density_2d_filled(contour_var = "ndensity",aes(alpha=..level..,fill=RCP),bins=4,size=1)+
     geom_point(data=port_ssp %>%
@@ -19,33 +20,43 @@
                   ungroup() %>%
                   group_by(RCP, SSP) %>% 
       summarise(risk_change_percGDP = median(risk_change_percGDP,na.rm=TRUE),GDP_ppp_2050=mean(GDP_ppp_2050,na.rm=T)),
-                  aes(x = log(GDP_ppp_2050), y = risk_change_percGDP,shape=SSP) )+
+                  aes(x = (GDP_ppp_2050/10^12), y = risk_change_percGDP,shape=SSP) )+
     scale_alpha_discrete(range = c(0,0.6,0.9,1),guide = guide_none()) +
     facet_wrap(~ RCP) +
     scale_fill_manual(values = c("RCP26"=hex_rcp26,"RCP45"=hex_rcp45,"RCP85"=hex_rcp85)) +
     labs(
       title = "C. Increase in Risk",
-      x = "Log GDP in 2050",
-      y = "Change in the Port-related Risk \n(percentage points of GDP)"
+      x = "GDP in 2050 (2020 trill USD)",
+      y = "Change in economic value at risk \n(pp of GDP)"
     ) +
     coord_cartesian(ylim = c(-0.1, 0.4)) +
-    theme_minimal()
+    theme_minimal()+
+    scale_x_continuous(
+        trans = "log10",lim=c(0.5,10^5)/1000,
+        labels = dollar_format(prefix = "$", big.mark = ",")
+      )
 
-
+  density_RCP_ssp 
+  
   port_ssp <- port_ssp %>% left_join(regions %>% mutate(iso3=countrycode),by="iso3")
 
   pr_total_present <- ggplot( )+
     geom_point(data=port_ssp %>% group_by(iso3,RCP,SSP) %>% 
-        summarise(GDP_ppp_2022=GDP_ppp_2022/10^9,rb=sum(risk_base_perc),R5=R5)%>% slice(1),
-        aes(x=GDP_ppp_2022*1.087,y=rb,color=R5)) + 
+        summarise(GDP_ppp_2022=GDP_ppp_2022/10^12,rb=sum(risk_base_perc),R5=R5)%>% slice(1),
+        aes(x=(GDP_ppp_2022*1.087),y=rb,color=R5)) + 
     geom_text_repel(data= port_ssp %>% group_by(iso3) %>% filter(RCP=="RCP45", SSP=="SSP2") %>%
-        summarise(GDP_ppp_2022=1.087*GDP_ppp_2022/10^9,rb=sum(risk_base_perc),R5=R5 )%>% slice(1),aes(x=GDP_ppp_2022,y=rb,label=iso3,color=R5)) + 
+        summarise(GDP_ppp_2022=1.087*GDP_ppp_2022/10^12,rb=sum(risk_base_perc),R5=R5 )%>% slice(1),
+        aes(x=(GDP_ppp_2022),y=rb,label=iso3,color=R5)) + 
     theme_bw()+
-    xlab("GDP in 2022 (2020 Bill USD)")+
+    xlab("GDP in 2022 (2020 trill USD)")+
     scale_color_manual(values=hex_R5)+
     scale_y_continuous(trans="log2",lim=c(0.01,16)) +
-    scale_x_continuous(trans="log10",lim=c(0.5,10^5)) +
-    ylab("Value at Risk\n(% of GDP)")+
+    #scale_x_continuous(trans="log10",lim=c(0.5,10^5)) +
+    scale_x_continuous(
+        trans = "log10",lim=c(0.5,10^5)/1000,
+        labels = dollar_format(prefix = "$", big.mark = ",")
+      )+
+    ylab("Economic value at risk\n(% of GDP)")+
     ggtitle("A. Present Risk")
  
 
@@ -53,23 +64,29 @@
 
   pr_total_future_1scen <- ggplot( )+
     geom_point(data=port_ssp %>% filter(RCP=="RCP45",SSP=="SSP2") %>% group_by(iso3) %>% 
-        summarise(GDP_ppp_2022=GDP_ppp_2050/10^9,rb=sum(risk_percGDP_2050),R5=R5 ),
-        aes(x=GDP_ppp_2022*1.087,y=rb,color=R5)) + #1.087 deflator 2015 to 2020
+        summarise(GDP_ppp_2022=GDP_ppp_2050/10^12,rb=sum(risk_percGDP_2050),R5=R5 ),
+        aes(x=(GDP_ppp_2022*1.087),y=rb,color=R5)) + #1.087 deflator 2015 to 2020
     geom_text_repel(data= port_ssp %>% group_by(iso3) %>% filter(RCP=="RCP45", SSP=="SSP2") %>%
-        summarise(GDP_ppp_2022=GDP_ppp_2050/10^9,rb=sum(risk_percGDP_2050), R5=R5 )%>% slice(1),aes(x=GDP_ppp_2022*1.087,y=rb,label=iso3,color=R5)) + 
+        summarise(GDP_ppp_2022=GDP_ppp_2050/10^12,rb=sum(risk_percGDP_2050), R5=R5 )%>% slice(1),
+        aes(x=(GDP_ppp_2022*1.087),y=rb,label=iso3,color=R5)) + 
     theme_bw()+
-    xlab("GDP in 2050 (2020 Bill USD)")+
+    xlab("GDP in 2050 (2020 trill USD)")+
       scale_color_manual(values=hex_R5)+
     ylab("Present Value at Risk in 2050 \n(% of GDP)")+
     scale_y_continuous(trans="log2",lim=c(0.01,16)) +
-    scale_x_continuous(trans="log10",lim=c(0.5,10^5)) +
+    #scale_x_continuous(trans="log10",lim=c(0.5,10^5)) +
+    scale_x_continuous(
+        trans = "log10",lim=c(0.5,10^5)/1000,
+        labels = dollar_format(prefix = "$", big.mark = ",")
+      )+
     ggtitle("B. Future Risk")+
     theme(axis.title.y = element_blank(),  # Removes y-axis label
           axis.text.y = element_blank()) 
   
 
 
-  fig_p1 <- ggarrange(ggarrange(pr_total_present,pr_total_future_1scen,ncol=2,align="h",widths=c(4,3),common.legend=TRUE,legend="bottom"),
+  fig_p1 <- ggarrange(ggarrange(pr_total_present,pr_total_future_1scen,ncol=2,align="h",widths=c(4,3),
+  common.legend=TRUE,legend="bottom"),
       density_RCP_ssp,ncol=1)
 
   windows()
@@ -87,6 +104,7 @@
       filter(iso3 == "MEX", SSP == "SSP2") %>%
       summarise(GDP_ppp_2050_mex = first(GDP_ppp_2050) / 10^9) %>%
       pull(GDP_ppp_2050_mex)
+
 
     pr_dif_future <- ggplot( )+ 
       geom_smooth(data=port_ssp%>% group_by(iso3,RCP)  %>% filter(SSP=="SSP2") %>%
@@ -111,6 +129,7 @@
 
 
   #Panel B
+    glimpse(port_ssp)
     linear_damage_country <- ggplot()+
       geom_point(data = port_ssp %>% filter(iso3=="MEX")%>% group_by(RCP,SSP)   %>%
           summarise(GDP_ppp_2050=GDP_ppp_2050/10^9,risk_change=sum(risk_change_percGDP),tdif=mean(tdif)),
@@ -159,6 +178,10 @@
     fig_p2 <- ggarrange(plot_effect_ports,map_port,ncol=2)
     windows()
     print(fig_p2)
+    glimpse(merged_data)
+    ED_Table4_ports <- merged_data %>% select(iso_a3,GDP_FractionChange_perC,GDP_FractionChange_perC_se)
+    #write.csv(ED_Table4_ports,file="ExtendedData\\ED_Table4_ports.csv")
+        
     #ggsave("Figures/SM/ports/coefficients.png")
   #Panel C original (end)
 

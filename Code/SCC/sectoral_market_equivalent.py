@@ -24,7 +24,7 @@ def var_from_gdx(gdx_dict, var, vars=[]):
     return df
 
    
-def sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None):
+def sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None, server_scale_factor=1):
     """
     Main idea: Replace with the baseline (no pulse) values all the values of consumption, usenm and nonuse except for
     the target oc_capital and target_valuation.
@@ -45,13 +45,13 @@ def sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_p
     UTARG_base = var_from_gdx(ocean_damage_gdx, 'UTARG').rename(columns={'UTARG': 'UTARG_base'})
     UTARG_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'UTARG').rename(columns={'UTARG': 'UTARG_pulse'})
 
-    OCEAN_USENM_VALUE_today = var_from_gdx(ocean_today_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_today'})
-    OCEAN_USENM_VALUE_base = var_from_gdx(ocean_damage_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_base'})
-    OCEAN_USENM_VALUE_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_pulse'})
+    OCEAN_USENM_VALUE_today = var_from_gdx(ocean_today_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).assign(OCEAN_USENM_VALUE=lambda x: x.OCEAN_USENM_VALUE/server_scale_factor).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_today'})
+    OCEAN_USENM_VALUE_base = var_from_gdx(ocean_damage_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).assign(OCEAN_USENM_VALUE=lambda x: x.OCEAN_USENM_VALUE/server_scale_factor).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_base'})
+    OCEAN_USENM_VALUE_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).assign(OCEAN_USENM_VALUE=lambda x: x.OCEAN_USENM_VALUE/server_scale_factor).rename(columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_pulse'})
 
-    OCEAN_NONUSE_VALUE_today = var_from_gdx(ocean_today_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_today'})
-    OCEAN_NONUSE_VALUE_base = var_from_gdx(ocean_damage_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_base'})
-    OCEAN_NONUSE_VALUE_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_pulse'})
+    OCEAN_NONUSE_VALUE_today = var_from_gdx(ocean_today_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).assign(OCEAN_NONUSE_VALUE=lambda x: x.OCEAN_NONUSE_VALUE/server_scale_factor).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_today'})
+    OCEAN_NONUSE_VALUE_base = var_from_gdx(ocean_damage_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).assign(OCEAN_NONUSE_VALUE=lambda x: x.OCEAN_NONUSE_VALUE/server_scale_factor).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_base'})
+    OCEAN_NONUSE_VALUE_pulse = var_from_gdx(ocean_damage_pulse_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).assign(OCEAN_NONUSE_VALUE=lambda x: x.OCEAN_NONUSE_VALUE/server_scale_factor).rename(columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_pulse'})
 
     CPC_today = var_from_gdx(ocean_today_gdx, 'CPC').rename(columns={'CPC': 'CPC_today'})
     CPC_base = var_from_gdx(ocean_damage_gdx, 'CPC').rename(columns={'CPC': 'CPC_base'})
@@ -216,10 +216,9 @@ def sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_p
     return results.sort_values('t')
 
 if __name__ == '__main__':
-    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(r"C:\Users\Granella\Downloads\results_ocean_damage_9999.gdx")
-    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(
-        r"C:\Users\Granella\Downloads\results_ocean_damage_pulse_9999.gdx")
-    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(r"C:\Users\Granella\Downloads\results_ocean_today_9999.gdx")
+    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx')
+    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx')
+    ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx')
 
     # Define target sectors and valuations
     targets = [('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), 
@@ -230,7 +229,7 @@ if __name__ == '__main__':
     results_list = []
     for target in targets:
         # Run the function for each target
-        result = sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1])
+        result = sectoral_market_equivalent(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1], server_scale_factor=10_000)
         
         # Add target information to the result DataFrame
         result = result.assign(oc_capital=target[0], valuation=target[1])

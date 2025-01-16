@@ -361,13 +361,13 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
 
 if __name__ == '__main__':
     try:
-        ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_damage.gdx')
-        ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_damage_pulse.gdx')
-        ocean_today_gdx = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'data/tmp/test_gdx/results_ocean_today.gdx')
+        ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_BASELINE.gdx')
+        ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse_BASELINE.gdx')
+        ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today_BASELINE.gdx')
     except OSError:
-        ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx')
-        ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx')
-        ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx')
+        ocean_damage_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_BASELINE.gdx')
+        ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse_BASELINE.gdx')
+        ocean_today_gdx = gdxpds.read_gdx.to_dataframes('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today_BASELINE.gdx')
     except:
         raise OSError('Files could not be saved.')
 
@@ -377,12 +377,18 @@ if __name__ == '__main__':
     # targets = [(None, None)]
     l = []
     for target in targets:
-        _scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1])
+        _scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1], server_scale_factor=10_000)
         _scc = _scc.assign(oc_capital=target[0], valuation=target[1])
         l.append(_scc)
     df = pd.concat(l)
     print(df[df.index==2020].round(3))
     print(df)
+    print(df[df.index==2100].round(3))
     #df.to_csv('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/analysis_output/BlueSCC_updated_Mu.csv')
     
-   
+# print(target, sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1], server_scale_factor=1, return_data=True))
+#    df2=sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, 'ports', target[1], server_scale_factor=1, return_data=True)
+#    print(df2)
+#    df_scc = df2[0]  # Access the first DataFrame
+#    df_utarg = df2[1]  # Access the second DataFrame
+#    df_utarg.to_csv('C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/analysis_output/ports_utarg.csv')

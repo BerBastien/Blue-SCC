@@ -3,27 +3,33 @@
 
 ## Load Data (start)
     
-    #Fig C1
+    #Fig C1 / S2
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/corals_tcoeff.Rds") #corals_tcoeff
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/corals_temp_unique.Rds") #corals_temp_unique
 
-    #Fig C2
+    #Fig C2 / S3
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_gulf.Rds") #coral_areas_gulf
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_temp_gulf.Rds") #coral_areas_gulf
 
-    #Fig C3
+    #Fig C3 / S4
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_keys.Rds")#coral_areas_keys
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_keys_single.Rds")#coral_areas_keys_single
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_keys_single_joined.Rds")#coral_areas_keys_single_joined
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_temp_keys.Rds")#coral_temp_keys
     
-    #Fig C4
+    #Fig C4 / S5
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/corals_area_coeff_sf.Rds") #corals_area_coeff_sf
-
-    #Fig C6
+    
+    #Fig C6 / S6
     coefs_with_vcov <- read.csv(file="Data\\output_modules_input_rice50x\\input_rice50x\\coral_GDPdam_coefficients.csv")
     ssp_corals_growth <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals/ssp_corals_growth.csv")
-    market_coefficients_by_country3 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")
+    market_coefficients_by_country3 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country4.csv")
+    
+    #Fig C7 - maldives
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_maldives.Rds")#coral_areas_maldives
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_maldives_single.Rds")#coral_areas_maldives_single
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_maldives_single_joined.Rds")#coral_areas_maldives_single_joined
+    load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_temp_maldives.Rds")#coral_temp_maldives
 
     
     corals_df_iso <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals_area_damage_value.csv")
@@ -71,7 +77,8 @@
     geom_text(aes(x=3.5,y=-12,label="RCP8.5 - 2100"),color=hex_rcp85,size=3) +
     xlab("Temperature increase from 1997-2018 baseline")+
     xlim(c(0,4.5))+
-    ylab("Coral Cover Change (%)")
+    ylab("Change in coral cover") +
+    scale_y_continuous(labels = function(x) paste0(x, "%"))
 
     legend_plot <- ggplot(corals_temp_unique)+
     geom_line(aes(x=tdif,y=cover_change_perc,color=scenario,group=interaction(scenario,uniqueplace)))+
@@ -89,7 +96,7 @@
 
     density_coral_coeff_cover <- ggplot(corals_tcoeff, aes(x = tcoeff, y = living_coral_cover*100)) +
         geom_hex() +
-        labs(x = "GMST Coefficient (Damages per degree C)", y = "Present Percentage of the Reef \nCovered by Living Corals") +
+        labs(x = "GMST Coefficient \n(Change in coral cover per degree C)", y = "Present Percentage of the Reef \nCovered by Living Corals") +
         scale_fill_scico(palette="berlin")+theme_bw()
     
     
@@ -99,7 +106,7 @@
     print(fig_c1)
     Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
     
-    #ggsave("Figures/SM/corals/Coeff_CoralCover_PresentCover.png",dpi=600)
+    #ggsave("Figures/SM/corals/Coeff_CoralCover_PresentCoverv2.png",dpi=600)
 
 
 ## Fig. S1 (end)
@@ -158,7 +165,7 @@
     #ggsave("Figures/SM/corals/CoralChange_temp_area.png",dpi=600)
 ## Fig. S2 (end)
 
-## Fig. S3 (start)
+## Fig. C3 (start)
     coral_areas_temp_florida <- ggplot() +
         geom_sf(data = coral_areas_keys, aes(fill = (GIS_AREA_K)), color = NA)+
         scale_fill_viridis(name = expression(paste("Area (km"^2, ")")), guide = guide_colorbar(nbin = 50))+#,labels = c("1e-6","1e-4","0.01","1","100")) +
@@ -344,10 +351,12 @@
     quantile_breaks <- quantile(merged_data$DamCoef_changeperC, probs = seq(0, 1, length.out = 5), na.rm = TRUE)
 
     labels2 <- c(
-        paste0("<", round(quantile_breaks[2], 2)),
-        paste0("(", round(quantile_breaks[2], 2), ",", round(quantile_breaks[3], 2), "]"),
-        paste0("(", round(quantile_breaks[3], 2), ",", round(quantile_breaks[4], 2), "]"),
-        paste0(">", round(quantile_breaks[4], 2))
+        #paste0("Higher than ", round(quantile_breaks[2], 2)*100,"%"),
+        paste0("(", round(quantile_breaks[1], 2)*100,"%", ",", round(quantile_breaks[2], 2)*100,"%", "]"),
+        paste0("(", round(quantile_breaks[2], 2)*100,"%", ",", round(quantile_breaks[3], 2)*100,"%", "]"),
+        paste0("(", round(quantile_breaks[3], 2)*100,"%", ",", round(quantile_breaks[4], 2)*100,"%", "]"),
+        paste0("(", round(quantile_breaks[4], 2)*100,"%", ",", round(quantile_breaks[5], 2)*100,"%", "]")#,
+        #paste0("Lower than ", round(quantile_breaks[4], 2)*100,"%")
     )
 
     merged_data$damage_category <- cut(
@@ -358,15 +367,15 @@
     )
 
     fig_c5 <- ggplot(data = merged_data %>% filter(continent != "Antarctica")) +
-    geom_sf(aes(fill = damage_category )) +
-    scale_fill_manual(values = custom_colors, name = "Cover damage \n(% per Degree C)",na.value="transparent") +
+    geom_sf(aes(fill = damage_category)) +
+    scale_fill_manual(values = custom_colors, name = "Coral loss\n per Degree C",na.value="transparent") +
     coord_sf(crs = "+proj=robin") + # Robinson projection
     theme_minimal() +
-    labs(fill = "Coral cover change \n(% change/C)")
+    labs(fill = "Coral cover loss \n(% change/C)") 
     windows()
     print(fig_c5)
     Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
-    #ggsave("Figures/SM/corals/coral_countrymap_cat.png",dpi=600) 
+    #ggsave("Figures/SM/corals/coral_countrymap_catv2.png",dpi=600) 
 
     # Custom colors for the categories
     
@@ -396,20 +405,25 @@
         ggtitle("Corals Market Revenue\n Under SSP2 (No Climate Impacts)") + xlab("Year") + ylab("Market Benefits From Corals (% GDP)") + theme_bw() + guides(color=FALSE, linetype=FALSE)
     
     
+    glimpse(market_coefficients_by_country3)
+    market_coefficients_by_country3 %>% filter(countrycode=="MDV")%>%select(year,FractionChangeGDP_perC_se,FractionChangeGDP_perC,temp,FractionChangeGDP_perC_se_adj) %>% 
+        mutate(ymin=100*(FractionChangeGDP_perC-FractionChangeGDP_perC_se*1.645)*temp, 
+        y =100*(FractionChangeGDP_perC)*temp ) %>%
+    tail()
+    
     coral_dam_plot2 <- ggplot(market_coefficients_by_country3%>% filter(scenario=="SSP2")) + 
         geom_point(aes(x=temp,y=fraction_damaged*100 ,color=R5)) +
         geom_text_repel(data=market_coefficients_by_country3%>% filter(scenario=="SSP2") %>% filter(year==2100), aes(x=temp+0.02,y=fraction_damaged*100 ,color=countrycode,label=countrycode)) +
         geom_line(aes(x=temp,y=100*FractionChangeGDP_perC*temp ,color=R5,group=countrycode))+
-        geom_ribbon(aes(x=temp,ymin=100*(FractionChangeGDP_perC-FractionChangeGDP_perC_se*1.645)*temp, 
-        ymax=100*(FractionChangeGDP_perC+FractionChangeGDP_perC_se*1.645)*temp ,fill=R5),alpha=0.2)+        
+        geom_ribbon(aes(x=temp,ymin=100*(FractionChangeGDP_perC+FractionChangeGDP_perC_se_adj *1.96)*temp, 
+        ymax=100*(FractionChangeGDP_perC-FractionChangeGDP_perC_se_adj *1.96)*temp ,fill=R5, group=countrycode),alpha=0.5)+        
         theme_bw() + 
         guides(color=FALSE,fill=FALSE) + 
         scale_color_manual(values=hex_R5)+
         scale_fill_manual(values=hex_R5)+
-        xlab("Temperature Increase under RCP7") + 
+        xlab("Temperature Increase from 2020 under SSP2-4.5") + 
         ylab("Market Damages (% GDP)")
-    
-
+    coral_dam_plot2
     coral_benefits_2100 <- ggplot(ssp_corals_growth %>% filter(scenario=="SSP2")) + 
         geom_hline(aes(yintercept=100),linetype=2)  +
         geom_hline(aes(yintercept=1),linetype=2)  +
@@ -427,6 +441,76 @@
     windows()
     print(fig_c6)
     Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
-    #ggsave("Figures/SM/corals/DamageFunction_linear.png",dpi=600) 
+    #ggsave("Figures/SM/corals/DamageFunction_linearv2.png",dpi=600) 
 
 ## Fig. C6
+
+## Fig. c7 (start)
+
+    maldives_corals <- continents %>% dplyr::filter(name_en=='Maldives')
+    
+    maldives_territory <- continents %>% dplyr::filter(name_en=='Maldives')
+
+    coral_areas_temp_maldives <- ggplot() +
+        geom_sf(data = coral_areas_maldives_single, aes(fill = (area_km2)), color = NA)+
+        scale_fill_viridis(name = expression(paste("Area (km"^2, ")")), guide = guide_colorbar(nbin = 50))+#,labels = c("1e-6","1e-4","0.01","1","100")) +
+        geom_sf(data = coral_temp_maldives, aes(color = tcoeff), size = 2) +
+        scale_color_gradientn(colors = pal1_heat[1:7], name = expression(paste("Cover damage \n(% change/C)")), guide = "legend") +
+        geom_sf(data = maldives_territory, fill = "white", color = "gray", alpha = 0.5) +
+        labs(title = "Coral Cover Polygons\nand Surveys Location") +
+        coord_sf(xlim = c(72, 74),
+                ylim = c(-1, 7)) +
+        my_theme()+
+        guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5),
+        color = guide_legend(title.position = "top", title.hjust = 0.5)) + 
+        theme(legend.position="right")
+        glimpse(coral_areas_maldives_single)
+        glimpse(coral_temp_maldives)
+
+    coral_areas_temp_maldives2 <- ggplot() +
+        geom_sf(data = coral_areas_maldives_single_joined, aes(fill = surveys), color = NA)+
+        geom_sf(data = coral_temp_maldives, color = "white", size = 2) +
+        scale_color_gradientn(colors = pal1_heat[1:7], name = expression(paste("Cover damage (pp/T"^2, ")")), guide = "legend") +
+        geom_sf(data = maldives_territory, fill = "white", color = "gray", alpha = 0.5) +
+        labs(title = "Number of Surveys \nwithin Polygons") +
+        coord_sf(xlim = c(72, 74),
+                ylim = c(-1, 7)) +
+        my_theme()+
+        guides(fill = guide_legend(title.position = "top", title.hjust = 0.5)) + 
+        theme(legend.position="right")
+        
+
+    coral_areas_temp_maldives3 <- ggplot() +
+        geom_sf(data = coral_areas_maldives_single_joined, aes(fill = mean_coef), color = NA)+
+        scale_fill_gradientn(colors = pal1_heat[1:7],name = expression(paste("Cover damage \n(% change/C)")), guide = guide_colorbar(nbin = 50))+#,labels = c("1e-6","1e-4","0.01","1","100")) +
+        #geom_sf(data = coral_temp_maldives,color = "white", size = 2) +
+        scale_color_gradientn(colors = pal1_heat[1:7], name = expression(paste("Cover damage \n(% change/C)")), guide = "legend") +
+        geom_sf(data = maldives_territory, fill = "white", color = "gray", alpha = 0.5) +
+        labs(title = "Mean Damage Coefficient\nwithin Coral Polygons") +
+        coord_sf(xlim = c(72, 74),
+                ylim = c(-1, 7)) +
+        my_theme()+
+        guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5)) + 
+        theme(legend.position="right")
+    fig_c7 <- ggarrange(ggarrange(coral_areas_temp_maldives,
+            coral_areas_temp_maldives2,ncol=1),
+            coral_areas_temp_maldives3,ncol=2,legend="right",align="hv",widths=c(2,1))
+
+            fig_c7 <- ggarrange(ggarrange(coral_areas_temp_maldives,
+            coral_areas_temp_maldives2,ncol=1,align="v"),
+            coral_areas_temp_maldives3,ncol=2,legend="right",align="hv",widths=c(2,1))
+    
+    
+    
+    coral_temp_maldives %>% summarize(mean_coef = mean(tcoeff,na.rm=TRUE))
+    
+
+    windows()
+    print(fig_c7)
+    Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
+
+    #ggsave("Figures/SM/corals/maldives_meandamagev2.png",dpi=600)
+
+
+
+## Fig. c7 (end)

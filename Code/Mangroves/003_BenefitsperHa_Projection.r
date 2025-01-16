@@ -67,6 +67,8 @@
         market_coefficients_by_country <- weighted_avg_benefits_prov2 %>% filter(year==2100) %>% dplyr::select(countrycode,GDPDam_perC,GDPDam_perC_se_adj,GDPDam_perC_sq,GDPDam_perC_sq_se_adj,cov_t_t2_adj)
         glimpse(market_coefficients_by_country)
         #write.csv(market_coefficients_by_country,file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\output_modules_input_rice50x\\output_modules\\mangrove_GDPdam_coefficients.csv")
+        market_coefficients_by_country <- read.csv(file="C:\\Users\\basti\\Documents\\GitHub\\BlueDICE\\Data\\output_modules_input_rice50x\\output_modules\\mangrove_GDPdam_coefficients.csv")
+    
     # Market damage Function (end)
 
     ## Non-Market Projections (start)

@@ -48,7 +48,11 @@
 
         weighted_avg_benefits_prov2 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\weighted_avg_benefits_prov2.csv")
         weighted_avg_benefits_prov2 <- weighted_avg_benefits_prov2%>% left_join(regions,by="countrycode")
-        
+        glimpse(weighted_avg_benefits_prov2) 
+        ED_Table3 <- weighted_avg_benefits_prov2 %>% filter(year==2030) %>% select(countrycode,GDPDam_perC,
+        GDPDam_perC_se,
+        GDPDam_perC_sq, GDPDam_perC_sq_se)
+        #write.csv(ED_Table3,"ExtendedData//ED_Table3_mangroves.csv")
         mangrove_dam_plot <- ggplot(weighted_avg_benefits_prov2 %>% filter(countrycode %in% countries_in_ssps)) + 
             geom_point(aes(x=temp,y=fraction_damaged,color=R5)) +
             #geom_text(data=weighted_avg_benefits_prov2 %>% filter(year==2100), aes(x=temp+0.1,y=percentage_damaged/100,color=countrycode,label=countrycode)) +
@@ -59,7 +63,7 @@
             theme_bw() + 
             guides(color=FALSE,fill=FALSE) + 
             scale_fill_manual(values=hex_R5)+
-            xlab("Temperature Increase under RCP7") + 
+            xlab("Temperature increase from 2020 under RCP7 (C)") + 
             ylab("Market Damages (% GDP)")
 
        
@@ -90,5 +94,5 @@
 
 
         windows()
-        ggarrange( ggarrange(market_ben_mangroves , market_ben_mangroves_2100        ), mangrove_dam_plot,ncol=1)        
+        ggarrange( ggarrange(market_ben_mangroves , market_ben_mangroves_2100        ), mangrove_dam_plot,ncol=1,heights = c(3,2))        
         #ggsave("Figures//all_figures//mangroves//Market_Dam.png")

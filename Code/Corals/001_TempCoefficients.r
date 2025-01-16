@@ -1,6 +1,5 @@
 #setup 
 
-    setwd('C:\\Users\\basti\\Documents\\GitHub\\BlueDICE')
     dir1 <- paste0(getwd(),'\\Data\\input_modules\\corals\\')
     
 #setup 
@@ -28,8 +27,26 @@
         corals3 <- corals[,which(names(corals) %in% c("Y_New","uniqueplace"))] 
         #glimpse(corals3)    
         corals_long2 <- merge(corals_long,corals3,by="uniqueplace")
+        glimpse(corals_long2)
+        corals_long2 <- corals_long2 %>% 
+            mutate(cover = Y_New + cover_change, 
+            cover_change_perc=100 * cover_change / Y_New)
+        new_rows_corals <- corals_long2 %>%
+            group_by(uniqueplace) %>%
+            summarize(
+                variable = first(variable),  # Retain any variable value, if consistent
+                cover_change = 0,
+                scenario = first(scenario),  # Retain any scenario value, adjust if needed
+                year = 2020,                   # No specific year for this artificial point
+                Y_New = first(Y_New),        # Retain the current Y_New value
+                cover = first(Y_New),        # Retain the current cover value
+                cover_change_perc = 0
+            )
 
-        corals_long2$cover_change_perc <- 100*corals_long2$cover_change / corals_long2$Y_New
+            # Add the new rows to the original dataframe
+            corals_long2 <- bind_rows(corals_long2, new_rows_corals)
+
+        #ggplot(corals_long2) + geom_line(aes(x = year, y = cover, group=interaction(uniqueplace,scenario), color=scenario))
     ## Arranging Coral Projections (start)
 
     ## Reading SSPs Temp (start)
@@ -76,17 +93,20 @@
         coral_latlon <- coral_latlon[!duplicated(coral_latlon$uniqueplace), ]
         ct <- merge(corals_temp,coral_latlon,by="uniqueplace")
         corals_temp <- ct
-        
+        glimpse(corals_temp)
+        corals_temp %>% filter(uniqueplace=="-16.69333333-179.9743333",scenario=="RCP85",year==2050)
         corals_temp_unique <- aggregate(cover_change_perc~uniqueplace+scenario+tdif+year+Latitude.Degrees+Longitude.Degrees,data=corals_temp,FUN="mean")
+        #corals_temp_unique <- aggregate(cover~uniqueplace+scenario+tdif+year+Latitude.Degrees+Longitude.Degrees,data=corals_temp,FUN="mean") #getting coverage of living coral
         corals_temp_unique_cover <- aggregate(Y_New~uniqueplace+scenario+tdif+year+Latitude.Degrees+Longitude.Degrees,data=corals_temp,FUN="mean")
         corals_temp_unique$cover <- corals_temp_unique_cover$Y_New
 
+        glimpse(corals_temp_unique)
     ## Merging coral projections and GMST (end)
 
     ## Output Files (start)    
-        save(corals_temp_unique,file="Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.Rds")
-        write.csv(corals_temp,"Data/output_modules_input_rice50x/output_modules/corals/corals_temp.csv")
-        write.csv(corals_temp_unique,"Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.csv")
+        #save(corals_temp_unique,file="Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.Rds")
+        #write.csv(corals_temp,"Data/output_modules_input_rice50x/output_modules/corals/corals_temp.csv")
+        #write.csv(corals_temp_unique,"Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.csv")
 
     ## Output Files (start)
 
@@ -108,7 +128,7 @@
         coral_sf <- st_as_sf(v4_coral_py)
         
         coral_areas_wgs84 <- st_transform(coral_sf, crs = st_crs(4326))
-        continents <- ne_countries(scale = "medium", returnclass = "sf") %>%
+        continents <- ne_countries(scale = "large", returnclass = "sf") %>%
             st_transform(st_crs(coral_areas_wgs84))  
         
         na_vals_id <- 0
@@ -171,7 +191,11 @@
     # Estimate GMST Coefficient (end)
 
         load(file="Data/output_modules_input_rice50x/output_modules/corals/corals_tcoeff.Rds")
+        glimpse(corals_tcoeff)
 
+         corals_tcoeff_sf <- corals_tcoeff %>%
+        filter %>% select(uniqueplace, tcoeff, geometry, se, pval,cover)  %>% ungroup()%>%
+        st_as_sf()
     # Plot estimated coefficients against values (start) 
         
         corals_tcoeff_sf <- corals_tcoeff %>%
@@ -364,8 +388,8 @@
 
         breaks <- seq(min((coral_temp_gulf$tcoeff*0.01)), max((coral_temp_gulf$tcoeff*0.01)),length.out=10)
         coral_temp_gulf$coef_group <- cut((coral_temp_gulf$tcoeff*0.01), breaks = breaks, labels = FALSE)
-        save(coral_areas_gulf,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_gulf.Rds")
-        save(coral_temp_gulf,file="Data/output_modules_input_rice50x/output_modules/corals/coral_temp_gulf.Rds")
+        #save(coral_areas_gulf,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_gulf.Rds")
+        #save(coral_temp_gulf,file="Data/output_modules_input_rice50x/output_modules/corals/coral_temp_gulf.Rds")
     ## Zoom in the Gulf of Mexico (end)
 
     ## Zoom in Florida Keys (start)
@@ -443,12 +467,115 @@
 
 
 
-        save(coral_areas_keys,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys.Rds")
-        save(coral_areas_keys_single,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys_single.Rds")
-        save(coral_areas_keys_single_joined,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys_single_joined.Rds")
-        save(coral_temp_keys,file="Data/output_modules_input_rice50x/output_modules/corals/coral_temp_keys.Rds")
+        # save(coral_areas_keys,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys.Rds")
+        # save(coral_areas_keys_single,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys_single.Rds")
+        # save(coral_areas_keys_single_joined,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys_single_joined.Rds")
+        # save(coral_temp_keys,file="Data/output_modules_input_rice50x/output_modules/corals/coral_temp_keys.Rds")
 
     ## Zoom in Florida Keys (end)
+
+    ## Maldives
+        ## Zoom in Maldives (start)
+        maldives_coords <- matrix(c(
+            72, -1,   # Bottom-left
+            74, -1,   # Bottom-right
+            74, 7,    # Top-right
+            72, 7,    # Top-left
+            72, -1    # Close the loop
+        ), ncol = 2, byrow = TRUE)
+
+        # Create a simple feature with a polygon representing the Maldives region
+        maldives_polygon <- st_polygon(list(maldives_coords))
+
+        # Get the bounding box of the Maldives polygon
+        maldives_bbox <- st_bbox(maldives_polygon)
+
+        # Crop the coral_areas_wgs84 spatial object to the bounding box of the Maldives
+        coral_areas_maldives <- st_crop(coral_areas_wgs84, maldives_bbox)
+        glimpse(corals_tcoeff_sf)
+        coral_temp_maldives <- st_crop(corals_tcoeff_sf, maldives_bbox)
+        #glimpse(coral_temp_maldives)
+        unique_place_maldives <- coral_temp_maldives$uniqueplace
+
+        # Split multipolygons into individual polygons
+
+        coral_areas_maldives_single <- coral_areas_maldives %>%
+            st_cast("MULTIPOLYGON") %>%  # Ensure consistent MULTIPOLYGON geometry
+            st_cast("POLYGON") %>%       # Split MULTIPOLYGON into individual POLYGONs
+            mutate(ID = row_number()) 
+
+        # coral_areas_maldives_single <- coral_areas_maldives %>%
+        #     st_cast("POLYGON") %>%
+        #     mutate(geometry = as.list(geometry)) %>%
+        #     unnest(geometry) %>%
+        #     st_as_sf()
+
+        # glimpse(coral_areas_maldives)
+        # glimpse(coral_areas_maldives_single)
+
+        coral_areas_maldives_single <- coral_areas_maldives_single %>%
+            mutate(area = st_area(geometry))
+        coral_areas_maldives_single$area_km2 <- as.double(coral_areas_maldives_single$area) / 1e6
+
+        coral_areas_maldives_single$ID <- seq(1:dim(coral_areas_maldives_single)[1])
+        glimpse(coral_areas_maldives_single)
+
+        hist(coral_areas_maldives_single$area_km2)
+        coral_areas_maldives_single %>% summarize(area=sum(area_km2))
+        
+        # Perform spatial join and group by original polygon identifiers
+        coral_areas_maldives_single_joined <- coral_areas_maldives_single %>%
+            st_join(coral_temp_maldives) %>%
+            group_by(ID) %>%
+            summarise(surveys = ifelse(!is.na(tcoeff), n(), 0),
+                    mean_coef = mean(tcoeff, na.rm = TRUE),
+                    area_km2 = mean(area_km2, na.rm = TRUE),
+                    cover = mean(cover, na.rm = TRUE),
+                    geometry = geometry)
+
+        coral_areas_maldives_single_joined <- coral_areas_maldives_single_joined[!duplicated(coral_areas_maldives_single_joined$ID), ]
+        glimpse(coral_areas_maldives_single_joined)
+
+        # Identify polygons with no surveys
+        no_surveys_polygons <- coral_areas_maldives_single_joined %>%
+            filter(surveys == 0)
+
+        # For polygons with no surveys, find the closest three points
+        # and calculate the mean coefficient
+        closest_mean_coef <- no_surveys_polygons %>%
+            st_distance(coral_temp_maldives) %>%
+            apply(1, function(x) {
+                idx <- order(x)[1:3]
+                return(mean(coral_temp_maldives$tcoeff[idx]))
+            })
+
+        # Update the mean_coef variable for polygons with no surveys
+        coral_areas_maldives_single_joined[which(coral_areas_maldives_single_joined$surveys == 0), "mean_coef"] <- closest_mean_coef
+
+        closest_mean_cover <- no_surveys_polygons %>%
+            st_distance(coral_temp_maldives) %>%
+            apply(1, function(x) {
+                idx <- order(x)[1:3]
+                return(mean(coral_temp_maldives$cover[idx]))
+            })
+
+        # Update the mean_coef variable for polygons with no surveys
+        coral_areas_maldives_single_joined[which(coral_areas_maldives_single_joined$surveys == 0), "cover"] <- closest_mean_cover
+
+        coral_areas_maldives_single_joined <- as.data.frame(coral_areas_maldives_single_joined)
+        coral_areas_maldives_single_joined <- st_as_sf(coral_areas_maldives_single_joined)
+
+        coral_areas_maldives_single_joined$surveys <- as.factor(coral_areas_maldives_single_joined$surveys)
+
+        # Save the data
+        # save(coral_areas_maldives, file = "Data/output_modules_input_rice50x/output_modules/corals/coral_areas_maldives.Rds")
+        # save(coral_areas_maldives_single, file = "Data/output_modules_input_rice50x/output_modules/corals/coral_areas_maldives_single.Rds")
+        # save(coral_areas_maldives_single_joined, file = "Data/output_modules_input_rice50x/output_modules/corals/coral_areas_maldives_single_joined.Rds")
+        # save(coral_temp_maldives, file = "Data/output_modules_input_rice50x/output_modules/corals/coral_temp_maldives.Rds")
+
+        ## Zoom in Maldives (end)
+
+    ## Maldives
 
 ## Example of the Methodology using a subset of the data (end)
 
@@ -457,7 +584,11 @@
         coral_areas_wgs84_2 <- coral_areas_wgs84 %>%
         mutate(area = st_area(geometry))
         coral_areas_wgs84_2$area_km2 <- as.double(coral_areas_wgs84_2$area)/ 1e6
-
+        # glimpse(coral_areas_wgs84_2)
+        # head(coral_areas_wgs84_2)
+        # plot(coral_areas_wgs84_2$geometry[5])
+        # glimpse(corals_tcoeff_sf)
+        
         # Perform spatial join and group by original polygon identifiers
         coral_areas_wgs84_2_joined <- coral_areas_wgs84_2 %>%
         st_join(corals_tcoeff_sf) %>%
@@ -504,6 +635,9 @@
             ##uncomment if data is ot there
             #save(corals_area_coeff_sf,file="Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_sf.Rds")
             #save(corals_area_coeff_df,file="Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_df.Rds")
+            load("Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_sf.Rds")
+            glimpse(corals_area_coeff_sf)
+        
         ## Output (end)
 
 ## Assign coefficients to area polygons (start)

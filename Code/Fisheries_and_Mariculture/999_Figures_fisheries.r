@@ -52,7 +52,7 @@
     
     scale_color_manual(values=hex_rcps)+
     theme_minimal() +
-    labs(color = "RCP Scenario",y="Profits (%GDP\n(difference from RCP 2.6)")
+    labs(color = "RCP Scenario",y="Profits (%GDP)")
 
 
 
@@ -63,7 +63,7 @@
     geom_point(aes(y=profit_ppDiff_from_rcp_26,x=tdif_from_rcp26,color=rcp),alpha=0.3)+
     geom_point(data=fisheries_df_temp_gdp %>% filter(scenario=="Full Adaptation", country_iso3=="MEX", year==2075),
         aes(y=profit_ppDiff_from_rcp_26,x=tdif_from_rcp26,color=rcp),size=3) + 
-    geom_smooth(aes(y=profit_ppDiff_from_rcp_26,x=tdif_from_rcp26),method="lm",color="darkgray")+
+    geom_smooth(aes(y=profit_ppDiff_from_rcp_26,x=tdif_from_rcp26),method="lm",color="darkgray",formula="y~0+x")+
     scale_color_manual(values=hex_rcps)+
     theme_minimal() +
     labs(color = "RCP Scenario", x= "Temperature(°C)\n(difference from RCP 2.6)", y="Profits\n Deviation from RCP2.6 (pp of GDP)",title="B. Warming Damage")
@@ -85,7 +85,7 @@
 
     # Merge your data with the world map data
   merged_data <- left_join(world, fish_tcoeff, by = c("iso_a3" = "country_iso3"))
-
+  glimpse(merged_data)
   # Plot
   map_port <- ggplot(data = merged_data) +
     geom_sf(aes(fill = GDP_FractionChange_perC)) +
@@ -97,6 +97,9 @@
     legend.text = element_text(angle = 0)) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5, title = "Damage Coefficients\n(GDP Change/Degree C)",ticks.colour = "black", frame.colour = "black")) +
     ggtitle("Fisheries Damage Function")
+    ED_Table5 <- merged_data %>% select(iso_a3,GDP_FractionChange_perC,GDP_FractionChange_perC_se)
+    write.csv(ED_Table5,file="ExtendedData\\ED_Table5_fisheries.csv")
+        
   #map_port
 
   #ggsave("Figures/SM/fisheries/coeff_FreeEtAl_fraction.png")

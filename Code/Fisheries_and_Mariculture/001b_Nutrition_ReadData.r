@@ -2,7 +2,7 @@
 ## Change in nutrient availbaility
 
 ## Read Data (start)
-    datadir <- "Data\\modules\\fish\\nutrition\\"
+    datadir <- "Data\\input_modules\\fish\\nutrition\\"
     nut_proj <- read.csv(paste0(datadir,"Figure4_Cheung_etal_2024.csv"))
     nut_proj_hi <- read.csv(paste0(datadir,"Cheung_etal_2024_Figure4_high_income.csv")) 
     nut_proj_li <- read.csv(paste0(datadir,"Cheung_etal_2024_Figure4_low_income.csv")) 
