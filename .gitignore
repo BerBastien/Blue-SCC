@@ -1,6 +1,7 @@
 /Figures
 .idea
 /Data/input_modules
+/Code/Blue-scc
 
 Data/*
 # Track inputs to RICE50x
