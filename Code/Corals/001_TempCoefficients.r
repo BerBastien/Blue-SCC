@@ -93,14 +93,12 @@
         coral_latlon <- coral_latlon[!duplicated(coral_latlon$uniqueplace), ]
         ct <- merge(corals_temp,coral_latlon,by="uniqueplace")
         corals_temp <- ct
-        glimpse(corals_temp)
         corals_temp %>% filter(uniqueplace=="-16.69333333-179.9743333",scenario=="RCP85",year==2050)
         corals_temp_unique <- aggregate(cover_change_perc~uniqueplace+scenario+tdif+year+Latitude.Degrees+Longitude.Degrees,data=corals_temp,FUN="mean")
         #corals_temp_unique <- aggregate(cover~uniqueplace+scenario+tdif+year+Latitude.Degrees+Longitude.Degrees,data=corals_temp,FUN="mean") #getting coverage of living coral
         corals_temp_unique_cover <- aggregate(Y_New~uniqueplace+scenario+tdif+year+Latitude.Degrees+Longitude.Degrees,data=corals_temp,FUN="mean")
         corals_temp_unique$cover <- corals_temp_unique_cover$Y_New
 
-        glimpse(corals_temp_unique)
     ## Merging coral projections and GMST (end)
 
     ## Output Files (start)    

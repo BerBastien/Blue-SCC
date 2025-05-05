@@ -30,6 +30,7 @@
         dplyr::select(iso3c, NY.GDP.PCAP.KD) %>%
         rename(countrycode = iso3c, gdp = NY.GDP.PCAP.KD)
 
+
         corals_df_iso_with_gdp <- merge(corals_df_iso, gdp_data_clean, by = "countrycode", all.x = TRUE)
         glimpse(corals_df_iso_with_gdp)
         corals_df_iso_with_gdp %>% filter(countrycode=="MDV")
@@ -84,7 +85,8 @@
             dplyr::select(-weighted_mean_coeff_cover,gdp,GDP_asPercentage,muV_value_perkm2year,nuV_value_perkm2year,nV_value_perkm2year,muV_value_perkm2year_se,nuV_value_perkm2year_se,nV_value_perkm2year_se, 
             gamma_um, gamma_um_se,gamma_unm,gamma_unm_se,gamma_nu,gamma_nu_se)
         #write.csv(corals_df_iso_with_gdp_clean,file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
-        glimpse(corals_df_iso_with_gdp )
+        #glimpse(corals_df_iso_with_gdp_clean )
+        #corals_df_iso_with_gdp_clean %>% filter(countrycode=="AUS")
     
     ## Get GDP per Capita and Adjust Values According to income elasticity to WTP (end)
 
@@ -93,7 +95,7 @@
 
     ### Market Damage Function (start)
             
-        ssp_corals <- ssp_gdp %>% left_join(corals_df_iso_with_gdp,by="countrycode")
+        ssp_corals <- ssp_gdp %>% left_join(corals_df_iso_with_gdp_clean,by="countrycode")
         ssp_corals <- ssp_corals %>% left_join(ssp_pop,by=c("countrycode","scenario","year"))
         ssp_corals <- ssp_corals %>% left_join(ssp_temp_long %>% dplyr::select(-scenario),by="year")
         glimpse(ssp_corals)    
@@ -222,13 +224,13 @@
         #         SE_dam = fraction_damaged * DamCoef_changeperC_se/DamCoef_changeperC) %>% 
         #         mutate(FractionChangeGDP_perC_se_adj = FractionChangeGDP_perC_se * ((variance + SE_dam^2)/(variance))^0.5)
         
-        # coefs_with_vcov <- market_coefficients_by_country3 %>% ungroup() %>% filter(year==2100,scenario=="SSP1") %>% dplyr::select(countrycode,FractionChangeGDP_perC,FractionChangeGDP_perC_se_adj) %>% as.data.frame()
-        # glimpse(coefs_with_vcov)
-        # coefs_with_vcov %>% filter(countrycode=="MDV")
+        coefs_with_vcov <- market_coefficients_by_country3 %>% ungroup() %>% filter(year==2100,scenario=="SSP1") %>% dplyr::select(countrycode,FractionChangeGDP_perC,FractionChangeGDP_perC_se_adj) %>% as.data.frame()
+        glimpse(coefs_with_vcov)
+        coefs_with_vcov %>% filter(countrycode=="AUS")
        
         # write.csv(coefs_with_vcov,file="Data\\output_modules_input_rice50x\\input_rice50x\\coral_GDPdam_coefficients.csv")
         # write.csv(ssp_corals_growth,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\ssp_corals_growth.csv")
-        # write.csv(market_coefficients_by_country3,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")
+         write.csv(market_coefficients_by_country3,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")
         ED_Table1_coralscoefs <- market_coefficients_by_country3 %>% filter(year==2020) %>% select(countrycode,CoralArea_2020_km2,DamCoef_changeperC,DamCoef_changeperC_se)
         #write.csv(ED_Table1_coralscoefs,file="ExtendedData\\ED_Table1_coralscoefs.csv")
         

@@ -97,7 +97,7 @@
     legend.text = element_text(angle = 0)) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5, title = "Damage Coefficients\n(GDP Change/Degree C)",ticks.colour = "black", frame.colour = "black")) +
     ggtitle("Fisheries Damage Function")
-    ED_Table5 <- merged_data %>% select(iso_a3,GDP_FractionChange_perC,GDP_FractionChange_perC_se)
+    ED_Table5 <- merged_data %>% st_drop_geometry(merged_data)%>% select(iso_a3,GDP_FractionChange_perC,GDP_FractionChange_perC_se)
     write.csv(ED_Table5,file="ExtendedData\\ED_Table5_fisheries.csv")
         
   #map_port
