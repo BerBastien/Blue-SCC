@@ -23,7 +23,7 @@
     #Fig C6 / S6
     coefs_with_vcov <- read.csv(file="Data\\output_modules_input_rice50x\\input_rice50x\\coral_GDPdam_coefficients.csv")
     ssp_corals_growth <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals/ssp_corals_growth.csv")
-    market_coefficients_by_country3 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country4.csv")
+    market_coefficients_by_country3 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")
     
     #Fig C7 - maldives
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_areas_maldives.Rds")#coral_areas_maldives
@@ -406,8 +406,8 @@
     
     
     glimpse(market_coefficients_by_country3)
-    market_coefficients_by_country3 %>% filter(countrycode=="MDV")%>%select(year,FractionChangeGDP_perC_se,FractionChangeGDP_perC,temp,FractionChangeGDP_perC_se_adj) %>% 
-        mutate(ymin=100*(FractionChangeGDP_perC-FractionChangeGDP_perC_se*1.645)*temp, 
+    market_coefficients_by_country3 %>% filter(countrycode=="MDV")%>%select(year,FractionChangeGDP_perC,temp,FractionChangeGDP_perC_se_adj) %>% 
+        mutate(ymin=100*(FractionChangeGDP_perC-FractionChangeGDP_perC_se_adj*1.645)*temp, 
         y =100*(FractionChangeGDP_perC)*temp ) %>%
     tail()
     
