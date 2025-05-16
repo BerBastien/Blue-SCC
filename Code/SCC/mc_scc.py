@@ -13,7 +13,7 @@ context.pdsettings()
 if platform.system() == 'Windows':
     root = Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x")
 else:
-    root = Path('/work/seme/fg12520/RICE50x')
+    root = Path('/work/cmcc/fg12520/RICE50x/bluerice')
 
 
 def scc_mc(mc_id, input_df, results_folder):
@@ -28,9 +28,10 @@ def scc_mc(mc_id, input_df, results_folder):
                ('fisheries', 'usenm'), (None, None)]
     for target in targets:
         try:
-            _scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1], server_scale_factor=10_000)
+            _scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1], server_scale_factor=1)
         except:
-            return pd.DataFrame()
+            pass
+            # return pd.DataFrame()
         _target = target if target != (None, None) else ('total', 'total')
         _scc = _scc.assign(oc_capital=_target[0], valuation=_target[1], id=mc_id)
         _l.append(_scc)
@@ -40,16 +41,14 @@ def scc_mc(mc_id, input_df, results_folder):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 3:
-        folder = str(sys.argv[1])
-        input_df = str(sys.argv[2])
-        mc_id = str(sys.argv[3])
-        results_folder = str(sys.argv[4])
+    if len(sys.argv) > 2:
+        run_type = str(sys.argv[1])
+        mc_id = str(sys.argv[2])
         try:
-            scc_mc(mc_id, input_df, results_folder).to_parquet(root / f'{folder}/{mc_id}.parquet')
+            scc_mc(run_type, mc_id).to_parquet(root / f'{run_type}/scc/{mc_id}.parquet')
         except:
             pass
     else:
-        folder = str(sys.argv[1])
-        files = list((root / f'{folder}').glob('*'))
-        pd.concat([pd.read_parquet(f) for f in files]).to_parquet(root / f'{folder}.parquet')
+        run_type = str(sys.argv[1])
+        files = list((root / f'{run_type}').glob('*'))
+        pd.concat([pd.read_parquet(f) for f in files]).to_parquet(root / f'{run_type}/scc.parquet')
