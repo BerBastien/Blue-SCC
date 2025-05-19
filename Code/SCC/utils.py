@@ -157,7 +157,7 @@ def scc(damage_gdx, damage_pulse_gdx, today_gdx):
     return scc
 
 
-def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None, return_data=False):
+def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None, return_data=False, country_level=False):
     """
     Main idea: Replace with the baseline (no pulse) values all the values of consumption, usenm and nonuse except for
     the target oc_capital and target_valuation.
@@ -325,21 +325,29 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
 
     # Ramsey discount factor:
     #   1.1 weighted consumption: (weighted avg of CPC_today)**-eta. Use population weights
-    weighted_consumption = df.groupby('t').apply(lambda x: np.average(x.CPC_today, weights=x.popu),
+    if country_level:
+        agg_level = ['t', 'n']
+    else:
+        agg_level = ['t']
+    weighted_consumption = df.groupby(agg_level).apply(lambda x: np.average(x.CPC_today, weights=x.popu),
                                                  include_groups=False).rename('weighted_consumption_t') ** -eta
     #   1.2 Normalized with respect to time=1
-    normalized_weighted_consumption = weighted_consumption / weighted_consumption.iloc[0]
+    normalized_weighted_consumption = weighted_consumption / weighted_consumption.loc[1]
     #   2. rr * normalized_weighted_consumption
     ramsey_discount_factor = rr.mul(normalized_weighted_consumption, axis=0)
 
     # Weighted mean of (Delta utility / Marginal utility of consumption), with population weights
-    delta_UTARG_in_consumption = df.groupby('t').apply(lambda x: np.average(x.delta_UTARG / x.muc, weights=x.popu))
+    delta_UTARG_in_consumption = df.groupby(agg_level).apply(lambda x: np.average(x.delta_UTARG / x.muc, weights=x.popu))
 
     # SCC: (cumulative) sum of: discount factor * wmean of consumption utility * world population, divided by 1e6 because
     # the pulse is one million tons
-    world_popu = df.groupby('t').popu.sum() * 1e6
+    world_popu = df.groupby(agg_level).popu.sum() * 1e6
     scc = ramsey_discount_factor.mul(delta_UTARG_in_consumption, axis=0).mul(world_popu, axis=0).sort_index(
-        ascending=False).cumsum() / 1e6  # divide by 1e6 because pulse is one million tons
+        ascending=False) / 1e6  # divide by 1e6 because pulse is one million tons
+    if country_level:
+        scc = scc.groupby('n').cumsum()
+    else:
+        scc = scc.cumsum()
     # Convert to present values for each t (not present value of 2005 at each t)
     scc = scc / ramsey_discount_factor
     # Convert to 2020 dollars
@@ -349,7 +357,7 @@ def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, targ
     scc = -scc
 
     scc = scc.sort_index(ascending=True)
-    scc.index = scc.index * 5 + 2010
+    scc = scc.reset_index().assign(t=lambda x: x.t*5+2010).set_index(agg_level)
     scc.columns = ['scc']
 
     if return_data:
