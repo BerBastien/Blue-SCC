@@ -5,6 +5,7 @@ import shutil
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pathlib import Path
 from scipy.stats import qmc, truncnorm, lognorm
 
 import context
@@ -27,6 +28,28 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
     chunk = int(chunk)
 
     assert run_type in ['distribution', 'gsa']
+
+    root = Path("C:/Users/Granella/Dropbox (CMCC)/PhD/Research/RICE50x")
+    # Create main folder
+    os.makedirs(root / 'bluerice', exist_ok=True)
+    # Empty and create all others
+    for folder in [
+        root / 'bluerice/baseline',
+        root / 'bluerice/baseline/results',
+        root / 'bluerice/baseline/debug',
+        root / 'bluerice/ssp',
+        root / 'bluerice/ssp/results',
+        root / 'bluerice/ssp/debug',
+        root / 'bluerice/rennert_et_al',
+        root / 'bluerice/rennert_et_al/results',
+        root / 'bluerice/rennert_et_al/debug',
+        root / 'bluerice/prstp',
+        root / 'bluerice/prstp/results',
+        root / 'bluerice/prstp/debug',
+    ]:
+        # Create the folder
+        os.makedirs(folder, exist_ok=True)
+
     # %% Baseline run
     baseline_run = r"""
         cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
@@ -36,26 +59,58 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
     """
     with open(context.projectpath() / 'Data/SCC/tmp/BASELINE.bat', 'w') as f:
         f.write(baseline_run)
+    with open(root / 'bluerice/baseline/BASELINE.bat', 'w') as f:
+        f.write(baseline_run)
 
     # SSPs
     l = []
     for i in range(1, 6):
         txt = rf"""
         cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
-                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_ssp{i} --mod_ocean=1  --baseline=ssp{i}
-                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_pulse_ssp{i} --mod_ocean=1 --mod_emission_pulse=ocean_damage_ssp{i}  --baseline=ssp{i}
-                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_today_ssp{i} --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1  --baseline=ssp{i}
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_damage_ssp{i} --mod_ocean=1  --baseline=ssp{i}
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_damage_pulse_ssp{i} --mod_ocean=1 --mod_emission_pulse=ocean_damage_ssp{i}  --baseline=ssp{i}
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_today_ssp{i} --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1  --baseline=ssp{i}
         """
         l.append(txt)
     with open(context.projectpath() / 'Data/SCC/tmp/SSPs.bat', 'w') as f:
         f.write('\n'.join(l))
+    with open(root / 'bluerice/ssp/SSPs.bat', 'w') as f:
+        f.write('\n'.join(l))
+
+    # Rennert et al parameters
+    rennert_et_al = r"""
+        cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_damage_rennert_et_al --mod_ocean=1 --elasmu=1.24 --prstp=0.02
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_damage_pulse_rennert_et_al --mod_ocean=1 --mod_emission_pulse=ocean_damage_rennert_et_al --elasmu=1.24 --prstp=0.02
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_today_rennert_et_al --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1 --elasmu=1.24 --prstp=0.02
+    """
+    with open(context.projectpath() / 'Data/SCC/tmp/rennert_et_al.bat', 'w') as f:
+        f.write(rennert_et_al)
+    with open(root / 'bluerice/rennert_et_al/rennert_et_al.bat', 'w') as f:
+        f.write(rennert_et_al)
+
+
+    # Pure rate of time preference
+    l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']
+    for i, prstp in enumerate(np.linspace(0.01, 0.02, 3)):
+        txt = fr"""\
+        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --prstp={prstp} 
+        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_{i} --prstp={prstp} 
+        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --prstp={prstp} 
+        """
+        l.append(txt)
+
+    with open(context.projectpath() / f'Data/SCC/tmp/prstp.cmd', 'w', newline='\n') as f:
+        f.write('\n'.join(l))
+    with open(root / 'bluerice/prstp/prstp.bat', 'w') as f:
+        f.write('\n'.join(l))
+
 
     # %% Monte Carlo for (1) GSA and (2) Distribution of SCC: Settings
 
     # GSA or Distribution
     if run_type == 'gsa':
         results_folder = 'results_ocean_GSA' + experiment_id
-        input_df = 'input_GSA' + experiment_id
         sh_folder = 'GSA' + experiment_id
         scc_folder = 'scc_GSA' + experiment_id
         uniform_params = {
@@ -65,7 +120,6 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
         lognormal_params = {}
     if run_type == 'distribution':
         results_folder = experiment_id + 'results'
-        input_df = 'input_distribution' + experiment_id
         sh_folder = 'distribution' + experiment_id
         scc_folder = 'scc_distribution' + experiment_id
         uniform_params = {
@@ -79,12 +133,23 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
             'Tecs': [0.4, np.log(3)]
         }
 
-    for folder in [f'{sh_folder}', f'{sh_folder}/runs', f'{sh_folder}/bsub', f'{sh_folder}/results', f'{sh_folder}/debug', f'{sh_folder}/scc']:
-        if os.path.exists(context.projectpath() / f'Data/SCC/tmp/{folder}'):
-            # Delete the folder and its contents
-            shutil.rmtree(context.projectpath() / f'Data/SCC/tmp/{folder}')
-        # Create the folder
-        os.makedirs(context.projectpath() / f'Data/SCC/tmp/{folder}')
+    for folder in [
+        context.projectpath() / f'Data/SCC/out/{sh_folder}',
+        context.projectpath() / f'Data/SCC/tmp/{sh_folder}',
+        context.projectpath() / f'Data/SCC/tmp/{sh_folder}/runs',
+        context.projectpath() / f'Data/SCC/tmp/{sh_folder}/bsub',
+        context.projectpath() / f'Data/SCC/tmp/{sh_folder}/results',
+        context.projectpath() / f'Data/SCC/tmp/{sh_folder}/debug',
+        context.projectpath() / f'Data/SCC/tmp/{sh_folder}/scc',
+        root / f'bluerice/{sh_folder}',
+        root / f'bluerice/{sh_folder}/runs',
+        root / f'bluerice/{sh_folder}/bsub',
+        root / f'bluerice/{sh_folder}/results',
+        root / f'bluerice/{sh_folder}/debug',
+        root / f'bluerice/{sh_folder}/scc',
+    ]:
+       # Create the folder
+        os.makedirs(folder, exist_ok=True)
 
     # %% Latin hypercube sampling
     normal_params = [
@@ -170,7 +235,9 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
 
     # Save inputs
     sample_df.reset_index().rename(columns={'index': 'id'}).to_parquet(
-        context.projectpath() / f'Data/SCC/out/{input_df}.parquet')
+        context.projectpath() / f'Data/SCC/out/{sh_folder}/input_{run_type}.parquet')
+    sample_df.reset_index().rename(columns={'index': 'id'}).to_parquet(
+        root / f'bluerice/{run_type}/input.parquet')
 
     # %% Create scripts for parallel computing
     # Remote
@@ -189,44 +256,34 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
             echo 0.
         else\
             echo not
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{results_folder} --debugdir=bluerice/debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --ocean_sensitivity=1 {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{results_folder} --debugdir=bluerice/debug_ocean --nameout=ocean_damage_{i} --ocean_sensitivity=1 {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{results_folder} --debugdir=bluerice/debug_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --ocean_sensitivity=1 --ocean_sensitivity=1 {s} 
-            python bluerice/mc_scc.py {scc_folder} {input_df} {i} {results_folder} \
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/=bluerice/{sh_folder}/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --ocean_sensitivity=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/=bluerice/{sh_folder}/debug --nameout=ocean_damage_{i} --ocean_sensitivity=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/=bluerice/{sh_folder}/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --ocean_sensitivity=1 --ocean_sensitivity=1 {s} 
+            python bluerice/mc_scc.py {run_type} {i} \
     
         fi
         """
         l.append(txt)
         if (i + 1) % chunk == 0:
+
             with open(context.projectpath() / f'Data/SCC/tmp/{sh_folder}/runs/mc_lhs_{i + 1}.sh', 'w', newline='\n') as f:
                 f.write('\n'.join(l))
+            with open(root / f'bluerice/{sh_folder}/runs/mc_lhs_{i + 1}.sh', 'w', newline='\n') as f:
+                f.write('\n'.join(l))
+
             l = [r"""cd /work/seme/fg12520/RICE50x
             conda activate bluerice"""]
             l2.append(f'bsub -q s_medium -M 32G -P 0635 bash bluerice/{sh_folder}/runs/mc_lhs_{i + 1}.sh')
 
     with open(context.projectpath() / f'Data/SCC/tmp/{sh_folder}/bsub/mc_bsubs.sh', 'w', newline='\n') as f:
         f.write('\n'.join(l2))
-
-
-def run_prtp(results_folder):
-    """
-
-    :return:
-    """
-
-    l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']
-    for i, prstp in enumerate(np.linspace(0.01, 0.02, 3)):
-        txt = fr"""\
-        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --prstp={prstp} 
-        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_damage_{i} --prstp={prstp} 
-        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir={results_folder} --debugdir=debug_ocean --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --prstp={prstp} 
-        """
-        l.append(txt)
-
-    with open(context.projectpath() / f'Data/SCC/tmp/prstp.cmd', 'w', newline='\n') as f:
-        f.write('\n'.join(l))
+    with open(root / f'bluerice/{sh_folder}/bsub/mc_bsubs.sh', 'w', newline='\n') as f:
+        f.write('\n'.join(l2))
 
 
 if __name__ == "__main__":
     import sys
-    run(*sys.argv[1:])
+    try:
+        run(*sys.argv[1:])
+    except:
+        run('distribution', n=300)

@@ -20,12 +20,14 @@ else:
     root = Path('/work/seme/fg12520/RICE50x')
 
 
-def scc_mc(mc_id, baseline=False):
-    if not (root / f'results_ocean/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
+def scc_mc(mc_id, run_type, baseline=False):
+
+    if not (root / 'bluerice' / run_type / f'/results/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
-    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_damage_{mc_id}.gdx')
-    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_damage_pulse_{mc_id}.gdx')
-    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_today_{mc_id}.gdx')
+
+    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / run_type / f'results/results_ocean_damage_{mc_id}.gdx')
+    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(root / run_type / f'results/results_ocean_damage_pulse_{mc_id}.gdx')
+    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(root / run_type / f'results/results_ocean_today_{mc_id}.gdx')
     _l = []
     targets = [(None, None), ('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), ('mangrove', 'consumption'),
                ('mangrove', 'usenm'), ('mangrove', 'nonuse'), ('ports', 'consumption'), ('fisheries', 'consumption'),
@@ -71,7 +73,7 @@ ids = pd.merge(df_sum, df_tot).assign(d = lambda x: x.scc_sum - x.scc_tot).query
 df = df[df.id.isin(ids)]
 
 # %% Baseline
-baseline = scc_mc('BASELINE', baseline=True).query('t==2020')
+baseline = scc_mc('BASELINE', 'baseline', baseline=True).query('t==2020')
 baseline['oc_capital'] = baseline.oc_capital.replace({'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
                        'total': 'Total'})
 baseline['valuation'] = baseline['valuation']\
