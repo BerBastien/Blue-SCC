@@ -1,5 +1,24 @@
 # BlueRICE
 
+Make input data. This will create `ocean_data.parquet` to be used in RICE50x.
+```bash
+cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\Blue-SCC\Code\SCC"
+conda activate bluerice
+python make_input_data.py
+```
+
+Navigate to your RICE50x folder then translate the data
+```bash
+cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
+rscript .\input\translate_rice50x_data.R --clean -n maxiso3
+```
+Then
+```bash
+cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\Blue-SCC"
+bash Data\SCC\tmp\mc_BASELINE.bat
+```
+
+## Monte Carlo
 To run the Monte Carlo:
 
 ```bash
@@ -8,14 +27,14 @@ del /Q /S *.*
 
 cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\Blue-SCC\Code\SCC"
 conda activate bluerice
-python make_mc_bat_files.py Distribution 10000
-python make_mc_bat_files.py GSA 10000
+python make_mc_bat_files.py Distribution 100
+python make_mc_bat_files.py GSA 100
 ```
 
-Zeus: clean
+Juno: clean
 ```bash
-ssc zeus
-cd work/RICE50x
+ssh juno
+cd /work/cmcc/fg12520
 rm -r bluerice_server/*
 ```
 

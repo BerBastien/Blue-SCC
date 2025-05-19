@@ -17,15 +17,15 @@ def palette(pub=True):
     if pub:
         value_color = {'Market value': '#89cc1f', 'Non-market use value': '#1d4cce', 'Nonuse value': '#1dcece',
                        'Total': '#ff005c'}
-        capital_color = {'Normative parameter': 'silver', 'Corals': '#ff00c5', 'Corals/Mangroves': '#ff00c5',
+        capital_color = {'Normative parameter': 'silver', 'Corals': '#ff00c5', 'Corals/Mangroves': '#1ad29b',
                          'Mangroves': '#1ad29b', 'Fisheries': '#0a3e7b', 'Ports': '#ffbf00'}
-        capital_color_edge = {'Normative parameter': 'silver', 'Corals': '#ff00c5', 'Corals/Mangroves': '#1ad29b',
+        capital_color_edge = {'Normative parameter': 'silver', 'Corals': '#ff00c5', 'Corals/Mangroves': '#ff00c5',
                               'Mangroves': '#1ad29b', 'Fisheries': '#0a3e7b', 'Ports': '#ffbf00'}
     else:
         value_color = {'Market value': 'tab:blue', 'Non-market use value': 'tab:orange', 'Nonuse value': 'tab:green','Total': 'tab:red'}
         capital_color = {'Normative parameter': 'silver', 'Corals': 'gold', 'Corals/Mangroves': 'gold', 'Mangroves': 'yellowgreen', 'Fisheries': 'tab:cyan', 'Ports': 'tab:purple'}
         capital_color_edge = {'Normative parameter': 'silver', 'Corals': 'gold', 'Corals/Mangroves': 'yellowgreen', 'Mangroves': 'yellowgreen', 'Fisheries': 'tab:cyan', 'Ports': 'tab:purple'}
-    return value_color, capital_color, capital_color
+    return value_color, capital_color, capital_color_edge
 
 
 def var_from_gdx(gdx_dict, var, vars=[]):

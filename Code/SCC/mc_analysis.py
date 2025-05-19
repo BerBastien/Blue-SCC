@@ -19,6 +19,7 @@ if platform.system() == 'Windows':
 else:
     root = Path('/work/seme/fg12520/RICE50x')
 
+
 def scc_mc(mc_id, baseline=False):
     if not (root / f'results_ocean/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
@@ -26,12 +27,12 @@ def scc_mc(mc_id, baseline=False):
     ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_damage_pulse_{mc_id}.gdx')
     ocean_today_gdx = gdxpds.read_gdx.to_dataframes(results_folder / f'results_ocean_today_{mc_id}.gdx')
     _l = []
-    targets = [('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), ('mangrove', 'consumption'),
+    targets = [(None, None), ('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), ('mangrove', 'consumption'),
                ('mangrove', 'usenm'), ('mangrove', 'nonuse'), ('ports', 'consumption'), ('fisheries', 'consumption'),
-               ('fisheries', 'usenm'), (None, None)]
+               ('fisheries', 'usenm'), ]
     for target in targets:
         try:
-            _scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1], server_scale_factor=10000)
+            _scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target[0], target[1])
         except:
             pass
             return pd.DataFrame()
@@ -571,3 +572,41 @@ ax.legend(h[3:6] + h[:1], l[3:6] + l[:1], frameon=False,  title_fontproperties={
 plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc_eta0.png')
 plt.show()
+# %% PRSTP and SCC
+ids = [x.stem.split('_')[-1] for x in (root / f'results_prstp_ocean').glob('results_ocean_damage_pulse_*.gdx')]
+l = []
+for id in ids:
+    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_prstp_ocean/results_ocean_damage_{id}.gdx')
+    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_prstp_ocean/results_ocean_damage_pulse_{id}.gdx')
+    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_prstp_ocean/results_ocean_today_{id}.gdx')
+    server_scale_factor = ocean_damage_gdx['server_scale_factor'].iat[0,0]
+    prstp = ocean_damage_gdx['prstp'].iat[0,0]
+    _scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, None, None, server_scale_factor=server_scale_factor).query('t==2020').assign(prstp=prstp)
+    l.append(_scc)
+scc_prstp = pd.concat(l).reset_index()
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8,4), sharex=False, sharey=False)
+color_dict, _, _ = palette()
+ax.barh(scc_prstp.index, scc_prstp.scc, color=color_dict['Total'])
+for i, row in scc_prstp.iterrows():
+    ax.text(row.scc + 3, i, f'${row.scc:.1f}')
+ax.spines[['top', 'right']].set_visible(False)
+ax.set_yticks(scc_prstp.index, scc_prstp.prstp)
+for line in ["left","bottom"]:
+    ax.spines[line].set_position(("outward", 10))
+ax.set_xlim(0, ax.get_xlim()[1])
+ax.set_xlabel('Social Cost of Carbon (2020 USD)')
+ax.set_ylabel('Pure rate of time preference')
+ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
+plt.tight_layout()
+plt.savefig(Path().cwd() / 'Figures/SCC/scc_prstp.pdf')
+plt.show()
+
+ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean_damage_BASELINE.gdx')
+ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean_damage_pulse_BASELINE.gdx')
+ocean_today_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean_today_BASELINE.gdx')
+server_scale_factor = ocean_damage_gdx['server_scale_factor'].iat[0, 0]
+prstp = ocean_damage_gdx['prstp'].iat[0, 0]
+_scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, None, None,
+                    server_scale_factor=server_scale_factor).query('t==2020').assign(prstp=prstp)
+print(_scc)
