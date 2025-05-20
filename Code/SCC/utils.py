@@ -29,132 +29,16 @@ def palette(pub=True):
 
 
 def var_from_gdx(gdx_dict, var, vars=[]):
-    df = gdx_dict[var]
+    if isinstance(gdx_dict, gdxpds.read_gdx.Translator):
+        df = gdx_dict.dataframe(var)
+    else:
+        df = gdx_dict[var]
     n = ['n'] if 'n' in df.columns else []
     if 'Level' in df.columns:
         df = df.filter(n + ['t', 'Level'] + vars).rename(columns={'Level': var})
     else:
         df = df.filter(n + ['t', 'Value'] + vars).rename(columns={'Value': var})
     return df
-
-
-def scc(damage_gdx, damage_pulse_gdx, today_gdx):
-    UTARG_today = var_from_gdx(today_gdx, 'UTARG').rename(columns={'UTARG': 'UTARG_today'})
-    UTARG_base = var_from_gdx(damage_gdx, 'UTARG').rename(columns={'UTARG': 'UTARG_base'})
-    UTARG_pulse = var_from_gdx(damage_pulse_gdx, 'UTARG').rename(columns={'UTARG': 'UTARG_pulse'})
-
-    OCEAN_USENM_VALUE_today = var_from_gdx(today_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).groupby(
-        ['n', 't']).OCEAN_USENM_VALUE.sum().reset_index().rename(
-        columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_today'})
-    OCEAN_USENM_VALUE_base = var_from_gdx(damage_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).groupby(
-        ['n', 't']).OCEAN_USENM_VALUE.sum().reset_index().rename(
-        columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_base'})
-    OCEAN_USENM_VALUE_pulse = var_from_gdx(damage_pulse_gdx, 'OCEAN_USENM_VALUE', vars=['oc_capital']).groupby(
-        ['n', 't']).OCEAN_USENM_VALUE.sum().reset_index().rename(
-        columns={'OCEAN_USENM_VALUE': 'OCEAN_USENM_VALUE_pulse'})
-
-    OCEAN_NONUSE_VALUE_today = var_from_gdx(today_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).groupby(
-        ['n', 't']).OCEAN_NONUSE_VALUE.sum().reset_index().rename(
-        columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_today'})
-    OCEAN_NONUSE_VALUE_base = var_from_gdx(damage_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).groupby(
-        ['n', 't']).OCEAN_NONUSE_VALUE.sum().reset_index().rename(
-        columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_base'})
-    OCEAN_NONUSE_VALUE_pulse = var_from_gdx(damage_pulse_gdx, 'OCEAN_NONUSE_VALUE', vars=['oc_capital']).groupby(
-        ['n', 't']).OCEAN_NONUSE_VALUE.sum().reset_index().rename(
-        columns={'OCEAN_NONUSE_VALUE': 'OCEAN_NONUSE_VALUE_pulse'})
-
-    CPC_today = var_from_gdx(today_gdx, 'CPC').rename(columns={'CPC': 'CPC_today'})
-    CPC_base = var_from_gdx(damage_gdx, 'CPC').rename(columns={'CPC': 'CPC_base'})
-    CPC_pulse = var_from_gdx(ocean_damage_gdx, 'CPC').rename(columns={'CPC': 'CPC_pulse'})
-
-    CPC_OCEAN_DAM_today = var_from_gdx(today_gdx, 'CPC_OCEAN_DAM').rename(
-        columns={'CPC_OCEAN_DAM': 'CPC_OCEAN_DAM_today'})
-    CPC_OCEAN_DAM_base = var_from_gdx(damage_gdx, 'CPC_OCEAN_DAM').rename(
-        columns={'CPC_OCEAN_DAM': 'CPC_OCEAN_DAM_base'})
-    CPC_OCEAN_DAM_pulse = var_from_gdx(damage_pulse_gdx, 'CPC_OCEAN_DAM').rename(
-        columns={'CPC_OCEAN_DAM': 'CPC_OCEAN_DAM_pulse'})
-
-    popu = var_from_gdx(damage_gdx, 'pop').rename(columns={'pop': 'popu'})
-    rr = var_from_gdx(damage_gdx, 'rr').assign(t=lambda x: x.t.astype(int)).set_index('t')
-
-    ocean_theta_1 = var_from_gdx(damage_gdx, 'ocean_theta_1').values[0][0]
-    ocean_theta_2 = var_from_gdx(damage_gdx, 'ocean_theta_2').values[0][0]
-    ocean_s1_1 = var_from_gdx(damage_gdx, 'ocean_s1_1').values[0][0]
-    ocean_s1_2 = var_from_gdx(damage_gdx, 'ocean_s1_2').values[0][0]
-    ocean_s2_1 = var_from_gdx(damage_gdx, 'ocean_s2_1').values[0][0]
-    ocean_s2_2 = var_from_gdx(damage_gdx, 'ocean_s2_2').values[0][0]
-
-    eta = 1.45
-
-    # Combine column-wise (wide) into a dataframe
-    df = functools.reduce(lambda l, r: pd.merge(l, r, how='inner', on=['t', 'n']),
-                          [UTARG_today, UTARG_base, UTARG_pulse, OCEAN_USENM_VALUE_today, OCEAN_USENM_VALUE_base,
-                           OCEAN_USENM_VALUE_pulse, OCEAN_NONUSE_VALUE_today, OCEAN_NONUSE_VALUE_base,
-                           OCEAN_NONUSE_VALUE_pulse, CPC_today, CPC_base, CPC_pulse, CPC_OCEAN_DAM_today,
-                           CPC_OCEAN_DAM_base, CPC_OCEAN_DAM_pulse, popu])
-
-    df['t'] = df['t'].astype(int)
-
-    # Convert use-nonmarket and nonuse values into per capita values
-    for col in df.filter(regex='OCEAN_USENM_VALUE|OCEAN_NONUSE_VALUE').columns:
-        df[f'{col}_PC'] = df[col] / df.popu * 1e6
-
-    # Delta utility
-    df = df.assign(delta_UTARG=1 / (1 - eta) * (df.UTARG_pulse ** (1 - eta) - df.UTARG_base ** (1 - eta)))
-
-    # Marginal utility of consumption
-    eta, s1, s2, C, V, W, theta1, theta2 = symbols('eta s1 s2 C V W theta1 theta2')
-
-    eta = 1.45
-    s1_1 = ocean_s1_1
-    s1_2 = ocean_s1_2
-    s2_1 = ocean_s2_1
-    s2_2 = ocean_s1_2
-    C = df.CPC_OCEAN_DAM_today
-    V = df.OCEAN_USENM_VALUE_today_PC
-    W = df.OCEAN_NONUSE_VALUE_today_PC
-    theta1 = ocean_theta_1
-    theta2 = ocean_theta_2
-
-    muc = ((1 - eta) * s1_1 * s2_1 * C ** (theta1 - 1) *
-           (s1_1 * C ** theta1 + V ** theta1 * s1_2) ** ((theta2 / theta1) - 1) *
-           ((s2_1 * (s1_1 * C ** theta1 + V ** theta1 * s1_2) ** (theta2 / theta1) + W ** theta2 * s2_2) ** (
-                       1 / theta2)) ** (1 - eta) /
-           ((1 - s2_2) * (s1_1 * C ** theta1 + V ** theta1 * s1_2) ** (theta2 / theta1) + W ** theta2 * s2_2))
-    # muc = ((1 - eta) * (1 - s1) * (1 - s2) * C ** (theta1 - 1) *
-    #        ((1 - s1) * C ** theta1 + V ** theta1 * s1) ** ((theta2 / theta1) - 1) *
-    #        (((1 - s2) * ((1 - s1) * C ** theta1 + V ** theta1 * s1) ** (theta2 / theta1) + W ** theta2 * s2) ** (
-    #                    1 / theta2)) ** (1 - eta) /
-    #        ((1 - s2) * ((1 - s1) * C ** theta1 + V ** theta1 * s1) ** (theta2 / theta1) + W ** theta2 * s2))
-
-    df['muc'] = muc
-
-    # Ramsey discount factor:
-    #   1.1 weighted consumption: (weighted avg of CPC_today)**-eta. Use population weights
-    weighted_consumption = df.groupby('t').apply(lambda x: np.average(x.CPC_today, weights=x.popu),
-                                                 include_groups=False).rename('weighted_consumption_t') ** -eta
-    #   1.2 Normalized with respect to time=1
-    normalized_weighted_consumption = weighted_consumption / weighted_consumption.iloc[0]
-    #   2. rr * normalized_weighted_consumption
-    ramsey_discount_factor = rr.mul(normalized_weighted_consumption, axis=0)
-
-    # Weighted mean of (Delta utility / Marginal utility of consumption), with population weights
-    delta_UTARG_in_consumption = df.groupby('t').apply(lambda x: np.average(x.delta_UTARG / x.muc, weights=x.popu))
-
-    # SCC: (cumulative) sum of discount factor * wmean of consumption utility * world population, divided by 1e6 because
-    # the pulse is one million tons
-    world_popu = df.groupby('t').popu.sum() * 1e6
-    scc = ramsey_discount_factor.mul(delta_UTARG_in_consumption, axis=0).mul(world_popu, axis=0).sort_index(
-        ascending=False).cumsum() / 1e6
-    # Convert to present values for each t (not present value of 2005 at each t)
-    scc = scc / ramsey_discount_factor
-    # Convert to 2020 dollars
-    conv2005toyear = 113.647 / 87.504  # in 2020 US-Dollars
-    scc = scc * conv2005toyear
-
-    scc = scc.sort_index(ascending=True)
-    scc.index = scc.index * 5 + 2010
-    return scc
 
 
 def sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, target_oc_capital=None, target_valuation=None, return_data=False, country_level=False):

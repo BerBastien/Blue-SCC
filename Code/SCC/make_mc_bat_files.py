@@ -1,5 +1,6 @@
 """Create .bat files to run a Monte Carlo analysis"""
 
+import logging
 import os
 import shutil
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ import context
 def run(run_type, n=10_000, experiment_id='', chunk=100):
     """
 
-    :param run_type: ['Distribution', 'GSA']
+    :param run_type: ['distribution', 'gsa']
     :param n:
     :param experiment_id:
     :param chunk:
@@ -27,9 +28,11 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
 
     chunk = int(chunk)
 
-    assert run_type in ['distribution', 'gsa']
+    assert run_type in ['distribution', 'gsa'], f'Invalid run type: {run_type}'
 
-    root = Path("C:/Users/Granella/Dropbox (CMCC)/PhD/Research/RICE50x")
+    local_rice_path = "C:/Users/Granella/Dropbox (CMCC)/PhD/Research/RICE50x"
+    remote_rice_path = "/work/cmcc/fg12520/RICE50x"
+    root = Path(local_rice_path)
     # Create main folder
     os.makedirs(root / 'bluerice', exist_ok=True)
     # Empty and create all others
@@ -51,8 +54,8 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
         os.makedirs(folder, exist_ok=True)
 
     # %% Baseline run
-    baseline_run = r"""
-        cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
+    baseline_run = rf"""
+        cd "{local_rice_path}"
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/baseline/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_BASELINE --mod_ocean=1
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/baseline/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_pulse_BASELINE --mod_ocean=1 --mod_emission_pulse=ocean_damage_BASELINE
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/baseline/results --debugdir=bluerice/baseline/debug --nameout=ocean_today_BASELINE --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1
@@ -66,7 +69,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
     l = []
     for i in range(1, 6):
         txt = rf"""
-        cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
+        cd "{local_rice_path}"
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_damage_ssp{i} --mod_ocean=1  --baseline=ssp{i}
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_damage_pulse_ssp{i} --mod_ocean=1 --mod_emission_pulse=ocean_damage_ssp{i}  --baseline=ssp{i}
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_today_ssp{i} --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1  --baseline=ssp{i}
@@ -78,8 +81,8 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
         f.write('\n'.join(l))
 
     # Rennert et al parameters
-    rennert_et_al = r"""
-        cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"
+    rennert_et_al = rf"""
+        cd "{local_rice_path}"
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_damage_rennert_et_al --mod_ocean=1 --elasmu=1.24 --prstp=0.02
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_damage_pulse_rennert_et_al --mod_ocean=1 --mod_emission_pulse=ocean_damage_rennert_et_al --elasmu=1.24 --prstp=0.02
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_today_rennert_et_al --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1 --elasmu=1.24 --prstp=0.02
@@ -91,7 +94,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
 
 
     # Pure rate of time preference
-    l = [r'cd "C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x"']
+    l = [rf'cd "{local_rice_path}"']
     for i, prstp in enumerate(np.linspace(0.01, 0.02, 3)):
         txt = fr"""\
         gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --prstp={prstp} 
@@ -110,16 +113,14 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
 
     # GSA or Distribution
     if run_type == 'gsa':
-        results_folder = 'results_ocean_GSA' + experiment_id
-        sh_folder = 'GSA' + experiment_id
-        scc_folder = 'scc_GSA' + experiment_id
+        sh_folder = 'gsa' + experiment_id
+        scc_folder = 'scc_gsa' + experiment_id
         uniform_params = {
             'ocean_health_mu': [-0.5, 0.5],
             'ocean_health_eta': [0.01, 0.2]
         }
         lognormal_params = {}
     if run_type == 'distribution':
-        results_folder = experiment_id + 'results'
         sh_folder = 'distribution' + experiment_id
         scc_folder = 'scc_distribution' + experiment_id
         uniform_params = {
@@ -241,7 +242,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
 
     # %% Create scripts for parallel computing
     # Remote
-    l = [r"""cd /work/cmcc/fg12520/RICE50x
+    l = [rf"""cd {remote_rice_path}
     conda activate bluerice"""]
     l2 = []
     for i, row in sample_df.iterrows():
@@ -271,7 +272,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
             with open(root / f'bluerice/{sh_folder}/runs/mc_lhs_{i + 1}.sh', 'w', newline='\n') as f:
                 f.write('\n'.join(l))
 
-            l = [r"""cd /work/seme/fg12520/RICE50x
+            l = [rf"""cd {remote_rice_path}
             conda activate bluerice"""]
             l2.append(f'bsub -q s_medium -M 32G -P 0635 bash bluerice/{sh_folder}/runs/mc_lhs_{i + 1}.sh')
 
@@ -280,6 +281,10 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
     with open(root / f'bluerice/{sh_folder}/bsub/mc_bsubs.sh', 'w', newline='\n') as f:
         f.write('\n'.join(l2))
 
+    # Copy mc_scc.py to RICE50x folder
+    shutil.copy(context.projectpath() / 'Code/SCC/mc_scc.py', root / 'bluerice')
+    shutil.copy(context.projectpath() / 'Code/SCC/utils.py', root / 'bluerice')
+    shutil.copy(context.projectpath() / 'Code/SCC/context.py', root / 'bluerice')
 
 if __name__ == "__main__":
     import sys

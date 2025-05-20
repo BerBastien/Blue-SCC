@@ -22,12 +22,12 @@ else:
 
 def scc_mc(mc_id, run_type, baseline=False):
 
-    if not (root / 'bluerice' / run_type / f'/results/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
+    if not (root / 'bluerice' / run_type / f'results/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
 
-    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / run_type / f'results/results_ocean_damage_{mc_id}.gdx')
-    ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(root / run_type / f'results/results_ocean_damage_pulse_{mc_id}.gdx')
-    ocean_today_gdx = gdxpds.read_gdx.to_dataframes(root / run_type / f'results/results_ocean_today_{mc_id}.gdx')
+    ocean_damage_gdx = gdxpds.read_gdx.Translator(root / 'bluerice' /  run_type / f'results/results_ocean_damage_{mc_id}.gdx', lazy_load=True)
+    ocean_damage_pulse_gdx = gdxpds.read_gdx.Translator(root / 'bluerice' /  run_type / f'results/results_ocean_damage_pulse_{mc_id}.gdx', lazy_load=True)
+    ocean_today_gdx = gdxpds.read_gdx.Translator(root / 'bluerice' /  run_type / f'results/results_ocean_today_{mc_id}.gdx', lazy_load=True)
     _l = []
     targets = [(None, None), ('coral', 'consumption'), ('coral', 'usenm'), ('coral', 'nonuse'), ('mangrove', 'consumption'),
                ('mangrove', 'usenm'), ('mangrove', 'nonuse'), ('ports', 'consumption'), ('fisheries', 'consumption'),
