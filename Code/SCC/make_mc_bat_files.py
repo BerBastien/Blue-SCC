@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from scipy.stats import qmc, truncnorm, lognorm
+from tqdm import tqdm
 
 import context
 
@@ -97,9 +98,9 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
     l = [rf'cd "{local_rice_path}"']
     for i, prstp in enumerate(np.linspace(0.01, 0.02, 3)):
         txt = fr"""\
-        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --prstp={prstp} 
-        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_{i} --prstp={prstp} 
-        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --prstp={prstp} 
+        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/prstp/results --debugdir=bluerice/prstp/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --prstp={prstp} 
+        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/prstp/results --debugdir=bluerice/prstp/debug --nameout=ocean_damage_{i} --prstp={prstp} 
+        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/prstp/results --debugdir=bluerice/prstp/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --prstp={prstp} 
         """
         l.append(txt)
 
@@ -175,7 +176,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
         'ocean_nu_start',
     ]
     positive_normal_params = {
-        'vsl_start': [7.4 / 1e6, 4.7 / 1e6],
+        'vsl_start': [7.4, 4.7],
         'theta': [0.21, 0.09],
         'ocean_income_elasticity_usenm': [0.222, 0.058],
         'ocean_income_elasticity_nonuse': [0.243, 0.068],
@@ -245,11 +246,11 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
     l = [rf"""cd {remote_rice_path}
     conda activate bluerice"""]
     l2 = []
-    for i, row in sample_df.iterrows():
+    for i, row in tqdm(sample_df.iterrows()):
         s = ' '.join(('--' + row.index + '=' + row.astype(str)).tolist())
         txt = fr"""
         do_stuff=false
-        if [ -f "{scc_folder}/{i}.parquet" ]; then
+        if [ -f "bluerice/{sh_folder}/scc/{i}.parquet" ]; then
             do_stuff=true
         fi
         
@@ -257,9 +258,9 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
             echo 0.
         else\
             echo not
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/=bluerice/{sh_folder}/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --ocean_sensitivity=1 {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/=bluerice/{sh_folder}/debug --nameout=ocean_damage_{i} --ocean_sensitivity=1 {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/=bluerice/{sh_folder}/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --ocean_sensitivity=1 --ocean_sensitivity=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1 --n=maxiso3  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/bluerice/{sh_folder}/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --ocean_sensitivity=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1 --n=maxiso3  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/bluerice/{sh_folder}/debug --nameout=ocean_damage_{i} --ocean_sensitivity=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1 --n=maxiso3  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/bluerice/{sh_folder}/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --ocean_sensitivity=1 --ocean_sensitivity=1 {s} 
             python bluerice/mc_scc.py {run_type} {i} \
     
         fi
@@ -291,4 +292,4 @@ if __name__ == "__main__":
     try:
         run(*sys.argv[1:])
     except:
-        run('distribution', n=300)
+        run('gsa', n=10_000)

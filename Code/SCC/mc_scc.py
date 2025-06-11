@@ -21,8 +21,12 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def scc_mc(run_type, mc_id):
+
+    mc_sampling_df = pd.read_parquet(root / f'{run_type}/input.parquet').query(f'id=={mc_id}')
+    mc_sampling_df['id'] = mc_sampling_df['id'].astype(str)
+
     if not (root / run_type / f'results/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
-        return pd.DataFrame()
+        return mc_sampling_df
     ocean_damage_gdx = gdxpds.read_gdx.Translator(root / f'{run_type}/results/results_ocean_damage_{mc_id}.gdx', lazy_load=True)
     ocean_damage_pulse_gdx = gdxpds.read_gdx.Translator(root / f'{run_type}/results/results_ocean_damage_pulse_{mc_id}.gdx', lazy_load=True)
     ocean_today_gdx = gdxpds.read_gdx.Translator(root / f'{run_type}/results/results_ocean_today_{mc_id}.gdx', lazy_load=True)
@@ -39,8 +43,6 @@ def scc_mc(run_type, mc_id):
         _target = target if target != (None, None) else ('total', 'total')
         _scc = _scc.assign(oc_capital=_target[0], valuation=_target[1], id=mc_id)
         _l.append(_scc)
-    mc_sampling_df = pd.read_parquet(root / f'{run_type}/input.parquet').query(f'id=={mc_id}')
-    mc_sampling_df['id'] = mc_sampling_df['id'].astype(str)
     return pd.concat(_l).reset_index().merge(mc_sampling_df, on='id', how='outer')
 
 
