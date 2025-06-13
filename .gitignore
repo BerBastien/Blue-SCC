@@ -1,4 +1,3 @@
-/Figures
 .idea
 /Data/input_modules
 /Code/Blue-scc
@@ -17,3 +16,12 @@ Data/SCC/out/*
 *.RData
 *.gpkg
 **/__pycache__
+
+# !/Figures/SCC/pawn.png
+# !/Figures/SCC/rennert_et_al.pdf
+# !/Figures/SCC/scc.pdf
+# !/Figures/SCC/scc_breakdown_ssps.pdf
+# !/Figures/SCC/scc_prstp.pdf
+
+!/Data/SCC/out/scc.csv
+!/Data/SCC/out/country_level_scc.csv
