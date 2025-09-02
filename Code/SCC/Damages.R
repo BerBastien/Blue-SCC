@@ -331,7 +331,7 @@ ggplot(plot_data %>% filter(year < end_year+1, value<0), aes(x = CPC, y = -value
   facet_wrap(~capital,scales="free")+ 
   scale_y_log10(labels = scales::dollar_format(suffix = "B")) +
   #scale_x_log10() +
-  labs(title = "A. Ocean-based damages under SSP2-6.0",
+  labs(title = "A. Ocean-based damages under SSP2",
        #x = "YNET",
        y = "Losses (Billion USD)",
        #color = "Capital",
@@ -353,7 +353,7 @@ ggplot(plot_data %>% filter(year < end_year+1, value<0), aes(x = CPC, y = -value
         scale_color_manual(values=Color_capitals_black)+
   scale_y_log10(labels = scales::dollar_format(suffix = "B")) +
         #scale_x_log10() +
-        labs(title = "A. Ocean-based damages under SSP2-6.0",
+        labs(title = "A. Ocean-based damages under SSP2",
             x = "GDP per capita (Thousand USD)",
             y = "Damages (Billion USD)",
             color = "Blue Capital",
@@ -363,6 +363,32 @@ ggplot(plot_data %>% filter(year < end_year+1, value<0), aes(x = CPC, y = -value
                         plot.title = element_text(hjust = 0.5)
                     )
 
+levels(factor(plot_data$variable))
+  time_damages_plot_onlyfisheries <- ggplot(plot_data %>% filter(year < end_year+1,capital=="Fisheries & Mariculture",variable=="Market"), 
+            aes(x = CPC/1000, y = -1000*value, color = capital, group = interaction(country,capital, variable))) +
+        geom_line(alpha=0.5) +
+        geom_point(data = plot_data %>% filter(year == end_year,capital=="Fisheries & Mariculture",variable=="Market"), 
+                    aes(shape = variable), size = 2,alpha=0.4) +
+        geom_text_repel(data = plot_data %>% filter(year == end_year,capital=="Fisheries & Mariculture",variable=="Market"), 
+                    aes(label=country), size = 3) +
+        scale_shape_manual(values = shapes) +
+        facet_wrap(~variable)+
+        #facet_wrap(~variable,scales="free")+ 
+        scale_color_manual(values=Color_capitals_black)+
+        #scale_x_log10() +
+        labs(title = "A. Ocean-based damages under SSP2",
+            x = "GDP per capita (Thousand USD)",
+            y = "Damages (Billion USD)",
+            color = "Blue Capital",
+            shape = "Value Category") +
+        theme_minimal()+ 
+                    theme(
+                        plot.title = element_text(hjust = 0.5)
+                    )
+                    
+  time_damages_plot_onlyfisheries 
+  plot_data %>% filter(year < end_year+1,capital=="Fisheries & Mariculture",variable=="Market",country=="rus") 
+        ggsave("C:/Users/basti/Documents/GitHub/BlueDICE/Figures/SM/fisheries/fisheries_losses.jpg")
 
 
 ggarrange(time_damages_plot,surpass_year_plot,ncol=1)

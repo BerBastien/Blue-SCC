@@ -176,6 +176,27 @@ plot_sectoral_damages <- ggplot(map_data %>% filter(continent != "Antarctica")) 
             )
 plot_sectoral_damages 
 
+
+plot_sectoral_damages_legbottom <- ggplot(map_data %>% filter(continent != "Antarctica")) +
+  geom_sf(aes(fill = quantile_group), color = "grey", linewidth = 0.1) +
+  facet_wrap(~oc_capital) +
+  scale_fill_manual(values = custom_colors, na.value = "transparent", name = "% of GDP") +
+  coord_sf(crs = "+proj=robin") + # Robinson projection
+  theme_void() +
+  labs(
+    title = "B. Damages in 2050",
+    fill = "% of GDP (Quantiles)"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  )
+  
+plot_sectoral_damages_legbottom
+
   #ggsave("Figures/mkt_equivalent_damages_aspercentageofGDP.png")
 
   map_data %>% group_by(oc_capital) %>% 

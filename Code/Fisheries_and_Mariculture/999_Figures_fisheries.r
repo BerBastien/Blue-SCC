@@ -6,6 +6,7 @@
 
 ## Figure F1 (start)
       
+  
   plot_profits_usd <- ggplot(fisheries_df_temp_gdp %>% filter(scenario=="Full Adaptation", country_iso3=="MEX", year>2013))+
     geom_line(aes(y=profits_usd/10^6,x=year,color=rcp, group=interaction(rcp,country_iso3)))+
     # scale_color_manual(values = c("RCP26" = "#2ca02c", 
@@ -185,6 +186,105 @@
 
 
 ## Figure F2 (end)
+
+
+
+## Extra Fig for Response to Reviewers
+  ggplot(fisheries_df_temp_gdp %>% 
+            filter(scenario == "Full Adaptation", 
+                    #country_iso3 == "ISL", 
+                    rcp=="RCP85", 
+                    year == 2025, 
+                    !is.na(profits_usd_percGDP))) +
+      geom_point(aes(y = profits_usd_percGDP, x = log(GDP_ppp), color = region)) +
+      geom_text_repel(aes(y = profits_usd_percGDP, x = log(GDP_ppp), color = region,label=country_iso3)) +
+      # scale_color_manual(values=hex_rcps)+
+      theme_minimal() +
+      labs(color = "Region",y="Profits (%GDP)")
+
+      file_path <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/SCC/out/country_level_scc.csv"
+
+      df <- read_csv(file_path)
+
+      # Filter for country (e.g., ISL)
+      df_bar <- df %>%
+        filter(iso3 == "ISL", oc_capital!="Total")  # Change to SLB or other if needed
+
+      # Optional: reorder capital so it looks better on x-axis
+      df_bar$oc_capital <- factor(df_bar$oc_capital,
+                                  levels = c("Corals", "Fisheries", "Mangroves", "Ports"))
+
+      # Plot
+      ggplot(df_bar, aes(x = oc_capital, y = scc, fill = valuation)) +
+        geom_bar(stat = "identity", width = 0.7, color = "gray30") +
+        geom_hline(yintercept = 0, color = "red", linewidth = 1, linetype = "dashed") +
+        scale_fill_manual(values=c("#a1c93b","#3b50c9","#81cbcd"))+
+        theme_minimal(base_size = 14) +
+        labs(
+          title = "SCC Components by Ocean Capital – ISL",
+          x = "Ocean Capital",
+          y = "Social Cost of Carbon (USD / tCO2)",
+          fill = "Valuation Type"
+        ) +
+        theme(
+          axis.text.x = element_text(angle = 15, hjust = 1),
+          plot.title = element_text(hjust = 0.5, face = "bold")
+        )
+
+        ggsave("C:/Users/basti/Documents/GitHub/BlueDICE/Figures/SM/fisheries/fisheries_revenues.jpg")
+
+        file_path <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/SCC/out/country_level_scc.csv"
+output_dir <- "C:/Users/basti/Documents/GitHub/BlueDICE/Figures/country_scc/"
+
+# Create output folder if it doesn't exist
+if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
+# Load data
+df <- read_csv(file_path)
+
+# Remove any total rows (if needed)
+df <- df %>% filter(oc_capital != "Total")
+
+# Reorder capital
+df$oc_capital <- factor(df$oc_capital, levels = c("Corals", "Fisheries", "Mangroves", "Ports"))
+
+# Define color palette manually
+valuation_colors <- c("Market value" = "#a1c93b", 
+                      "Non-market use value" = "#3b50c9", 
+                      "Nonuse value" = "#81cbcd")
+
+# Loop over iso3 codes
+for (iso in unique(df$iso3)) {
+  
+  df_bar <- df %>% filter(iso3 == iso)
+
+  p <- ggplot(df_bar, aes(x = oc_capital, y = scc, fill = valuation)) +
+    geom_bar(stat = "identity", width = 0.7, color = "gray30") +
+    geom_hline(yintercept = 0, color = "red", linewidth = 1, linetype = "dashed") +
+    scale_fill_manual(values = valuation_colors) +
+    theme_minimal(base_size = 14) +
+    labs(
+      title = paste0("SCC Components by Ocean Capital – ", iso),
+      x = "Ocean Capital",
+      y = "Social Cost of Carbon (USD / tCO₂)",
+      fill = "Valuation Type"
+    ) +
+    theme(
+      axis.text.x = element_text(angle = 15, hjust = 1),
+      plot.title = element_text(hjust = 0.5, face = "bold")
+    )
+
+  # Save to PNG
+  ggsave(
+    filename = paste0(output_dir, iso, "_scc_barplot.jpg"),
+    plot = p,
+    width = 8,
+    height = 6,
+    dpi = 300
+  )
+}
+
+##
 
 ## Figures Nutrition (start)
     ## Nutrition Change (start)

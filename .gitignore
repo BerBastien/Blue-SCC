@@ -25,3 +25,5 @@ Data/SCC/out/*
 
 !/Data/SCC/out/scc.csv
 !/Data/SCC/out/country_level_scc.csv
+/Figures/all_figures/
+/Figures/country_scc/
