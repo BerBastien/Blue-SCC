@@ -631,7 +631,7 @@ plt.show()
 ids = [x.stem.split('_')[-1] for x in (root / f'bluerice/prstp/results').glob('results_ocean_damage_pulse_*.gdx')]
 l = []
 for id in ids:
-    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_prstp_ocean/results_ocean_damage_{id}.gdx')
+    ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / f'bluerice/prstp/results/results_ocean_damage_{id}.gdx')
     prstp = ocean_damage_gdx['prstp'].iat[0,0]
     l.append(scc_mc(id, 'prstp', baseline=True).query('t==2020 & oc_capital=="total"').assign(prstp=prstp))
 scc_prstp = pd.concat(l).reset_index()

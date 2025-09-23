@@ -58,8 +58,8 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
     baseline_run = rf"""
         cd "{local_rice_path}"
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/baseline/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_BASELINE --mod_ocean=1
-                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/baseline/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_pulse_BASELINE --mod_ocean=1 --mod_emission_pulse=ocean_damage_BASELINE
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/baseline/results --debugdir=bluerice/baseline/debug --nameout=ocean_today_BASELINE --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/baseline/results --debugdir=bluerice/baseline/debug --nameout=ocean_damage_pulse_BASELINE --mod_ocean=1 --mod_emission_pulse=ocean_damage_BASELINE --reference_marg_util=ocean_today_BASELINE
     """
     with open(context.projectpath() / 'Data/SCC/tmp/BASELINE.bat', 'w') as f:
         f.write(baseline_run)
@@ -72,8 +72,8 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
         txt = rf"""
         cd "{local_rice_path}"
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_damage_ssp{i} --mod_ocean=1  --baseline=ssp{i}
-                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_damage_pulse_ssp{i} --mod_ocean=1 --mod_emission_pulse=ocean_damage_ssp{i}  --baseline=ssp{i}
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_today_ssp{i} --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1  --baseline=ssp{i}
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/ssp/results --debugdir=bluerice/ssp/debug --nameout=ocean_damage_pulse_ssp{i} --mod_ocean=1 --mod_emission_pulse=ocean_damage_ssp{i}  --baseline=ssp{i} --reference_marg_util=ocean_today_ssp{i}
         """
         l.append(txt)
     with open(context.projectpath() / 'Data/SCC/tmp/SSPs.bat', 'w') as f:
@@ -85,8 +85,8 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
     rennert_et_al = rf"""
         cd "{local_rice_path}"
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_damage_rennert_et_al --mod_ocean=1 --elasmu=1.24 --prstp=0.02
-                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_damage_pulse_rennert_et_al --mod_ocean=1 --mod_emission_pulse=ocean_damage_rennert_et_al --elasmu=1.24 --prstp=0.02
                 gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_today_rennert_et_al --mod_ocean=1 --policy=simulation_tatm_exogen --climate_of_today=1 --elasmu=1.24 --prstp=0.02
+                gams run_rice50x.gms --policy=bau --n=maxiso3 --workdir=bluerice/rennert_et_al/results --debugdir=bluerice/rennert_et_al/debug --nameout=ocean_damage_pulse_rennert_et_al --mod_ocean=1 --mod_emission_pulse=ocean_damage_rennert_et_al --elasmu=1.24 --prstp=0.02 --reference_marg_util=ocean_today_rennert_et_al
     """
     with open(context.projectpath() / 'Data/SCC/tmp/rennert_et_al.bat', 'w') as f:
         f.write(rennert_et_al)
@@ -100,7 +100,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
         txt = fr"""\
         gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/prstp/results --debugdir=bluerice/prstp/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --prstp={prstp} 
         gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/prstp/results --debugdir=bluerice/prstp/debug --nameout=ocean_damage_{i} --prstp={prstp} 
-        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/prstp/results --debugdir=bluerice/prstp/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --prstp={prstp} 
+        gams run_rice50x.gms --max_solretry=10 --mod_ocean=1  --n=maxiso3 --workdir=bluerice/prstp/results --debugdir=bluerice/prstp/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --prstp={prstp} --reference_marg_util=ocean_today_{i}
         """
         l.append(txt)
 
@@ -260,7 +260,7 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
             echo not
             gams run_rice50x.gms --max_solretry=10 --mod_ocean=1 --n=maxiso3  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/bluerice/{sh_folder}/debug --nameout=ocean_today_{i} --policy=simulation_tatm_exogen --climate_of_today=1 --ocean_sensitivity=1 {s} 
             gams run_rice50x.gms --max_solretry=10 --mod_ocean=1 --n=maxiso3  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/bluerice/{sh_folder}/debug --nameout=ocean_damage_{i} --ocean_sensitivity=1 {s} 
-            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1 --n=maxiso3  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/bluerice/{sh_folder}/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --ocean_sensitivity=1 --ocean_sensitivity=1 {s} 
+            gams run_rice50x.gms --max_solretry=10 --mod_ocean=1 --n=maxiso3  --workdir=bluerice/{sh_folder}/results --debugdir=bluerice/bluerice/{sh_folder}/debug --nameout=ocean_damage_pulse_{i} --mod_emission_pulse=ocean_damage_{i} --ocean_sensitivity=1 --ocean_sensitivity=1 --reference_marg_util=ocean_today_{i} {s}  
             python bluerice/mc_scc.py {run_type} {i} \
     
         fi
