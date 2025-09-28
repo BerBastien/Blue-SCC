@@ -1,30 +1,27 @@
-
-# Load necessary libraries
-library(dplyr)
-library(readr)
-library(ggplot2)
-library(sf)  # For spatial data handling
-library(rnaturalearth)  # For country boundaries
-library(readxl)
-library(dplyr)
-library(ggplot2)
-library(sf)
-library(rnaturalearth)
-library(tidyr)
-
 # Step 1: Read the CSV file
 file_path <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/analysis_output/MarketEquivalentValues.csv"
 data <- read_csv(file_path)
+
+
+data_adjusted <- data %>%
+  mutate(year = t * 5 + 2010)%>% 
+  mutate(iso_a3=toupper(n))%>% 
+  mutate( oc_capital = recode(oc_capital,coral="Corals",fisheries="Fisheries & Mariculture",mangrove = "Mangroves", ports="Ports")) %>%
+  mutate(total_value = -delta_UTARG_in_consumption)
+
+
+
 
 # Step 2: Adjust 't' to get the actual year
 data <- data %>%
   mutate(year = t * 5 + 2010)
 
+  glimpse(data)
+
 # Step 3: Filter for the year 2050
 data_2050 <- data %>%
   filter(year == 2050) %>% 
   mutate(iso_a3=toupper(n))
-glimpse(data_2050)
 # Step 4: Aggregate by 'oc_capital' and 'country'
 # Assuming 'country' is a column in your data. If not, adjust accordingly.
 aggregated_data <- data_2050 %>%
@@ -38,7 +35,7 @@ aggregated_data <- data_2050 %>%
 
 glimpse(aggregated_data)
 # Step 4: Read the Excel file's 'YGROSS' sheet
-file_path_excel <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today_BASELINE.xlsx"
+file_path_excel <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.xlsx"
 ygross_data <- read_excel(file_path_excel, sheet = "YGROSS", skip = 3, col_names = FALSE)
 pop_data <- read_excel(file_path_excel, sheet = "pop", skip = 3, col_names = FALSE)
 glimpse(pop_data)
@@ -70,6 +67,99 @@ map_data <- world %>%
   mutate(percentage_of_YGROSS = (total_value * pop * 1e6/ (YGROSS_2020*1e12)) * 100) %>% 
   mutate(percentage_of_YGROSS = ifelse(percentage_of_YGROSS==0,NA,percentage_of_YGROSS))
 
+
+
+file_path_excel <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.xlsx"
+ygross_data <- read_excel(file_path_excel, sheet = "YGROSS", skip = 3, col_names = FALSE)
+pop_data <- read_excel(file_path_excel, sheet = "pop", skip = 3, col_names = FALSE)
+glimpse(pop_data)
+names(ygross_data) <- c("t", "country", "info", "gdp_value", "upperbound", "marginal")
+names(pop_data) <- c("t", "country", "pop")
+ygross_data <- ygross_data %>%
+    mutate(iso_a3=toupper(country), year = as.integer(t)*5+2010) %>%
+  mutate(YGROSS_2020 = gdp_value * (113.647 / 87.504))  # Convert to 2020 trillion USD
+
+pop_data <- pop_data %>%
+    mutate(iso_a3=toupper(country), year = as.integer(t)*5+2010) 
+
+glimpse(data_adjusted)
+data_adjusted <- data_adjusted %>%
+  #left_join(aggregated_data, by = "iso_a3") %>%
+  left_join(ygross_data, by = c("iso_a3","year")) %>%
+  left_join(pop_data, by= c("iso_a3","year")) %>%
+  mutate(percentage_of_YGROSS = (total_value * pop * 1e6/ (YGROSS_2020*1e12)) * 100) %>% 
+  mutate(percentage_of_YGROSS = ifelse(percentage_of_YGROSS==0,NA,percentage_of_YGROSS))%>% 
+  filter(year %% 5 == 0, year >= 2025, year <= 2100)
+
+  time_damages_plot_adjusted <- ggplot(
+    data_adjusted ,
+    aes(x = year, y = -delta_UTARG_in_consumption, color = oc_capital, group = interaction(n, oc_capital))
+  ) +
+    geom_line(alpha = 0.5) +
+    # geom_point(data = plot_data %>% filter(year == end_year), 
+    #             aes(shape = variable), size = 2,alpha=0.4) +
+    # geom_text_repel(data = plot_data %>% filter(year == end_year), 
+    #             aes(label=country), size = 2) +
+    #scale_shape_manual(values = shapes) +
+    facet_wrap(~valuation) +
+    #facet_wrap(~variable,scales="free")+ 
+    scale_color_manual(values = Color_capitals_black)+
+  scale_y_log10(labels = scales::dollar_format(suffix = "B")) +
+        #scale_x_log10() +
+        labs(title = "A. Ocean-based damages under SSP2",
+            x = "GDP per capita (Thousand USD)",
+            y = "Damages (Billion USD)",
+            color = "Blue Capital",
+            shape = "Value Category") +
+        theme_minimal()+ 
+                    theme(
+                        plot.title = element_text(hjust = 0.5)
+                    )
+
+                    time_damages_plot_adjusted
+
+
+data_adjusted <- data_adjusted %>% mutate(valuation= recode(valuation,
+                         usenm = "Non-market Use",
+                         nonuse = "Non-use",
+                         consumption = "Market"),
+       valuation = factor(valuation, levels = c("Market", "Non-market Use", "Non-use")),
+       n = factor(n)) %>%
+       mutate( adjusted_value = delta_UTARG_in_consumption * pop * 1e6) %>%
+       mutate( adjusted_value_trillions = adjusted_value / 1e12) %>%
+left_join(plot_data %>% 
+  filter(year %% 5 == 0, year >= 2025, year <= 2100), by = c("n"="country","year","oc_capital"="capital","valuation"="variable"))
+g
+
+                    time_damages_plot_adjusted <- ggplot(data_adjusted %>% filter(year > 2025, year < 2101), 
+                      aes(x = -value/1000, y = -adjusted_value_trillions*10^3, color = oc_capital, group = interaction(n,oc_capital))) +
+                      geom_line(alpha=0.5) +
+                      geom_abline(slope = 1, intercept = 0, color = "black", linetype = "solid", size = 1) + # identity line
+                      # geom_point(data = plot_data %>% filter(year == end_year), 
+                      #             aes(shape = variable), size = 2,alpha=0.4) +
+                      # geom_text_repel(data = plot_data %>% filter(year == end_year), 
+                      #             aes(label=country), size = 2) +
+                      #scale_shape_manual(values = shapes) +
+                      facet_wrap(~valuation) +
+                      #facet_wrap(~variable,scales="free")+ 
+                      scale_color_manual(values = Color_capitals_black) +
+                      scale_y_log10(labels = scales::dollar_format(accuracy = 0.001)) +
+                      scale_x_log10(labels = scales::dollar_format(accuracy = 0.001)) +
+                      #scale_y_log10(labels = scales::dollar_format(suffix = "B", accuracy = 0.001)) +
+                      #scale_x_log10(labels = scales::dollar_format(suffix = "B", accuracy = 0.001)) +
+                      labs(title = "Welfare adjustment effect",
+                      x = "Unadjusted Damages (Billion USD)",
+                      y = "Welfare-adjusted Damages\n (Billion USD)",
+                      color = "Blue Capital",
+                      shape = "Value Category") +
+                      theme_minimal()+ 
+                      theme(
+                      plot.title = element_text(hjust = 0.5)
+                      )
+
+                    time_damages_plot_adjusted
+                    ggsave("Figures/welfare-adjustment-effect-sectoral_damages.jpg",  dpi = 300)
+
 # Step 2: Separate rows with NA in `oc_capital`, duplicate for each unique `oc_capital`, and recombine
 oc_capital_levels <- unique(aggregated_data$oc_capital)
 
@@ -84,21 +174,17 @@ map_data <- map_data %>%
   filter(!is.na(oc_capital)) %>%
   bind_rows(na_rows_expanded)
 
-library(dplyr)
-library(sf)
-
-library(dplyr)
-library(sf)
-
 # Step 1: Add an ID column for easy tracking
 map_data <- map_data %>%
   mutate(id = row_number())
 
 # Step 2: Tag negative values and assign them "Negative" in quantile_group
+map_data %>% filter(percentage_of_YGROSS < 0, oc_capital=="Mangroves") %>% as.data.frame()
+
 map_data <- map_data %>%
   mutate(
     quantile_group = case_when(
-      percentage_of_YGROSS < 0 ~ "Benefits",  # Tag all negative values
+      percentage_of_YGROSS < -0.001 ~ "Benefits",  # Tag all negative values
       TRUE ~ NA_character_  # Placeholder for positive values
     )
   )
@@ -136,10 +222,6 @@ map_data <- map_data %>%
 
 glimpse(map_data)
 
-library(ggplot2)
-library(dplyr)
-library(forcats)
-
 # Relevel quantile_group so that "Benefits" is at the end
 map_data <- map_data %>%
   mutate(
@@ -149,10 +231,10 @@ levels(factor(map_data$quantile_group))
 # Define custom color palette
 custom_colors <- c(
   "Benefits" = "darkgreen",
-  "Q1 (0 - 0.05)" = "#FADBD8",   # Lightest shade of red for Q1
-  "Q2 (0.05 - 0.21)" = "#F1948A",        # Light red for Q2
-  "Q3 (0.21 - 0.83)" = "#CD6155",        # Medium red for Q3
-  "Q4 (0.83 - 9.2)" = "#A93226"   # Darkest red for Q4
+  "Q1 (0 - 0.08)" = "#FADBD8",   # Lightest shade of red for Q1
+  "Q2 (0.08 - 0.35)" = "#F1948A",        # Light red for Q2
+  "Q3 (0.35 - 1.9)" = "#CD6155",        # Medium red for Q3
+  "Q4 (1.9 - 20.5)" = "#A93226"   # Darkest red for Q4
 )
 
 # Create the plot

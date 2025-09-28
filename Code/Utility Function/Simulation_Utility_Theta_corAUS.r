@@ -6,8 +6,8 @@ glimpse(cor_dam)
 
 # Define parameters
 #market_value <- 10  # Initial value of the market component
-market_value <- cor_dam %>% filter(year==2025,country=="aus") %>% select(YNET)*def_mult[[1]]*10^12 #in million 2020 USD
-nonmarket_value <- cor_dam %>% filter(year==2025,country=="aus") %>% select(usenm_nodam)*def_mult[[1]]*10^12 #million 202o USD
+market_value <- cor_dam %>% filter(year==2025,country=="aus") %>% select(YNET)*def_mult[[1]]*10^6 #YNET is in Trillion, here we convert to millions
+nonmarket_value <- cor_dam %>% filter(year==2025,country=="aus") %>% select(usenm_nodam)*def_mult[[1]] #already in millions
 market_value/nonmarket_value
 dam <- 1 #damage is in million
 eta <- 0.5  # Set a value for eta
@@ -106,8 +106,10 @@ market_eq_gg2 <- market_eq +
 plot_sectoral_damages <- plot_sectoral_damages + theme(plot.margin = margin(0, 0, 0, 0))
 
 
-ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
+ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
+labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
 ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10))
+
 ggsave("Figures/Main/Fig2_Damages2050_v5.png",dpi=300)
 
 market_eq_gg_small <- market_eq_gg +

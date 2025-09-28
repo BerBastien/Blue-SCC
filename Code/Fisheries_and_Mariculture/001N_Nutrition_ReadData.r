@@ -14,8 +14,39 @@
 
     # View the transformed dataframe
     glimpse(nut_proj_long)
+    # Nutrient deficiency Data/input_modules/fish/nutrition/API_SN.ITK.DEFC.ZS_DS2_en_csv_v2_745143.csv
+        # Read and clean WDI undernourishment data
+        nutrient_def_file <- paste0(datadir, "API_SN.ITK.DEFC.ZS_DS2_en_csv_v2_745143.csv")
+        # Find the header row (starts with "Country Name")
+        header_line <- which(readLines(nutrient_def_file) %>% grepl("^\"Country Name\"", .))[1]
+        nutrient_def <- read.csv(nutrient_def_file, skip = header_line - 1, check.names = FALSE, stringsAsFactors = FALSE)
+        # Remove empty columns at the end
+        nutrient_def <- nutrient_def[, 1:which(names(nutrient_def) == "2024")]
+        # Reshape to long format
+        nutrient_def_long <- nutrient_def %>%
+            pivot_longer(cols = matches("^\\d{4}$"), names_to = "year", values_to = "undernourished_pct") %>%
+            mutate(year = as.integer(year),
+                undernourished_pct = as.numeric(undernourished_pct),
+                ISO3 = countrycode(`Country Name`, origin = "country.name", destination = "iso3c"))
+        glimpse(nutrient_def_long)
+
+        # Read and clean WDI total population data
+        pop_file <- paste0(datadir, "API_SP.POP.TOTL_DS2_en_csv_v2_745064.csv")
+        # Find the header row (starts with "Country Name")
+        pop_header_line <- which(readLines(pop_file) %>% grepl("^\"Country Name\"", .))[1]
+        pop_data <- read.csv(pop_file, skip = pop_header_line - 1, check.names = FALSE, stringsAsFactors = FALSE)
+        # Remove empty columns at the end (keep up to 2024)
+        pop_data <- pop_data[, 1:which(names(pop_data) == "2024")]
+        # Reshape to long format
+        pop_long <- pop_data %>%
+            pivot_longer(cols = matches("^\\d{4}$"), names_to = "year", values_to = "population") %>%
+            mutate(year = as.integer(year),
+                   population = as.numeric(population),
+                   ISO3 = countrycode(`Country Name`, origin = "country.name", destination = "iso3c"))
+        glimpse(pop_long)
+    # Total population Data/input_modules/fish/nutrition/API_SP.POP.TOTL_DS2_en_csv_v2_745064.csv
     #low-income: below median GDP per capita
-## Read Data (end)
+## Read Data (end)ssp_gdp_pop
 
 
 ## nutrient Damage functions coefficients (start)
@@ -30,7 +61,7 @@
             se = map_dbl(model, ~ summary(.x)$coef[2]),
             pval = map_dbl(model, ~ summary(.x)$coef[4])
         ) %>%
-        select(-data, -model) %>%
+        dplyr::select(-data, -model) %>%
         unnest(cols = c(tcoeff, se, pval)) %>%
         slice(1) %>%
         ungroup() %>%
@@ -69,6 +100,8 @@
     glimpse(nut_eff_sum)
 
     nut_eff_sum <- nut_eff_sum %>% left_join(nut_tcoeff,by="nutrient") %>% filter(!is.na(tcoeff))
+    
+    glimpse(nut_eff_sum)
 ## RR
 
 ## GBD
@@ -78,8 +111,8 @@
     gbd_deaths_number <- gbd %>%
         filter(metric_name == "Number", measure_name == "Deaths") %>%
         mutate(ISO3 = countrycode(location_name, origin = "country.name", destination = "iso3c")) %>%
-        rename(deaths_base = val, condition_gbd = cause_name) %>%
-        select(deaths_base, ISO3, condition_gbd)
+        dplyr::rename(deaths_base = val, condition_gbd = cause_name) %>%
+        dplyr::select(deaths_base, ISO3, condition_gbd)
 
     # Calculate median GDP per capita for a specific year and SSP
     medianGDPpc <- ssp_gdp_pop %>%
@@ -109,38 +142,59 @@
         gbd_deaths_number_doseresponse_pop <- gbd_deaths_number_pop %>%
             left_join(nut_eff_sum, by = c("condition_gbd", "income")) %>%
             filter(!is.na(nutrient), !is.na(tcoeff)) %>%
-            rename(cause = condition_gbd) %>%
-            select(deaths_base_percapita, ISO3, cause, nutrient, total_effect, total_se, tcoeff, se) %>%
+            dplyr::rename(cause = condition_gbd) %>%
+            dplyr::select(deaths_base_percapita, ISO3, cause, nutrient, total_effect, total_se, tcoeff, se) %>%
             mutate(
-                iso_nut = paste0(ISO3, nutrient),
-                magnitude_risk = deaths_base_percapita * total_effect,
-                magnitude_risk_var = (se * magnitude_risk)^2
+            iso_nut = paste0(ISO3, nutrient),
+            magnitude_risk = deaths_base_percapita * total_effect,
+            magnitude_risk_var = (se * magnitude_risk)^2
             ) %>%
             group_by(ISO3) %>%
             summarize(
-                risk_w_avg_tcoeff = sum(magnitude_risk * tcoeff) / sum(magnitude_risk),
-                risk_w_avg_tcoeff_se = sqrt(sum((se * magnitude_risk)^2) / sum(magnitude_risk)^2),
-                sum_magnitude_risk = sum(magnitude_risk),
-                sum_magnitude_risk_se = sqrt(sum(magnitude_risk_var))
+            risk_w_avg_tcoeff = sum(magnitude_risk * tcoeff) / sum(magnitude_risk),
+            risk_w_avg_tcoeff_se = sqrt(sum((se * magnitude_risk)^2) / sum(magnitude_risk)^2),
+            sum_magnitude_risk = sum(magnitude_risk),
+            sum_magnitude_risk_se = sqrt(sum(magnitude_risk_var))
             ) %>%
-            ungroup() %>% 
-            rename(countrycode=ISO3, 
-                beta_nutrient_percChange_perDegreeC = risk_w_avg_tcoeff, 
-                beta_nutrient_percChange_perDegreeC_se = risk_w_avg_tcoeff_se, 
-                TAME_nutrients_MortalityEffect = sum_magnitude_risk, 
-                TAME_nutrients_MortalityEffect_se = sum_magnitude_risk_se)
+            ungroup() %>%
+            dplyr::rename(
+                countrycode = ISO3,
+                beta_nutrient_percChange_perDegreeC = risk_w_avg_tcoeff,
+                beta_nutrient_percChange_perDegreeC_se = risk_w_avg_tcoeff_se,
+                TAME_nutrients_MortalityEffect = sum_magnitude_risk,
+                TAME_nutrients_MortalityEffect_se = sum_magnitude_risk_se
+            ) %>%
+            left_join(
+                nutrient_def_long %>% filter(year == 2020) %>% dplyr::select(ISO3, undernourished_pct),
+                by = c("countrycode" = "ISO3")
+            ) %>%
+            mutate(
+                TAME_nutrients_MortalityEffect = TAME_nutrients_MortalityEffect * (1 - undernourished_pct / 100)
+            )
 
 
         glimpse(gbd_deaths_number_doseresponse_pop)
         #gbd_deaths_number_doseresponse_pop <- read.csv("Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv")
-        #nut_dep <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/seafood_dependence.csv")
+        nut_dep <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/seafood_dependence.csv")
         glimpse(gbd_deaths_number_doseresponse_pop)
         glimpse(nut_dep)
         gbd_deaths_number_doseresponse_pop2 <- merge(
-                                                    gbd_deaths_number_doseresponse_pop %>% select(-X),
-                                                    nut_dep %>% mutate(countrycode=countrycode(Country.Territory,origin="country.name",destination="iso3c")) %>% select(countrycode,Nutritional_D))
+                                                    gbd_deaths_number_doseresponse_pop ,
+                                                    nut_dep %>% mutate(countrycode=countrycode(Country.Territory,origin="country.name",destination="iso3c")) %>% 
+                                                    dplyr::select(countrycode,Nutritional_D))
         glimpse(gbd_deaths_number_doseresponse_pop2)
-        write.csv(gbd_deaths_number_doseresponse_pop2,"Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv")
+        # ggplot(gbd_deaths_number_doseresponse_pop2, aes(x = TAME_nutrients_MortalityEffect, y = TAME_nutrients_MortalityEffect_adjusted)) +
+        #     geom_point(aes(size = abs(beta_nutrient_percChange_perDegreeC))) +
+        #     theme_minimal() +
+        #     geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+        #     labs(
+        #         title = "TAME Nutrients Mortality Effect Adjusted by Nutritional Dependence",
+        #         x = "TAME Nutrients Mortality Effect",
+        #         y = "TAME Nutrients Mortality Effect Adjusted by Undersnourishment"
+        #     )
+
+
+        #write.csv(gbd_deaths_number_doseresponse_pop2,"Data/output_modules_input_rice50x/input_rice50x/mortality_seafood_nutrition.csv")
 
     ### Input Equation RICE50x
 
@@ -150,7 +204,7 @@
                                 ssp_gdp_pop %>% mutate(nutrient="Protein"),
                                 ssp_gdp_pop %>% mutate(nutrient="Omega3"),
                                 ssp_gdp_pop %>% mutate(nutrient="Iron"))
-        
+            glimpse(ssp_gdp_pop_nut)        
  
 
         
@@ -167,7 +221,7 @@
 
     gbd_deaths_number <- gbd %>% filter(metric_name=="Number",measure_name=="Deaths") %>% 
         mutate(ISO3 = countrycode(location_name, origin="country.name", destination="iso3c")) %>% 
-        rename(deaths_base=val, condition_gbd=cause_name) %>% dplyr::select(deaths_base,ISO3,condition_gbd) 
+        dplyr::rename(deaths_base=val, condition_gbd=cause_name) %>% dplyr::select(deaths_base,ISO3,condition_gbd) 
 
     glimpse(gbd_deaths_number)
     
@@ -184,7 +238,7 @@
     gbd_deaths_number_doseresponse_pop <- gbd_deaths_number_pop %>% 
         left_join(nut_eff_sum ,by=c("condition_gbd","income"))%>% 
         filter(!is.na(nutrient),!is.na(tcoeff)) %>% 
-        rename(cause=condition_gbd)
+        dplyr::rename(cause=condition_gbd)
     
     
 
@@ -194,7 +248,7 @@
     glimpse(gbd_deaths_number_doseresponse_pop_subset)
 
 
-    
+    glimpse(ssp_gdp_pop_nut) #
     gbd_deaths_number_doseresponse_pop_temp <- 
         gbd_deaths_number_doseresponse_pop_subset %>%  
         left_join(ssp_gdp_pop_nut %>% dplyr::filter(!is.na(tdif)) %>% 
@@ -202,7 +256,7 @@
     
     ## Read Dependence (start)
         nut_dep <- read.csv(paste0(datadir,"Cheung_etal_2024_World_Nut_Dependency.csv"))
-        write.csv(nut_dep,file="Data/output_modules_input_rice50x/input_rice50x/seafood_dependence.csv")
+        #write.csv(nut_dep,file="Data/output_modules_input_rice50x/input_rice50x/seafood_dependence.csv")
         nut_dep <- nut_dep %>% mutate(ISO3=countrycode(Country.Territory,origin="country.name",destination="iso3c"))
 
 
@@ -220,26 +274,19 @@
         avg_effect %>% filter(ISO3=="MEX")
 
 
-        mutate(future_risk = (1+(tcoeff/100)*tdif)*(-total_effect*Nutritional_D), 
-        future_risk_se = sqrt(
-         ((-total_effect * Nutritional_D) * (tdif / 100) * se)^2 + 
-         ((1 + (tcoeff / 100) * tdif) * (Nutritional_D * total_se))^2), 
-        delta_risk = ((tcoeff/100)*tdif)*(-total_effect), 
-        delta_risk_se = abs(delta_risk) * sqrt((se / tcoeff)^2 + (total_se / total_effect)^2)) %>% 
-        mutate(deaths_percapita_future = delta_risk * deaths_base_percapita, 
-        deaths_percapita_future_se = abs(deaths_base_percapita) * delta_risk_se, 
-        lives_saved_percapita_future = -future_risk * deaths_base_percapita, 
-        lives_saved_percapita_future_se = abs(deaths_base_percapita) * future_risk_se, 
-        GDPpc_2020USD = def_mult$def_2005_to_2020 * (GDP.billion2005USDperYear*10^9)/(Pop.million*10^6)) %>% 
-        filter(!is.na(Nutritional_D))
         
+        glimpse(gbd_deaths_number_doseresponse_pop_temp)
         gbd_deaths_number_doseresponse_pop_temp_future_dep <- gbd_deaths_number_doseresponse_pop_temp %>% 
-        left_join(nut_dep,by="ISO3") %>% 
-        mutate(future_risk = (1+(tcoeff/100)*tdif)*(-total_effect*Nutritional_D), 
+        left_join(nut_dep,by="ISO3") %>%
+            left_join(
+                nutrient_def_long %>% filter(year == 2020) %>% dplyr::select(ISO3, undernourished_pct),
+                by = c("ISO3")
+            ) %>%
+        mutate(future_risk = (1+(tcoeff/100)*tdif)*(-total_effect*Nutritional_D * (1 - undernourished_pct / 100)), 
         future_risk_se = sqrt(
-         ((-total_effect * Nutritional_D) * (tdif / 100) * se)^2 + 
-         ((1 + (tcoeff / 100) * tdif) * (Nutritional_D * total_se))^2), 
-        delta_risk = ((tcoeff/100)*tdif)*(-total_effect), 
+         ((-total_effect * Nutritional_D * (1 - undernourished_pct / 100)) * (tdif / 100) * se)^2 + 
+         ((1 + (tcoeff / 100) * tdif) * (Nutritional_D * total_se * (1 - undernourished_pct / 100)))^2), 
+        delta_risk = ((tcoeff/100)*tdif)*(-total_effect*Nutritional_D* (1 - undernourished_pct / 100)), 
         delta_risk_se = abs(delta_risk) * sqrt((se / tcoeff)^2 + (total_se / total_effect)^2)) %>% 
         mutate(deaths_percapita_future = delta_risk * deaths_base_percapita, 
         deaths_percapita_future_se = abs(deaths_base_percapita) * delta_risk_se, 
@@ -261,6 +308,7 @@
         deaths_percapita_future_se = sqrt(sum(deaths_percapita_future_se^2, na.rm = TRUE)), 
         Pop.million = first(Pop.million), 
         tdif=first(tdif), 
+        temp=first(temp), 
         GDPpc_2020USD = first(GDPpc_2020USD)
         )
     glimpse(deaths_by_nutrient)
@@ -279,17 +327,17 @@
         GDPpc_2020USD = first(GDPpc_2020USD), 
         Nutritional_D = first(Nutritional_D), 
         GDP_2020USD = first(def_mult$def_2005_to_2020 * (GDP.billion2005USDperYear*10^9))
-        ) %>% left_join(regions %>% rename(ISO3=countrycode),by=("ISO3"))
+        ) %>% left_join(regions %>% dplyr::rename(ISO3=countrycode),by=("ISO3"))
 
 
     
 
     #write.csv(deaths_by_country,"Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country.csv")
-    deaths_by_country <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country.csv")
+    #deaths_by_country <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country.csv")
+    glimpse(deaths_by_country)
 
 
-
-    no_subs = 0.5
+    no_subs = 0.05
 
     vsl_base_us_million2020USD = 10.05 #based on https://www.nature.com/articles/s41586-022-05224-9
     gdp_base_us_million2020USD = deaths_by_country %>% ungroup() %>% 
@@ -305,7 +353,7 @@
             summarize(
                 totpop = sum(Pop.million,na.rm=TRUE),
                 popweighted_average_GDPpc = sum(GDPpc_2020USD*Pop.million/totpop), 
-                year_ssp = year_ssp[[1]]) %>% ungroup() %>% select(-ssp,-year), by="year_ssp") %>% 
+                year_ssp = year_ssp[[1]]) %>% ungroup() %>% dplyr::select(-ssp,-year), by="year_ssp") %>% 
     mutate(deaths_future=deaths_percapita_future*(no_subs*Pop.million*10^6), 
         deaths_future_se=abs(no_subs*Pop.million*10^6) * deaths_percapita_future_se, 
         lives_saved_future=lives_saved_percapita_future*(no_subs*Pop.million*10^6), 
@@ -339,7 +387,7 @@
     glimpse(deaths_by_country_vsl)
 
     deaths_by_country_vsl %>% filter(ISO3=="SLB") %>% 
-    select(health_damage_percGDP_se) %>% 
+    dplyr::select(health_damage_percGDP_se) %>% 
     summarize(mean_se_2 = mean(health_damage_percGDP_se^2,na.rm=TRUE), 
             mean_se_2_root = sqrt(mean(health_damage_percGDP_se^2,na.rm=TRUE)), 
             mean_se = mean(health_damage_percGDP_se,na.rm=TRUE))

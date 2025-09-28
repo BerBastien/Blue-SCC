@@ -243,4 +243,4 @@ if __name__ == '__main__':
     # Print results for a specific year, e.g., 2020, and save to CSV
     print(final_results[final_results['t'] == 2020].round(3))
     print(final_results)
-    # final_results.to_csv( 'C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/analysis_output/MarketEquivalentValues.csv', index=False)
+    final_results.to_csv( 'C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/analysis_output/MarketEquivalentValues.csv', index=False)

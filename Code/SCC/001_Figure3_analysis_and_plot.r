@@ -40,7 +40,7 @@
 ## Read BLUERICE50x Results
 
 
-## Ports year surpass (start)
+## Ports  (start)
     ports_dam <- exp_data_damage %>% 
         filter(capital =="ports",year>2024) %>% 
         arrange(country, year) %>%  # Ensure the data is sorted by country and year
@@ -52,12 +52,11 @@
         mutate(cumulative_YNET_dam_mkt_dif = cumsum(-YNET_dam_mkt_dif), 
         cumulative_YNET_dam_mkt_dif_perc = cumsum(-YNET_dam_mkt_dif_perc), 
         cumulative_YNET_dam_mkt_dif_perc2025 = cumsum(YNET_dam_mkt_dif_perc2025)) %>%  # Compute the cumulative sum
-        ungroup() %>% as.data.frame()  %>% 
-        filter(!all(cumulative_YNET_dam_mkt_dif == 0))
+        ungroup() %>% as.data.frame()  
 
-## Ports Year Surpass
+## Ports 
 
-## Corals Year Surpass
+## Corals 
    
     cor_dam <- exp_data_damage %>% 
         filter(capital =="coral",year>2024) %>% 
@@ -76,14 +75,12 @@
 
  
         mutate(cumulative_dam_perc2025 = cumsum(dam_dif_perc2025)) %>%
-        ungroup() %>% as.data.frame()  %>% 
-        filter(!all(cumulative_dam_perc2025  == 0), 
-            !is.na(cumulative_dam_perc2025))
+        ungroup() %>% as.data.frame()  
 
 
-## Corals Year Surpass
+## Corals 
 
-## Mangroves Year Surpass
+## Mangroves 
 
     man_dam <- exp_data_damage %>% 
         filter(capital =="mangrove",year>2024) %>% 
@@ -108,20 +105,23 @@
 
         mutate(all_dam_post2025 = all_dam - first(all_dam[year==2025]),
         dam_dif_perc2025 = (all_dam_post2025 / net_GDP_2025) * 100, 
-        dam_dif_perc2025_all = (all_dam / net_GDP_2025) * 100) %>%
+        dam_dif_perc2025_all = (all_dam / net_GDP_2025) * 100) %>% as.data.frame()  
+        man_dam %>% filter(country %in% c("ind","idn")) %>% select(OCEAN_AREA,YNET,year,ocean_value_intercept_nu,ocean_value_exp_nu,pop, nu_dam,country)
 
- 
-        mutate(cumulative_dam_perc2025 = cumsum(dam_dif_perc2025)) %>%
-        ungroup() %>% as.data.frame()  %>% 
-        filter(!all(cumulative_dam_perc2025  == 0), 
-            !is.na(cumulative_dam_perc2025))
+        ggplot(man_dam %>% filter(country %in% c("ind","bra","idn")), 
+        aes(x = year, y = OCEAN_AREA,color=country)) +
+            geom_line() +
+            geom_point() +
+            labs(title = "Ocean Area Over Time (India)",
+                     x = "Year",
+                     y = "Ocean Area") +
+            theme_minimal()
 
-    
 
-## Mangroves Year Surpass
+## Mangroves 
 
 
-## Fish Year Surpass
+## Fish 
     exp_data_damage %>% 
         filter(year %in% c(2020,2025,2030),country=="brb", capital=="fisheries") %>% 
         dplyr::select(ocean_health_beta,ocean_health_tame,pop,year,ocean_health_mu)
@@ -143,22 +143,12 @@
         YNET_dam_mkt_dif = YNET*(tatm_diff_2025*ocean_consump_damage_coef)*10^6, #YNET is in Trillions, so this value is in Millions
         net_GDP_2025 = first(YNET[year == 2025]),  # Get the net GDP in 2025 for each country
         all_dam =-(YNET_dam_mkt_dif+usenm_dif)) %>%
+        ungroup() %>% as.data.frame()
 
-        mutate(all_dam_post2025 = all_dam - first(all_dam[year==2025]),
-        dam_dif_perc2025 = (all_dam_post2025 / net_GDP_2025) * 100, 
-        dam_dif_perc2025_all = (all_dam / net_GDP_2025) * 100) %>%
-
- 
-        mutate(cumulative_dam_perc2025 = cumsum(dam_dif_perc2025)) %>%
-        ungroup() %>% as.data.frame()  %>% 
-        filter(!all(cumulative_dam_perc2025  == 0), 
-            !is.na(cumulative_dam_perc2025))
-
-## Fish Year Surpass
-   
+## Fish 
+       
 ####
 ## Across Time
-
 
 fish_dam <- fish_dam %>% mutate(capital = "Fisheries & Mariculture")# %>% filter(country!="ken")
 man_dam <- man_dam %>% mutate(capital = "Mangroves")
@@ -185,19 +175,98 @@ plot_data <- merged_df %>%
 shapes <- c("Market" = 15, "Non-market Use" = 16, "Non-use" = 17)
 
 
-  
-  time_damages_plot <- ggplot(plot_data %>% filter(value<0,year < end_year+1), 
+
+    ##Overall, market use damages are the largest in absolute terms, totaling global annual losses of US$1.66 trillion in 2100, followed by damages in non-market use values amounting to US$182 billion in 2100, and non-use values adding up to US$13 billion in annual losses, all results are expressed in 2020 USD equivalent
+    plot_data %>% filter(year == end_year) %>% 
+        group_by(variable) %>% 
+        summarize(median_damage = median(-value, na.rm = TRUE),
+                  mean_damage = mean(-value, na.rm = TRUE),
+                  total_damage = sum(-value, na.rm = TRUE)*1.298763) %>%  #Convert to 2020 USD
+        arrange(desc(median_damage))
+
+    
+
+    # Market damages are dominated by losses in seaport activities (93.6%), followed by corals (3.9%), fisheries and mariculture (2.4%), and then mangroves (0.1%). 
+    market_summary <- plot_data %>% 
+            filter(year == end_year, variable == "Market") %>%
+            group_by(capital) %>%
+            summarize(
+                median_damage = median(-value, na.rm = TRUE),
+                mean_damage = mean(-value, na.rm = TRUE),
+                total_damage = sum(-value, na.rm = TRUE) 
+            ) %>%
+            ungroup()
+
+        market_total <- sum(market_summary$total_damage, na.rm = TRUE)
+
+        market_summary <- market_summary %>%
+            mutate(percentage_of_total = 100 * total_damage / market_total) %>%
+            arrange(desc(median_damage))
+
+        market_summary
+
+        # Merge plot_data with regions to add region info
+        plot_data_region <- plot_data %>%
+            mutate(country_upper = toupper(as.character(country))) %>%
+            left_join(regions, by = c("country_upper" = "countrycode"))
+
+        # Calculate total 2100 market damages by region
+        market_damages_2100 <- plot_data_region %>%
+            filter(year == 2100, variable == "Market", !is.na(R5)) %>%
+            group_by(R5) %>%
+            summarize(total_market_damage = sum(-value, na.rm = TRUE)) %>%
+            ungroup()
+
+        # Calculate percentage by region
+        market_damages_2100 <- market_damages_2100 %>%
+            mutate(percentage = 100 * total_market_damage / sum(total_market_damage, na.rm = TRUE))
+
+        #The regions bearing the highest losses are ASIA (37%) and MAF (34%), followed by OECD (16%), LAM (12%), and REF (1%).
+        market_damages_2100
+
+
+
+        # Calculate total 2100 market damages by region
+        nonmarket_damages_2100 <- plot_data_region %>%
+            filter(year == 2100, variable == "Non-market Use", !is.na(R5)) %>%
+            group_by(R5) %>%
+            summarize(total_nonmarket_damage = sum(-value, na.rm = TRUE)) %>%
+            ungroup()
+
+        # Calculate percentage by region
+        nonmarket_damages_2100 <- nonmarket_damages_2100 %>%
+            mutate(percentage = 100 * total_nonmarket_damage / sum(total_nonmarket_damage, na.rm = TRUE))
+
+        #Non-market use value losses from corals and mangroves, which provide important coastal protection services, are also large. Regional losses are highest in MAF (44%) and ASIA (40%), followed by OECD (12%), LAM (2%), and REF (2%).
+        nonmarket_damages_2100
+
+
+        # Calculate total 2100 market damages by region
+        nonuse_damages_2100 <- plot_data_region %>%
+            filter(year == 2100, variable == "Non-use", !is.na(R5)) %>%
+            group_by(R5) %>%
+            summarize(total_nonuse_damage = sum(-value, na.rm = TRUE)) %>%
+            ungroup()
+
+        # Calculate percentage by region
+        nonuse_damages_2100 <- nonuse_damages_2100 %>%
+            mutate(percentage = 100 * total_nonuse_damage / sum(total_nonuse_damage, na.rm = TRUE))
+
+        #Consequently, ASIA bears 94% of these damages, followed by OECD (5%), LAM, and MAF. 
+        nonuse_damages_2100
+
+  time_damages_plot <- ggplot(plot_data %>% filter(value<0,year < end_year+1,country!="ken" ), 
             aes(x = CPC/1000, y = -value, color = capital, group = interaction(country,capital, variable))) +
         geom_line(alpha=0.5) +
-        geom_point(data = plot_data %>% filter(year == end_year), 
+        geom_point(data = plot_data %>% filter(year == end_year,country!="ken" ), 
                     aes(shape = variable), size = 2,alpha=0.4) +
-        geom_text_repel(data = plot_data %>% filter(year == end_year), 
+        geom_text_repel(data = plot_data %>% filter(year == end_year,country!="ken" ), 
                     aes(label=country), size = 2) +
         scale_shape_manual(values = shapes) +
         facet_wrap(~variable)+
         #facet_wrap(~variable,scales="free")+ 
         scale_color_manual(values=Color_capitals_black)+
-  scale_y_log10(labels = scales::dollar_format(suffix = "M", accuracy = 0.01)) +
+  scale_y_log10(labels = scales::dollar_format(suffix = "M", accuracy = 0.0001)) +
         #scale_x_log10() +
         labs(title = "A. Ocean-based damages under SSP2",
             x = "GDP per capita (Thousand USD)",
@@ -212,7 +281,7 @@ shapes <- c("Market" = 15, "Non-market Use" = 16, "Non-use" = 17)
                     time_damages_plot
 
   time_damages_plot_onlyfisheries <- ggplot(plot_data %>% filter(year < end_year+1,capital=="Fisheries & Mariculture",variable=="Market"), 
-            aes(x = CPC/1000, y = -1000*value, color = capital, group = interaction(country,capital, variable))) +
+            aes(x = CPC/1000, y = -value, color = capital, group = interaction(country,capital, variable))) +
         geom_line(alpha=0.5) +
         geom_point(data = plot_data %>% filter(year == end_year,capital=="Fisheries & Mariculture",variable=="Market"), 
                     aes(shape = variable), size = 2,alpha=0.4) +
@@ -225,7 +294,7 @@ shapes <- c("Market" = 15, "Non-market Use" = 16, "Non-use" = 17)
         #scale_x_log10() +
         labs(title = "A. Fisheries damages under SSP2",
             x = "GDP per capita (Thousand USD)",
-            y = "Damages (Billion USD)",
+            y = "Damages (Million USD)",
             color = "Blue Capital",
             shape = "Value Category") +
         theme_minimal()+ 
@@ -260,8 +329,6 @@ data_adjusted <- data %>%
 data <- data %>%
   mutate(year = t * 5 + 2010)
 
-  glimpse(data)
-
 # Step 3: Filter for the year 2050
 data_2050 <- data %>%
   filter(year == 2050) %>% 
@@ -277,11 +344,11 @@ aggregated_data <- data_2050 %>%
   ungroup() %>% 
   mutate( oc_capital = recode(oc_capital,coral="Corals",fisheries="Fisheries & Mariculture",mangrove = "Mangroves", ports="Ports"))
 
+glimpse(aggregated_data)
 # Step 4: Read the Excel file's 'YGROSS' sheet
 file_path_excel <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.xlsx"
 ygross_data <- read_excel(file_path_excel, sheet = "YGROSS", skip = 3, col_names = FALSE)
 pop_data <- read_excel(file_path_excel, sheet = "pop", skip = 3, col_names = FALSE)
-glimpse(pop_data)
 # Step 2: Rename columns for easier access
 # Assuming the data starts from the second row and has the following structure
 names(ygross_data) <- c("t", "country", "info", "gdp_value", "upperbound", "marginal")
@@ -321,7 +388,6 @@ ygross_data <- ygross_data %>%
 
 pop_data <- pop_data %>%
     mutate(iso_a3=toupper(country), year = as.integer(t)*5+2010) 
-
 data_adjusted <- data_adjusted %>%
   #left_join(aggregated_data, by = "iso_a3") %>%
   left_join(ygross_data, by = c("iso_a3","year")) %>%
@@ -330,32 +396,6 @@ data_adjusted <- data_adjusted %>%
   mutate(percentage_of_YGROSS = ifelse(percentage_of_YGROSS==0,NA,percentage_of_YGROSS))%>% 
   filter(year %% 5 == 0, year >= 2025, year <= 2100)
 
-  time_damages_plot_adjusted <- ggplot(
-    data_adjusted ,
-    aes(x = year, y = -delta_UTARG_in_consumption, color = oc_capital, group = interaction(n, oc_capital))
-  ) +
-    geom_line(alpha = 0.5) +
-    # geom_point(data = plot_data %>% filter(year == end_year), 
-    #             aes(shape = variable), size = 2,alpha=0.4) +
-    # geom_text_repel(data = plot_data %>% filter(year == end_year), 
-    #             aes(label=country), size = 2) +
-    #scale_shape_manual(values = shapes) +
-    facet_wrap(~valuation) +
-    #facet_wrap(~variable,scales="free")+ 
-    scale_color_manual(values = Color_capitals_black)+
-  scale_y_log10(labels = scales::dollar_format(suffix = "B")) +
-        #scale_x_log10() +
-        labs(title = "A. Ocean-based damages under SSP2",
-            x = "GDP per capita (Thousand USD)",
-            y = "Damages (Billion USD)",
-            color = "Blue Capital",
-            shape = "Value Category") +
-        theme_minimal()+ 
-                    theme(
-                        plot.title = element_text(hjust = 0.5)
-                    )
-
-                    time_damages_plot_adjusted
 
 
 data_adjusted <- data_adjusted %>% mutate(valuation= recode(valuation,
@@ -370,8 +410,8 @@ left_join(plot_data %>%
   filter(year %% 5 == 0, year >= 2025, year <= 2100), by = c("n"="country","year","oc_capital"="capital","valuation"="variable"))
 
 
-                    time_damages_plot_adjusted <- ggplot(data_adjusted %>% filter(year > 2025, year < 2101), 
-                      aes(x = -value/1000, y = -adjusted_value_trillions*10^3, color = oc_capital, group = interaction(n,oc_capital))) +
+                    time_damages_plot_adjusted <- ggplot(data_adjusted %>% filter(year > 2025, year < 2101, n !="ken" ), 
+                      aes(x = -value, y = -adjusted_value_trillions*10^6, color = oc_capital, group = interaction(n,oc_capital))) +
                       geom_line(alpha=0.5) +
                       geom_abline(slope = 1, intercept = 0, color = "black", linetype = "solid", size = 1) + # identity line
                       # geom_point(data = plot_data %>% filter(year == end_year), 
@@ -387,8 +427,8 @@ left_join(plot_data %>%
                       #scale_y_log10(labels = scales::dollar_format(suffix = "B", accuracy = 0.001)) +
                       #scale_x_log10(labels = scales::dollar_format(suffix = "B", accuracy = 0.001)) +
                       labs(title = "Welfare adjustment effect",
-                      x = "Unadjusted Damages (Billion USD)",
-                      y = "Welfare-adjusted Damages\n (Billion USD)",
+                      x = "Unadjusted Damages (Million USD)",
+                      y = "Welfare-adjusted Damages\n (Million USD)",
                       color = "Blue Capital",
                       shape = "Value Category") +
                       theme_minimal()+ 
@@ -397,7 +437,7 @@ left_join(plot_data %>%
                       )
 
                     time_damages_plot_adjusted
-                    #ggsave("Figures/welfare-adjustment-effect-sectoral_damages.jpg",  dpi = 300)
+                    #ggsave("Figures/FigS26_welfare-adjustment-effect-sectoral_damages.jpg",  dpi = 300)
 
 # Step 2: Separate rows with NA in `oc_capital`, duplicate for each unique `oc_capital`, and recombine
 oc_capital_levels <- unique(aggregated_data$oc_capital)
@@ -459,7 +499,6 @@ map_data <- map_data %>%
   dplyr::select(-quantile_group.x, -quantile_group.y, -id) 
 
 
-glimpse(map_data)
 
 # Relevel quantile_group so that "Benefits" is at the end
 map_data <- map_data %>%
@@ -475,6 +514,26 @@ custom_colors <- c(
   "Q3 (0.35 - 1.9)" = "#CD6155",        # Medium red for Q3
   "Q4 (1.9 - 20.5)" = "#A93226"   # Darkest red for Q4
 )
+
+# Create the plot
+plot_sectoral_damages <- ggplot(map_data %>% filter(continent != "Antarctica")) +
+  geom_sf(aes(fill = quantile_group),color="grey",linewidth=0.1) +
+  facet_wrap(~oc_capital) +
+  scale_fill_manual(values = custom_colors, na.value = "transparent", name = "% of GDP") +
+  coord_sf(crs = "+proj=robin") + # Robinson projection
+  theme_void() +
+  labs(
+    title = "B. Damages in 2050",
+    fill = "% of GDP (Quantiles)"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )+
+            theme(
+                plot.title = element_text(hjust = 0.5)
+            )
 
 
 plot_sectoral_damages_legbottom <- ggplot(map_data %>% filter(continent != "Antarctica")) +
@@ -494,8 +553,7 @@ plot_sectoral_damages_legbottom <- ggplot(map_data %>% filter(continent != "Anta
     plot.title = element_text(hjust = 0.5),
     legend.position = "bottom"
   )
-  
-plot_sectoral_damages_legbottom
+
 
 
 
@@ -503,11 +561,8 @@ plot_sectoral_damages_legbottom
 #### Figure 3 Panel B
 
 
-# Load necessary libraries
-library(ggplot2)
 
 #Run Damages.R nd get cor_dam
-glimpse(cor_dam)
 
 # Define parameters
 #market_value <- 10  # Initial value of the market component
@@ -594,7 +649,6 @@ market_eq <- ggplot(results, aes(x = theta, y = market_dollar_equivalent_loss)) 
   )+ xlim(c(-0.1,1.12))
 market_eq
 #ggsave("Figures/Utility/Simulation_Utility_MarketLoss.png")
-getwd()
 
 
 market_eq_gg <- ggarrange(ggplot() + theme_void() ,market_eq,ggplot()+ theme_void(), ncol=3,widths=c(1,2,1))
@@ -614,6 +668,8 @@ plot_sectoral_damages <- plot_sectoral_damages + theme(plot.margin = margin(0, 0
 ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
 labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
 ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10))
+#ggsave("Figures/Fig3_Damages.jpg",dpi=600)
+
 
 
 
