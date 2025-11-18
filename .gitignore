@@ -1,9 +1,13 @@
 .idea
 /Data/input_modules
 /Code/Blue-scc
+Figures
+!Figures/Main
 
+ExtendedData
 Data/*
 # Track inputs to RICE50x
+!Data/SuppTables
 !Data/output_modules_input_rice50x
 Data/output_modules_input_rice50x/*
 !Data/output_modules_input_rice50x/input_rice50x

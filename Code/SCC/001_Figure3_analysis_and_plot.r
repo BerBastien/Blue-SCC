@@ -665,9 +665,19 @@ market_eq_gg2 <- market_eq +
 plot_sectoral_damages <- plot_sectoral_damages + theme(plot.margin = margin(0, 0, 0, 0))
 
 
-ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
-labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
-ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10))
+# Save as PDF with default dimensions
+ggsave("Figures/Fig3_Damages.pdf", 
+  plot = ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
+  labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
+  ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10)),
+  dpi=600)
+
+# Save as SVG with default dimensions
+ggsave("Figures/Fig3_Damages.svg", 
+  plot = ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
+  labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
+  ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10)),
+  dpi=600)
 #ggsave("Figures/Fig3_Damages.jpg",dpi=600)
 
 
