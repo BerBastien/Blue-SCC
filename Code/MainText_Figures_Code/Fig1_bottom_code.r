@@ -10,14 +10,15 @@
 
         population_data <- readRDS("Data/other/population_data_2020.rds")
         gdp_data <- readRDS("Data/other/gdp_data_2020.rds")
+        library(dplyr)
 
         
     ## Socioeconomics (end)
 
     ## Temperature from RICE50x
         # Load and preprocess data
-        tatm <- read_excel(paste0('Data/output_rice50x/results_ocean_damage_9999.xlsx'), sheet = "TATM") %>%
-        select(year = 1, tatm = 3) %>%
+        tatm <- read_excel(paste0('Data/output_rice50x/results_ocean_damage.xlsx'), sheet = "TATM") %>%
+        dplyr::select(year = 1, tatm = 3) %>%
         mutate(year = 1980 + (as.integer(year) - 1) * 5, tatm = as.double(tatm)) %>%
         filter(!is.na(year)) %>%
         as.data.frame()
@@ -36,7 +37,7 @@
 
         ## Present Value as Percent
             coral_values <- ssp_corals_growth %>% filter(year==2020,scenario=="SSP2") %>% 
-                select(countrycode,Market_Use_Values_Undamaged_percGDP,nuV_Undamaged_percGDP,nV_Undamaged_percGDP) %>% 
+                dplyr::select(countrycode,Market_Use_Values_Undamaged_percGDP,nuV_Undamaged_percGDP,nV_Undamaged_percGDP) %>% 
                 dplyr::rename( market_percGDP = Market_Use_Values_Undamaged_percGDP, nonmarketuse_percGDP =nuV_Undamaged_percGDP, nonuse_percGDP=nV_Undamaged_percGDP)
             glimpse(coral_values)
 
@@ -58,25 +59,20 @@
     ## Ports (start)
 
         port_ssp <- read.csv("Data/output_modules_input_rice50x\\output_modules/ports/ports_ssps_rcps.csv")
-        glimpse(port_ssp)
-        glimpse(ssp_corals_growth_ssp2)
-        levels(factor(port_ssp$type))
-
+        
         port_values <- port_ssp %>% filter(year==2022,SSP=="SSP2",RCP=="RCP26") %>% 
             group_by(iso3) %>% 
             summarize( risk_base_perc = sum(risk_base_perc), iso3=iso3) %>% 
-            select(iso3,risk_base_perc) %>% slice(1) %>% 
+            dplyr::select(iso3,risk_base_perc) %>% slice(1) %>% 
             mutate(category="Market",capital="Ports")%>% 
             dplyr::rename( value = risk_base_perc, countrycode=iso3)  %>% ungroup()
-        glimpse(port_values)
         
     ## Ports (end)
 
     ## Fisheries (start)
         
         fisheries_df_temp_gdp <- read.csv("Data/output_modules_input_rice50x\\output_modules/fish/fisheries_Free_EtAl.csv")
-        glimpse(fisheries_df_temp_gdp)
-
+        
         fish_values <- fisheries_df_temp_gdp %>% filter(year==2020,rcp=="RCP26",scenario=="Full Adaptation") %>% 
             dplyr::rename(value=profits_usd_percGDP_baseline,countrycode=country_iso3) %>% 
             dplyr::select(value,countrycode)%>% 
@@ -92,28 +88,23 @@
                     left_join(gdp_data %>% dplyr::select(GDP_2020usd,countrycode),by="countrycode")%>% 
                     left_join(population_data %>% dplyr::select(Pop2020,countrycode),by="countrycode") %>% 
                     mutate(value = 100*TAME_nutrients_MortalityEffect*Pop2020*Nutritional_D*0.05*VSL/GDP_2020usd) %>% 
-                    select(value,countrycode) %>% 
+                    dplyr::select(value,countrycode) %>% 
                     mutate(category="Non-market Use",capital="Fisheries & Mariculture")
-        glimpse(nutrition_health)
-
+        
         
     ## Fisheries (end)
 
     ## Mangroves (start)
         man_ben_perkm2 <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\weighted_avg_benefits.csv") #read.csv("Data/intermediate_output/mangrove_benefits_per_km2.csv") 
         area_man <- read.csv("Data\\output_modules_input_rice50x\\input_rice50x\\mangrove_area_coefficients_sq.csv")
-        glimpse(area_man)
         
-        levels(factor(man_ben_perkm2$type))
-
         man_values0 <- man_ben_perkm2 %>% dplyr::filter(year==2020,forcing=="onlyCC") %>% dplyr::select(-X,-year,-forcing,-gdppc,-GDP_SSP2,-weighted_avg_benefit_perha) %>% 
                         left_join(area_man %>% dplyr::select(countrycode,MangroveArea_2020_km2),by="countrycode") %>% 
                         #dplyr::rename(category=type) %>% 
                         mutate(value =weighted_avg_benefit_perha_percGDP * MangroveArea_2020_km2 * 100, 
                         category = case_when(type=="cultural"~"Non-use", type=="provision"~"Market",type=="regulation"~"Non-market Use"),
                         capital = "Mangroves") %>% dplyr::select(-MangroveArea_2020_km2,-weighted_avg_benefit_perha_percGDP,-type)
-        glimpse(man_values0)
-
+        
              
     ## Mangroves (end)
 
@@ -162,7 +153,7 @@
         labs(size="Value of Benefit\n(shown as %GDP)",shape="Value Category",color="Blue Capital",x="GDP per capita (Thousand 2020 USD)")
   
         capital_plot
-        ggsave("Figures\\Main\\Values_Across_Regions2.png",dpi=300)
+        ggsave("Figures\\Main\\Panels\\Figure1_B.png",dpi=300)
 
         #svglite::svglite("capital_diagrams.svg", width = 10, height = 7)
         #print(capital_plot)
@@ -196,9 +187,9 @@
         mixed_plot <- ggarrange(sankey,capital_plot)
 
 
-        svglite::svglite("combined_diagrams_v3.svg", width = 7.5, height = 4)
-        print(mixed_plot )
-        dev.off()
+        # svglite::svglite("combined_diagrams_v3.svg", width = 7.5, height = 4)
+        # print(mixed_plot )
+        # dev.off()
 
         # Calculate total count for each region
         total_counts <- blue_cap_summary %>%
@@ -248,12 +239,13 @@
             theme(legend.position = "none")
 
             sankey
+        ggsave("Figures\\Main\\Panels\\Figure1_C.png",dpi=300)
 
 
 
 
-            mixed_plot <- ggarrange(sankey,capital_plot+guides(legend.position="right"),ncol=2,widths=c(1,2))
-            ggarrange(sankey,capital_plot+guides(legend.position="right"),ncol=2,widths=c(1,2))
+            # mixed_plot <- ggarrange(sankey,capital_plot+guides(legend.position="right"),ncol=2,widths=c(1,2))
+            # ggarrange(sankey,capital_plot+guides(legend.position="right"),ncol=2,widths=c(1,2))
 
             #svglite::svglite("Figures/sankey_capital.svg", width = 7.5, height = 6)
 

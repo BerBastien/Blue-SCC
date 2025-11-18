@@ -9,11 +9,6 @@
     geospatial_fish_raster <- readRDS("Data\\input_modules\\fish\\species_richness_yr0.Rds")
     eez_boundaries <- st_read("Data/other/eez_boundaries_v11.gpkg")
 
-    glimpse(geospatial_mangroves_polygons)
-    glimpse(geospatial_coral_polygons)
-    glimpse(geospatial_ports_polygons) # infra = 'port'
-    glimpse(geospatial_fish_raster)
-
     crs_map_corals <- st_crs(geospatial_coral_polygons)
     crs_map_mangroves <- st_crs(geospatial_mangroves_polygons)
     crs_map_ports <- st_crs(geospatial_ports_polygons)
@@ -130,26 +125,7 @@ ggplot() +
          color = "none") +
     coord_sf(crs = "+proj=robin") 
 
-ggsave("Figures/blue_capital_croppedEEZ.png")
+ggsave("Figures/Main/Panels/Fig1_top.png")
 
 
 
-
-
-
-    ggplot(data = geospatial_coral_polygons, aes(fill = damage_category)) +
-        geom_sf(aes(color = damage_category), size = 2) +
-        scale_color_manual(values = custom_colors, name = "Cover damage (% per Degree C)") +
-        scale_fill_manual(values = custom_colors, name = "Cover damage (% per Degree C)") +
-        geom_sf(data = continents, fill = "gray", color = NA, alpha = 0.2) +
-        labs(title = "") +
-        my_theme() + 
-        theme(
-            legend.position = "bottom",
-            legend.key.height = unit(1, "cm"), 
-            legend.key.width = unit(1.5, "cm")  
-        ) +
-        guides(
-            fill = guide_legend(title.position = "top", title.hjust = 0.5),
-            color = guide_legend(title.position = "top", title.hjust = 0.5)
-        )

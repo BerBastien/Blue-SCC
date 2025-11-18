@@ -437,7 +437,7 @@ left_join(plot_data %>%
                       )
 
                     time_damages_plot_adjusted
-                    #ggsave("Figures/FigS26_welfare-adjustment-effect-sectoral_damages.jpg",  dpi = 300)
+                    #ggsave("Figures/SM/FigS26_welfare-adjustment-effect-sectoral_damages.jpg",  dpi = 300)
 
 # Step 2: Separate rows with NA in `oc_capital`, duplicate for each unique `oc_capital`, and recombine
 oc_capital_levels <- unique(aggregated_data$oc_capital)
@@ -566,8 +566,8 @@ plot_sectoral_damages_legbottom <- ggplot(map_data %>% filter(continent != "Anta
 
 # Define parameters
 #market_value <- 10  # Initial value of the market component
-market_value <- cor_dam %>% filter(year==2025,country=="aus") %>% select(YNET)*def_mult[[1]]*10^6 #YNET is in Trillion, here we convert to millions
-nonmarket_value <- cor_dam %>% filter(year==2025,country=="aus") %>% select(usenm_nodam)*def_mult[[1]] #already in millions
+market_value <- cor_dam %>% filter(year==2025,country=="aus") %>% dplyr::select(YNET)*def_mult[[1]]*10^6 #YNET is in Trillion, here we convert to millions
+nonmarket_value <- cor_dam %>% filter(year==2025,country=="aus") %>% dplyr::select(usenm_nodam)*def_mult[[1]] #already in millions
 market_value/nonmarket_value
 dam <- 1 #damage is in million
 eta <- 0.5  # Set a value for eta
@@ -664,20 +664,23 @@ market_eq_gg2 <- market_eq +
   market_eq_gg2 <- market_eq_gg2 + theme(plot.margin = margin(50, 10, 50, 10))
 plot_sectoral_damages <- plot_sectoral_damages + theme(plot.margin = margin(0, 0, 0, 0))
 
+ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
+   labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
+   ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10))
 
 # Save as PDF with default dimensions
-ggsave("Figures/Fig3_Damages.pdf", 
-  plot = ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
-  labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
-  ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10)),
-  dpi=600)
+# ggsave("Figures/Fig3_Damages.pdf", 
+#   plot = ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
+#   labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
+#   ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10)),
+#   dpi=600)
 
 # Save as SVG with default dimensions
-ggsave("Figures/Fig3_Damages.svg", 
-  plot = ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
-  labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
-  ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10)),
-  dpi=600)
+# ggsave("Figures/Fig3_Damages.svg", 
+#   plot = ggarrange(time_damages_plot, ggarrange(market_eq_gg2, plot_sectoral_damages_legbottom + 
+#   labs(title="C. Substitutability-adjusted Damages in 2050"),align="h",
+#   ncol=2,widths=c(2,3)),ncol=1,heights=c(9,10)),
+#   dpi=600)
 #ggsave("Figures/Fig3_Damages.jpg",dpi=600)
 
 
