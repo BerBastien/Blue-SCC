@@ -4,8 +4,9 @@
 Figures/*
 !Figures/Main
 !Figures/Main/Panels
+Figures/Other
 Equations
-Results_BlueRCI50x
+Results_BlueRICE50
 ExtendedData
 Data/*
 # Track inputs to RICE50x
