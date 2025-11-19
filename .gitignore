@@ -1,7 +1,7 @@
 .idea
 /Data/input_modules
 /Code/Blue-scc
-Figures
+Figures/*
 !Figures/Main
 !Figures/Main/Panels
 Equations
