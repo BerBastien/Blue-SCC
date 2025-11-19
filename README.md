@@ -6,6 +6,6 @@ The python (Python 3.14) files in the folder code/SCC/ convert those damage func
 
 The user needs RICE50+ to calculate the Blue SCC: https://github.com/witch-team/RICE50xmodel
 
-Once the user gets the results the figures in the paper xxxxxxxx are replicable running the code code/MainText_Figures_Code
+Once the user gets the results the figures in the paper "Accounting for Ocean Impacts Nearly Doubles the Social Cost of Carbon" are replicable running the code code/MainText_Figures_Code
 
 Typical running time in a normal computer takes less than one hour
