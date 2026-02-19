@@ -5,17 +5,13 @@ from pathlib import Path
 import gdxpds
 import pandas as pd
 from utils import sectoral_scc
-import platform
 import context
 
 import logging
 
 context.pdsettings()
 
-if platform.system() == 'Windows':
-    root = Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x/bluerice")
-else:
-    root = Path('/work/cmcc/fg12520/RICE50x/bluerice')
+root = context.rice_path() / 'bluerice'
 
 logging.basicConfig(level=logging.DEBUG)
 

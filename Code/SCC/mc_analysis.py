@@ -1,26 +1,19 @@
 # %% Imports
-import re
-from joblib import Parallel, delayed
 from pathlib import Path
 import numpy as np
 import gdxpds
 import matplotlib.pyplot as plt
-from tqdm import tqdm
 import pandas as pd
 from utils import sectoral_scc, palette
 from matplotlib import ticker
-import platform
 import context
 
 context.pdsettings()
 
-if platform.system() == 'Windows':
-    root = Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x")
-else:
-    root = Path('/work/seme/fg12520/RICE50x')
+root = context.rice_path()
 
 
-def scc_mc(mc_id, run_type, baseline=False, country_level=False):
+def scc_mc(mc_id, run_type, country_level=False):
 
     if not (root / 'bluerice' / run_type / f'results/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
