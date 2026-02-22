@@ -18,8 +18,8 @@
 
     #external directories for datasets
     dir_box <- "G:\\My Drive\\Data\\"
-    dir_wcmc <- paste0(dir_box,"\\Oceans\\coral_extent\\14_001_WCMC008_CoralReefs2021_v4_1\\01_Data")
-    dir_ssps <- paste0(dir_box,"\\SSPs\\Gridded\\Pop\\")
+    dir_wcmc <- paste0(dir_box,"\\Oceans\\coral_extent\\14_001_WCMC008_CoralReefs2021_v4_1\\01_Data") # get this data at https://drive.google.com/drive/folders/10poBMwF3QM2SenNFkT8lntIX9ZSSDe6n?usp=sharing
+    dir_ssps <- paste0(dir_box,"\\SSPs\\Gridded\\Pop\\") # get this data at https://drive.google.com/drive/folders/1_XBbnVRYC-bN0MxDgfA6_d0f_dSS7kZ1?usp=sharing
 
 
     # Miscelaneous 

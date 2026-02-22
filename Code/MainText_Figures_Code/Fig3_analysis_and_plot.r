@@ -255,6 +255,26 @@ shapes <- c("Market" = 15, "Non-market Use" = 16, "Non-use" = 17)
         #Consequently, ASIA bears 94% of these damages, followed by OECD (5%), LAM, and MAF. 
         nonuse_damages_2100
 
+  # Create source data for the figure
+  source_data_fig3a <- plot_data %>% 
+    filter(value < 0, year < end_year + 1, country != "ken") %>%
+    dplyr::select(
+      year,
+      country,
+      YNET,
+      pop,
+      capital,
+      variable,
+      value,
+      CPC
+    ) %>%
+    arrange(capital, variable, country, year)
+
+  # Save to CSV
+  write_csv(source_data_fig3a, 
+            "Code/MainText_Figures_Code/figure_source_data/Fig3A_source_data.csv")
+
+  # Create the plot
   time_damages_plot <- ggplot(plot_data %>% filter(value<0,year < end_year+1,country!="ken" ), 
             aes(x = CPC/1000, y = -value, color = capital, group = interaction(country,capital, variable))) +
         geom_line(alpha=0.5) +
@@ -535,24 +555,41 @@ plot_sectoral_damages <- ggplot(map_data %>% filter(continent != "Antarctica")) 
                 plot.title = element_text(hjust = 0.5)
             )
 
+            # Create source data for the figure
+            source_data_fig3c <- map_data %>% 
+              filter(continent != "Antarctica") %>%
+              st_drop_geometry() %>%  # Remove geometry for CSV export
+              dplyr::select(
+                country = name,
+                iso_a3,
+                continent,
+                oc_capital,
+                percentage_of_YGROSS,
+                quantile_group
+              )
 
-plot_sectoral_damages_legbottom <- ggplot(map_data %>% filter(continent != "Antarctica")) +
-  geom_sf(aes(fill = quantile_group), color = "grey", linewidth = 0.1) +
-  facet_wrap(~oc_capital) +
-  scale_fill_manual(values = custom_colors, na.value = "transparent", name = "% of GDP") +
-  coord_sf(crs = "+proj=robin") + # Robinson projection
-  theme_void() +
-  labs(
-    title = "B. Damages in 2050",
-    fill = "% of GDP (Quantiles)"
-  ) +
-  theme(
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  )
+            Save to CSV
+            # write_csv(source_data_fig3c, 
+            #           "Code/MainText_Figures_Code/figure_source_data/Fig3C_source_data.csv")
+
+            # Create the plot with legend at bottom
+            plot_sectoral_damages_legbottom <- ggplot(map_data %>% filter(continent != "Antarctica")) +
+              geom_sf(aes(fill = quantile_group), color = "grey", linewidth = 0.1) +
+              facet_wrap(~oc_capital) +
+              scale_fill_manual(values = custom_colors, na.value = "transparent", name = "% of GDP") +
+              coord_sf(crs = "+proj=robin") + # Robinson projection
+              theme_void() +
+              labs(
+                title = "B. Damages in 2050",
+                fill = "% of GDP (Quantiles)"
+              ) +
+              theme(
+                axis.text = element_blank(),
+                axis.ticks = element_blank(),
+                panel.grid = element_blank(),
+                plot.title = element_text(hjust = 0.5),
+                legend.position = "bottom"
+              )
 
 
 
@@ -610,6 +647,19 @@ for (i in seq_along(theta_values)) {
 glimpse(results)
 results
 # Plot the results
+# Create source data for Figure 3B
+source_data_fig3b <- results %>%
+  filter(theta >= -0.1, theta <= 1.12) %>%
+  dplyr::select(
+    theta,
+    market_dollar_equivalent_loss
+  )
+
+# Save to CSV
+write_csv(source_data_fig3b, 
+          "Code/MainText_Figures_Code/figure_source_data/Fig3B_source_data.csv")
+
+# Create the plot
 market_eq <- ggplot(results, aes(x = theta, y = market_dollar_equivalent_loss)) +
   geom_line() +
   labs(
