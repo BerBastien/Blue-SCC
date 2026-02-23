@@ -128,7 +128,7 @@ port_df_old <- read.csv("Data\\input_modules\\ports\\Old Data\\port_risk_midcent
 ## Read RCPs Temps (end)  
 
 ## Read SSps GDP (start)
-    ssps <- read.csv(paste0(dir_box,"/SSPs/SspDb_country_data_2013-06-12.csv"))
+    ssps <- read.csv(file.path(dir_ssps, "SspDb_country_data_2013-06-12.csv"))
     glimpse(ssps)
     
 

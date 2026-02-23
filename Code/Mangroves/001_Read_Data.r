@@ -35,9 +35,9 @@
     
     ##  Merge with GDP (start)
 
-        ssp_gdp <- read.csv(file=paste0(dir_box,'\\SSPs\\ssp_gdp.csv'))
-        ssp_temp <- read.csv(file=paste0(dir_box,"\\SSPs\\CO2Pulse\\SSP585_magicc_202310021547.csv"))
-        ssp_temp <- read.csv(file=paste0(dir_box,"\\SSPs\\CO2Pulse\\SSP370_magicc_202311031621.csv"))
+        ssp_gdp <- read.csv(file=file.path(dir_ssps, 'ssp_gdp.csv'))
+        ssp_temp <- read.csv(file=file.path(dir_ssps, "CO2Pulse", "SSP585_magicc_202310021547.csv"))
+        ssp_temp <- read.csv(file=file.path(dir_ssps, "CO2Pulse", "SSP370_magicc_202311031621.csv"))
         countries_in_ssps <- unique(ssp_gdp$ISO3)            
             
         ssp_gdp$countrycode <- ssp_gdp$ISO3        

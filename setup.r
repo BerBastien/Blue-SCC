@@ -1,13 +1,16 @@
 ## Set-up File
 
 ####--- Libraries ---####
-    x <- c('raster','ggOceanMapsData','ggOceanMaps', 'ggpubr',"reshape",
+    # Install and load pacman if not already installed
+    if (!require("pacman", quietly = TRUE)) install.packages("pacman")
+
+    # Load packages using pacman
+    pacman::p_load('raster','ggOceanMapsData','ggOceanMaps', 'ggpubr',"reshape",
         'dplyr','ncdf4','ggplot2','tidyverse','RColorBrewer','colorspace','spData','sf',
         'lfe','marginaleffects','rgdal',"rnaturalearth",'rgeos','geosphere','sf','ggthemes',
         "exactextractr","WDI","ggrepel","viridis","scico","scales","stringr","patchwork", "readxl",
-        "countrycode","purrr","tidyr","rlang","rnaturalearthdata","ggalluvial","svglite","ggplot2", "dplyr","WDI","ggpubr","scico","rnaturalearth","scales","readxlsx","tidyquant","dplyr")
-    
-    lapply(x, require, character.only = TRUE)
+        "countrycode","purrr","tidyr","rlang","rnaturalearthdata","ggalluvial","svglite","ggplot2",
+        "dplyr","WDI","ggpubr","scico","rnaturalearth","scales","readxlsx","tidyquant","dplyr", "here")
 
 
 
@@ -16,49 +19,79 @@
     script_path <- here::here()
     setwd(script_path)
 
-    #external directories for datasets
-    dir_box <- "G:\\My Drive\\Data\\"
-    dir_wcmc <- paste0(dir_box,"\\Oceans\\coral_extent\\14_001_WCMC008_CoralReefs2021_v4_1\\01_Data")
-    dir_ssps <- paste0(dir_box,"\\SSPs\\Gridded\\Pop\\")
+    # Local data directories (using External_Data folder in repository)
+    dir_external <- here::here("External_Data")
+    dir_wcmc <- file.path(dir_external, "01_Data")
+
+    # Gridded population data (TIF files) - now at root level of External_Data
+    dir_ssps_gridded <- dir_external  # SPP1, SPP2, SPP3, SPP4, SPP5 folders
+
+    # CSV/tabular SSP data directory
+    dir_ssps <- file.path(dir_external, "SSPs")
+
+    # Create SSPs directory if it doesn't exist (for CSV files)
+    if (!dir.exists(dir_ssps)) {
+        dir.create(dir_ssps, recursive = TRUE)
+        dir.create(file.path(dir_ssps, "CO2Pulse"), recursive = TRUE)
+        warning("\n========================================")
+        warning("External_Data/SSPs/ directory created.")
+        warning("REQUIRED CSV FILES (not yet present):")
+        warning("  - External_Data/SSPs/SspDb_country_data_2013-06-12.csv")
+        warning("  - External_Data/SSPs/ssp_gdp.csv")
+        warning("  - External_Data/SSPs/ssp_pop.csv")
+        warning("  - External_Data/SSPs/CO2Pulse/*.csv (SSP scenario temperature files)")
+        warning("========================================\n")
+    }
 
 
-    # Miscelaneous 
+    # Miscellaneous
     misc_folder <- here::here("Code", "Misc")
     r_files_misc <- list.files(path = misc_folder, pattern = "\\.[rR]$", full.names = TRUE)
-    lapply(r_files_misc, source)
+
+    # Source misc files with error handling (some may require data files)
+    cat("\nLoading miscellaneous utility files...\n")
+
+    # Files to skip (require external data not in repository)
+    skip_files <- c("crosscutting_data.r", "estimating_eaths.r")
+
+    for (misc_file in r_files_misc) {
+        file_name <- basename(misc_file)
+
+        # Skip files that require external data
+        if (file_name %in% skip_files) {
+            cat("  Skipping", file_name, "(requires external data files)\n")
+            next
+        }
+
+        tryCatch({
+            source(misc_file)
+            cat("  Loaded:", file_name, "\n")
+        }, error = function(e) {
+            warning(paste("Could not load", file_name, ":", conditionMessage(e)))
+        })
+    }
     graphics.off()
     
 ####--- Blue Capital Modules ---####
-    # Corals  
-    corals_folder <- here::here("Code", "Corals")
-    r_files_corals <- list.files(path = corals_folder, pattern = "\\.[rR]$", full.names = TRUE)
-    #lapply(r_files_corals, source) Only run once
-    r_files_corals_figures <- list.files(path = corals_folder, pattern = "999", full.names = TRUE)
-    source(r_files_corals_figures[1])
-    graphics.off()
+    # Note: Module scripts are NOT run automatically during setup.
+    # They require data files and should be run via main.R or manually.
+    #
+    # To run modules manually:
+    #   source("Code/Corals/001_TempCoefficients.r")
+    #   source("Code/Mangroves/001_Read_Data.r")
+    # etc.
+    #
+    # To run complete workflow:
+    #   source("main.R")
 
-    # Ports
-    ports_folder <- here::here("Code", "Ports")
-    r_files_ports <- list.files(path = ports_folder, pattern = "\\.[rR]$", full.names = TRUE)
-    #lapply(r_files_ports, source) Only run once
-    r_files_ports_figures <- list.files(path = ports_folder, pattern = "999", full.names = TRUE)
-    source(r_files_ports_figures[1])
-    graphics.off()
-
-    # Fisheries and Mariculture
-    fisheries_folder <- here::here("Code", "Fisheries_and_Mariculture")
-    r_files_fisheries <- list.files(path = fisheries_folder, pattern = "\\.[rR]$", full.names = TRUE)
-    #lapply(r_files_fisheries, source) Only run once
-    r_files_fisheries_figures <- list.files(path = fisheries_folder, pattern = "999", full.names = TRUE)
-    source(r_files_fisheries_figures[1])
-    graphics.off()
-
-    # Mangroves
-    mangroves_folder <- here::here("Code", "Mangroves")
-    r_files_mangroves <- list.files(path = mangroves_folder, pattern = "\\.[rR]$", full.names = TRUE)
-    #lapply(r_files_mangroves, source) Only run once
-    r_files_mangroves_figures <- list.files(path = mangroves_folder, pattern = "999", full.names = TRUE)
-    source(r_files_mangroves_figures[1])
-    graphics.off()
+    cat("\n")
+    cat("========================================\n")
+    cat("SETUP COMPLETE\n")
+    cat("========================================\n")
+    cat("\nEnvironment ready!\n")
+    cat("\nNext steps:\n")
+    cat("  1. Run complete workflow: source('main.R')\n")
+    cat("  2. Or run individual modules in Code/\n")
+    cat("\nFor help, see README.md or QUICK_START.md\n\n")
 
 

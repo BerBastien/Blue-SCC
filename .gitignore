@@ -1,4 +1,7 @@
 .idea
+.Rhistory
+test_*.r
+test_*.R
 /Data/input_modules
 /Code/Blue-scc
 Figures/*
@@ -34,3 +37,38 @@ Data/SCC/out/*
 !/Data/SCC/out/country_level_scc.csv
 /Figures/all_figures/
 /Figures/country_scc/
+.Rproj.user
+
+# External_Data - ignore large files but keep structure
+External_Data/**/*.tif
+External_Data/**/*.tfw
+External_Data/**/*.tfwx
+External_Data/**/*.ovr
+External_Data/**/*.shp
+External_Data/**/*.shx
+External_Data/**/*.dbf
+External_Data/**/*.prj
+External_Data/**/*.sbn
+External_Data/**/*.sbx
+External_Data/**/*.CPG
+External_Data/**/*.xml
+External_Data/**/arc.dir
+
+# Keep External_Data directory structure and documentation
+!External_Data/
+!External_Data/README.md
+!External_Data/**/README.md
+!External_Data/**/.gitkeep
+
+# Results directory - ignore large model output files
+Results/
+!Results/README.md
+!Results/.gitkeep
+
+blue-scc.Rproj
+
+.claude/
+
+External_Data/
+
+docs/Bastien-Olvera et al. - 2026 - Accounting for ocean impacts nearly doubles the social cost of carbon.pdf

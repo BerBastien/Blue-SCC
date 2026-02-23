@@ -87,7 +87,7 @@ glimpse(fisheries_df)
 ## Temp SSPS (start)
 
 ## ADD GDP (start)
-  ssps <- read.csv(paste0(dir_box,"/SSPs/SspDb_country_data_2013-06-12.csv"))
+  ssps <- read.csv(file.path(dir_ssps, "SspDb_country_data_2013-06-12.csv"))
   glimpse(ssps)
     
     ssp <- melt(ssps, id = c("MODEL","SCENARIO","REGION","VARIABLE","UNIT")) 
