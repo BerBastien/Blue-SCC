@@ -1,26 +1,19 @@
 # %% Imports
-import re
-from joblib import Parallel, delayed
 from pathlib import Path
 import numpy as np
 import gdxpds
 import matplotlib.pyplot as plt
-from tqdm import tqdm
 import pandas as pd
 from utils import sectoral_scc, palette
 from matplotlib import ticker
-import platform
 import context
 
 context.pdsettings()
 
-if platform.system() == 'Windows':
-    root = Path(r"C:\Users\Granella\Dropbox (CMCC)\PhD\Research\RICE50x")
-else:
-    root = Path('/work/seme/fg12520/RICE50x')
+root = context.rice_path()
 
 
-def scc_mc(mc_id, run_type, baseline=False, country_level=False):
+def scc_mc(mc_id, run_type, country_level=False):
 
     if not (root / 'bluerice' / run_type / f'results/results_ocean_damage_pulse_{mc_id}.gdx').is_file():
         return pd.DataFrame()
@@ -41,12 +34,8 @@ def scc_mc(mc_id, run_type, baseline=False, country_level=False):
         _target = target if target != (None, None) else ('total', 'total')
         _scc = _scc.assign(oc_capital=_target[0], valuation=_target[1], id=mc_id)
         _l.append(_scc)
-    if baseline:
-        return pd.concat(_l).reset_index()
-    else:
-        mc_sampling_df = pd.read_parquet(Path.cwd() / 'Data/SCC/out/lhs.parquet').query(f'id=={mc_id}')
-        mc_sampling_df['id'] = mc_sampling_df['id'].astype(str)
-        return pd.concat(_l).reset_index().merge(mc_sampling_df, on='id', how='outer')
+    return pd.concat(_l).reset_index()
+
 
 
 def get_distribution_data():
@@ -74,7 +63,7 @@ def get_gsa_data():
 
 
 def get_baseline_data():
-    baseline = scc_mc('BASELINE', 'baseline', baseline=True).query('t==2020')
+    baseline = scc_mc('BASELINE', 'baseline').query('t==2020')
     baseline['oc_capital'] = baseline.oc_capital.replace(
         {'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
          'total': 'Total'})
@@ -175,6 +164,10 @@ distribution = distribution.rename(columns={'coral': 'Corals', 'fisheries': 'Fis
 
 distribution = distribution[['Total', 'Fisheries', 'Corals', 'Mangroves', 'Ports']]
 
+with pd.ExcelWriter(Path().cwd() / 'Data/SCC/out/Figure_4.xlsx') as writer:
+    baseline.to_excel(writer, sheet_name='Upper panel', index=False)
+    distribution.reset_index().assign(id = lambda x: x.id.astype(int)).sort_values('id').to_excel(writer, sheet_name='Lower panel', index=False)
+
 fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8,8), sharex=False, sharey=False)
 ax1, ax2 = axs
 # Upper panel
@@ -214,12 +207,13 @@ ax2.text(-0.1, 1.1, 'B. Uncertatinty in the Blue social cost of carbon in 2020',
 
 plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc.pdf')
+plt.savefig(Path().cwd() / 'Figures/SCC/scc.svg')
 plt.show()
 
 # %% Other SSPs
 l = []
 for i in range(1,6):
-    l.append(scc_mc(f'ssp{i}', run_type='ssp', baseline=True).assign(ssp=f'SSP{i}'))
+    l.append(scc_mc(f'ssp{i}', run_type='ssp').assign(ssp=f'SSP{i}'))
 ssps = pd.concat(l).query('t==2020').replace({'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
                         'total': 'Total'})\
     .replace({'consumption': 'Market value', 'usenm': 'Non-market use value', 'nonuse': 'Nonuse value', 'total': 'Total'})
@@ -251,66 +245,10 @@ axs[-1].set_visible(False)
 ax.legend(h[3:6] + h[:1], l[3:6] + l[:1], frameon=False,  title_fontproperties={'weight':'demibold'})
 plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc_breakdown_ssps.pdf')
+plt.savefig(Path().cwd() / 'Figures/SCC/scc_breakdown_ssps.svg')
 plt.show()
-
-# %%
-# total = df[df.oc_capital == 'total']
-# total20 = total[(total.index == 2020) & (total.id.str.startswith('theta')==False)]
-# theta20 = df[(df.oc_capital == 'total') & (df.index==2020) & (df.id.str.startswith('theta'))].sort_values('theta1')
-# fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5,5), sharex=False, sharey=False)
-# ax.plot(theta20.theta1, theta20.scc)
-# ax.set_xlabel(r'$\theta_1, \theta_2$')
-# ax.set_ylabel('2020 USD', loc='top', rotation='horizontal', fontweight='normal')
-# ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-# ax.set_ylim(0, ax.get_ylim()[1])
-# ax.set_title('2020 SCC')
-# ax.spines[['top', 'right']].set_visible(False)
-# plt.tight_layout()
-# plt.show()
-#
-#
-# fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6,5), sharex=False, sharey=False)
-# ax.scatter(total20.theta1, total20.scc)
-# ax.scatter(total20[total20.id==0].theta1, total20[total20.id==0].scc)
-# ax.set_xlabel(r'$\theta_1, \theta_2$')
-# ax.set_ylabel('2020 USD', loc='top', rotation='horizontal', fontweight='normal')
-# ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-# ax.set_ylim(0, ax.get_ylim()[1])
-# ax.set_title('2020 SCC')
-# ax.spines[['top', 'right']].set_visible(False)
-# plt.tight_layout()
-# plt.show()
-#
-# fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6,5), sharex=False, sharey=False)
-# ax.hist(total20[total20.id!='0'].scc, bins=10)
-# # ax.axvline(total20[total20.id==0].at[2020, 'scc'], color='tab:orange')
-# ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-# ax.annotate('$28.9', (32, 20), color='k')
-# # ax.set_xlabel('2020 USD', loc='center', rotation='horizontal', fontweight='normal')
-# ax.set_ylabel('Density', loc='center')
-# ax.set_title('2020 SCC')
-# ax.spines[['top', 'right']].set_visible(False)
-# plt.tight_layout()
-# plt.show()
-#
-# fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8,5), sharex=False, sharey=False)
-# ax1.hist(total20[total20.id!='0'].scc, bins=7, color='silver')
-# ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-# ax1.annotate('$28.9', (32, 20), color='k')
-# ax1.set_ylabel('A', loc='top', rotation='horizontal', fontweight='bold')
-# ax1.set_yticklabels([])
-# ax1.spines[['top', 'right']].set_visible(False)
-# ax2.plot(theta20.theta1, theta20.scc)
-# ax2.set_xlabel(r'$\theta_1, \theta_2$')
-# ax2.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
-# ax2.yaxis.set_major_formatter(ticker.FormatStrFormatter("$%d"))
-# ax2.spines[['top', 'right']].set_visible(False)
-# fig.suptitle('2020 SCC in 2020 USD')
-# plt.tight_layout()
-# plt.show()
-pass
 # %% Rennert et al
-rennert_et_al = scc_mc('rennert_et_al', run_type='rennert_et_al', baseline=True).query('t==2020')
+rennert_et_al = scc_mc('rennert_et_al', run_type='rennert_et_al').query('t==2020')
 rennert_et_al['oc_capital'] = rennert_et_al.oc_capital.replace(
     {'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
      'total': 'Total'})
@@ -349,7 +287,7 @@ plt.savefig(Path().cwd() / 'Figures/SCC/rennert_et_al.pdf')
 plt.show()
 
 # %% Country-level
-country_level = scc_mc('BASELINE', run_type='baseline', baseline=True, country_level=True).query('t==2020').drop(columns=['id', 't'])
+country_level = scc_mc('BASELINE', run_type='baseline', country_level=True).query('t==2020').drop(columns=['id', 't'])
 country_level['oc_capital'] = country_level.oc_capital.replace(
     {'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves',
      'total': 'Total'})
@@ -362,51 +300,26 @@ country_level.assign(iso3=lambda x: x.n.str.upper())\
     .filter(['iso3', 'scc', 'oc_capital', 'valuation'])\
     .reset_index(drop=True)\
     .to_csv(context.projectpath() / 'Data/SCC/out/country_level_scc.csv', index=False)
-
-# Plot
-import geopandas as gpd
-import geodatasets
-import matplotlib as mpl
-world = gpd.read_file(r"Data\SCC\tmp\ne_110m_admin_0_countries\ne_110m_admin_0_countries.shp")\
-    .assign(iso3=lambda x: x.ADM0_A3).filter(['iso3', 'geometry'])
-plot_df = country_level.assign(iso3=lambda x: x.n.str.upper())\
-    .sort_values(['iso3', 'oc_capital', 'valuation'])\
-    .filter(['iso3', 'scc', 'oc_capital', 'valuation'])\
-    .reset_index(drop=True)
-plot_df['scc_share'] = plot_df.scc / plot_df.groupby(['oc_capital', 'valuation']).scc.transform('sum')
-gdf = world.merge(plot_df).query('valuation=="Total"')
-
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 5), sharex=False, sharey=False)
-gdf.query('valuation=="Total"').plot(ax=ax, column='scc', cmap='Blues', legend=True,
-                                     norm=mpl.colors.LogNorm(vmin=1.0001, vmax=5)),
-world.boundary.plot(ax=ax, linewidth=0.5, color='k')
-plt.show()
 # %% GSA
+from matplotlib.lines import Line2D
 import safepython.PAWN as PAWN
 from safepython.util import aggregate_boot
-import os
 
 gsa_df = get_gsa_data()
-os.system(r"Rscript C:\Users\Granella\Dropbox (CMCC)\PhD\Research\Blue-SCC\Code\SCC\OT.R")
 gsa_vars = list(set(gsa_df.columns) - set(['t', 'scc', 'oc_capital', 'valuation', 'id', 'baseline', 'ocean_theta_2', 'Tecs', 'prstp', 'elasmu']))
 problem = {
     'num_vars': len(gsa_vars),
     'names': gsa_vars,
-    # 'bounds': [[0,1], [0 , 1]]
 }
 x = gsa_df[gsa_vars].values
 y = gsa_df.scc.values
 print(x.shape, y.shape)
 
-# analyse
-# delta_df = pd.DataFrame(delta.analyze(problem, x, y, seed=3465)).sort_values(by='delta', ascending=False)
-# pawn_df = pd.DataFrame(pawn.analyze(problem, x, y)).sort_values(by='mean', ascending=False)
-KS_median, KS_mean, KS_max, KS_dummy  = PAWN.pawn_indices(x, y, 5, Nboot=500, dummy=True)
 # Compute mean and confidence intervals of the sensitivity indices across the bootstrap resamples:
+KS_median, KS_mean, KS_max, KS_dummy = PAWN.pawn_indices(x, y, 5, Nboot=500, dummy=True)
 KS_mean_m, KS_mean_lb, KS_mean_ub = aggregate_boot(KS_mean)
 pawn_df = pd.DataFrame([KS_mean_m, KS_mean_lb, KS_mean_ub], columns=gsa_vars, index=['mean', 'lb', 'ub']).T
 pawn_df = pawn_df.sort_values('mean').reset_index(names='names')
-ot_df = pd.read_parquet(context.projectpath() / 'Data/SCC/out/OT.parquet')
 
 # Plot
 cat_dict = {
@@ -463,13 +376,8 @@ params_names_dict = {'Tecs': 'ECS', 'prstp': 'PRTP', 'vsl_start': 'VSL',
                      'ocean_nu_start': 'Non-use value per km$^2$ at t=0',
                      }
 _, cat_color_dict, cat_edgecolor_dict = palette()
-# cat_color_dict = {'Normative parameter': 'silver', 'Corals': 'gold', 'Corals/Mangroves': 'gold', 'Mangroves': 'yellowgreen', 'Fisheries': 'tab:cyan', 'Ports': 'tab:purple'}
-# cat_edgecolor_dict = {'Normative parameter': 'silver', 'Corals': 'gold', 'Corals/Mangroves': 'yellowgreen', 'Mangroves': 'yellowgreen', 'Fisheries': 'tab:cyan', 'Ports': 'tab:purple'}
 cat_hatch_dict = {'Normative parameter': None, 'Corals': None, 'Corals/Mangroves': '/', 'Mangroves': None, 'Fisheries': None, 'Ports': None}
 
-# delta_df = delta_df.replace(params_names_dict)
-# delta_df['cat'] = delta_df.names.replace(cat_dict)
-# delta_df = delta_df.sort_values(['cat', 'delta'])
 pawn_df['cat'] = pawn_df.names.replace(cat_dict)
 pawn_df = pawn_df.replace(params_names_dict)
 pawn_df['cat_color'] = pawn_df.cat.replace(cat_color_dict)
@@ -478,67 +386,14 @@ pawn_df['cat_hatch'] = pawn_df.cat.replace(cat_hatch_dict)
 pawn_df['cat'] = pd.Categorical(pawn_df.cat, ['Normative parameter', 'Corals', 'Corals/Mangroves', 'Mangroves', 'Fisheries', 'Ports'])
 pawn_df = pawn_df.sort_values(['cat', 'mean'], ascending=[True, True])
 
-ot_df['cat'] = ot_df.names.replace(cat_dict)
-ot_df = ot_df.replace(params_names_dict)
-ot_df['cat_color'] = ot_df.cat.replace(cat_color_dict)
-ot_df['cat_edgecolor'] = ot_df.cat.replace(cat_edgecolor_dict)
-ot_df['cat_hatch'] = ot_df.cat.replace(cat_hatch_dict)
-ot_df['cat'] = pd.Categorical(ot_df.cat, ['Normative parameter', 'Corals', 'Corals/Mangroves', 'Mangroves', 'Fisheries', 'Ports'])
-ot_df = ot_df.sort_values(['cat', 'ot'])
-
-# fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10,5), sharex=False, sharey=True)
-# ax1.bar(delta_df.names, delta_df.delta)
-# ax1.set_xticklabels(ax1.get_xticklabels(), rotation='vertical')
-# ax1.axhline(0, c='k')
-# ax2.bar(pawn_df.names, pawn_df['mean'])
-# ax1.set_ylabel('A', loc='top', rotation='horizontal', fontweight='bold')
-# ax1.set_title('Delta Moment-Independent Measure ')
-# ax2.set_xticklabels(ax2.get_xticklabels(), rotation='vertical')
-# ax2.axhline(0, c='k')
-# for ax in (ax1, ax2):
-#     ax.spines[['top', 'right']].set_visible(False)
-# ax2.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
-# ax2.set_title('PAWN index (mean)')
-# fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
-# plt.tight_layout()
-# plt.show()
-
-from matplotlib.lines import Line2D
-plt.rcParams['hatch.linewidth'] = 9
-pawn_df = pawn_df.sort_values(['cat', 'mean'], ascending=[False, True])
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,7), sharex=False, sharey=True)
-ax.bar(pawn_df.names, pawn_df['mean'], color=pawn_df.cat_color, hatch=pawn_df.cat_hatch, edgecolor=pawn_df.cat_edgecolor)
-ax.bar(pawn_df.names, pawn_df['mean'], color='none', edgecolor=pawn_df.cat_color)
-for i, row in pawn_df.reset_index(drop=True).iterrows():
-    # ax.plot([i,i], [row.loc['lb'], row.loc['ub']], c='k')
-    # ax.scatter([i], row.loc['mean'], c='k')
-    ax.errorbar([i], row.loc['mean'], [[row.loc['mean']-row.loc['lb']], [row.loc['ub']-row.loc['mean']]], fmt='_', capsize=6, c='k')
-ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='center')
-ax.axhline(0, c='k')
-ax.spines[['top', 'right']].set_visible(False)
-ax.set_ylabel('PAWN index', loc='top', rotation='vertical', fontweight='bold')
-legend_lines = [Line2D([0], [0], color=x, lw=8) for x in cat_color_dict.values()]
-del legend_lines[2]
-legend_labels = list(cat_color_dict.keys())
-del legend_labels[2]
-ax.legend(legend_lines, legend_labels, frameon=False)
-# ax.set_title('PAWN index (mean)')
-# fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
-plt.tight_layout()
-plt.savefig(Path().cwd() / 'Figures/SCC/pawn_h.png')
-plt.show()
-
 pawn_df = pawn_df.sort_values(['cat', 'mean'], ascending=[False, True])
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(7,10), sharex=False, sharey=True)
 ax.barh(pawn_df.names, pawn_df['mean'], color=pawn_df.cat_color, hatch=pawn_df.cat_hatch, edgecolor=pawn_df.cat_edgecolor)
 ax.barh(pawn_df.names, pawn_df['mean'], color='none', edgecolor=pawn_df.cat_color)
 for i, row in pawn_df.reset_index(drop=True).iterrows():
-    # ax.plot([i,i], [row.loc['lb'], row.loc['ub']], c='k')
-    # ax.scatter([i], row.loc['mean'], c='k')
     ax.errorbar(row.loc['mean'], [i], xerr=[[row.loc['mean']-row.loc['lb']], [row.loc['ub']-row.loc['mean']]], fmt='_', capsize=6, c='k')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='center')
 ax.spines[['top', 'right']].set_visible(False)
-# ax.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
 legend_lines = [Line2D([0], [0], color=x, lw=8) for x in cat_color_dict.values()]
 del legend_lines[2]
 legend_labels = list(cat_color_dict.keys())
@@ -548,57 +403,12 @@ ax.set_xlabel('PAWN index (mean)')
 ax.set_title('PAWN index (mean)')
 fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
 plt.tight_layout()
-plt.savefig(Path().cwd() / 'Figures/SCC/pawn.png')
+plt.savefig(Path().cwd() / 'Figures/SCC/pawn.pdf')
+plt.savefig(Path().cwd() / 'Figures/SCC/pawn.svg')
 plt.show()
 
-
-
-from matplotlib.lines import Line2D
-plt.rcParams['hatch.linewidth'] = 9
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,7), sharex=False, sharey=True)
-ax.bar(ot_df.names, ot_df['ot'], color=ot_df.cat_color, hatch=ot_df.cat_hatch, edgecolor=ot_df.cat_edgecolor)
-ax.bar(ot_df.names, ot_df['ot'], color='none', edgecolor=ot_df.cat_color)
-for i, row in ot_df.reset_index(drop=True).iterrows():
-    ax.plot([i,i], [row.loc['ot_lb'], row.loc['ot_ub']], c='k')
-    # ax.scatter([i], row.loc['mean'], c='k')
-ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='center')
-ax.axhline(0, c='k')
-ax.spines[['top', 'right']].set_visible(False)
-# ax.set_ylabel('B', loc='top', rotation='horizontal', fontweight='bold')
-legend_lines = [Line2D([0], [0], color=x, lw=8) for x in cat_color_dict.values()]
-del legend_lines[2]
-legend_labels = list(cat_color_dict.keys())
-del legend_labels[2]
-ax.legend(legend_lines, legend_labels, frameon=False)
-ax.set_title('OT index')
-fig.suptitle('Global sensitivity analysis for the 2020 SCC in 2020 USD')
-plt.tight_layout()
-plt.savefig(Path().cwd() / 'Figures/SCC/OT.png')
-plt.show()
-
-
-# %%
-from safepython.PAWN import pawn_indices
-KS_median, KS_mean, KS_max, KS_dummy = pawn_indices(x, y, 5, Nboot=1, dummy=False)
-pawn_bs = pd.DataFrame(np.vstack([KS_mean.mean(axis=0), np.quantile(KS_mean, 0.025, axis=0), np.quantile(KS_mean, 0.975, axis=0)]), columns=gsa_vars, index=['mean', '0.025', '0.975']).T.sort_values('mean')
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8,5), sharex=False, sharey=False)
-ax.bar(pawn_bs.index, pawn_bs['mean'])
-ax.scatter(pawn_bs.index, pawn_bs['0.025'], c='k')
-ax.scatter(pawn_bs.index, pawn_bs['0.975'], c='k')
-ax.set_xticklabels(ax2.get_xticklabels(), rotation=90, ha='center')
-ax.axhline(0, c='k')
-ax.spines[['top', 'right']].set_visible(False)
-plt.tight_layout()
-plt.show()
-# %%
-fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(10,10), sharex=False, sharey=True)
-for ax, col in zip(axs.flatten(), gsa_vars):
-    ax.scatter(df[col], df.scc, color='b',  marker='+', alpha=0.1)
-    ax.set_title(col, fontsize=7)
-plt.tight_layout()
-plt.show()
 # %% eta = 0
-eta0 = scc_mc(f'eta0', baseline=True).query('t==2020')\
+eta0 = scc_mc(f'eta0').query('t==2020')\
     .replace({'coral': 'Corals', 'fisheries': 'Fisheries', 'ports': 'Ports', 'mangrove': 'Mangroves', 'total': 'Total',
               'consumption': 'Market value', 'usenm': 'Non-market use value', 'nonuse': 'Nonuse value', 'total': 'Total'})
 
@@ -627,13 +437,15 @@ ax.legend(h[3:6] + h[:1], l[3:6] + l[:1], frameon=False,  title_fontproperties={
 plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc_eta0.png')
 plt.show()
+
 # %% PRSTP and SCC
 ids = [x.stem.split('_')[-1] for x in (root / f'bluerice/prstp/results').glob('results_ocean_damage_pulse_*.gdx')]
 l = []
 for id in ids:
     ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / f'bluerice/prstp/results/results_ocean_damage_{id}.gdx')
     prstp = ocean_damage_gdx['prstp'].iat[0,0]
-    l.append(scc_mc(id, 'prstp', baseline=True).query('t==2020 & oc_capital=="total"').assign(prstp=prstp))
+    elasmu = ocean_damage_gdx['elasmu'].iat[0,0]
+    l.append(scc_mc(id, 'prstp').query('(t==2020 | t==2020) & oc_capital=="total"').assign(prstp=prstp, elasmu=elasmu))
 scc_prstp = pd.concat(l).reset_index()
 
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8,4), sharex=False, sharey=False)
@@ -653,11 +465,3 @@ plt.tight_layout()
 plt.savefig(Path().cwd() / 'Figures/SCC/scc_prstp.pdf')
 plt.show()
 
-ocean_damage_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean_damage_BASELINE.gdx')
-ocean_damage_pulse_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean_damage_pulse_BASELINE.gdx')
-ocean_today_gdx = gdxpds.read_gdx.to_dataframes(root / f'results_ocean_today_BASELINE.gdx')
-server_scale_factor = ocean_damage_gdx['server_scale_factor'].iat[0, 0]
-prstp = ocean_damage_gdx['prstp'].iat[0, 0]
-_scc = sectoral_scc(ocean_today_gdx, ocean_damage_gdx, ocean_damage_pulse_gdx, None, None,
-                    server_scale_factor=server_scale_factor).query('t==2020').assign(prstp=prstp)
-print(_scc)

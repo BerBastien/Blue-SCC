@@ -31,8 +31,8 @@ def run(run_type, n=10_000, experiment_id='', chunk=100):
 
     assert run_type in ['distribution', 'gsa'], f'Invalid run type: {run_type}'
 
-    local_rice_path = "C:/Users/Granella/Dropbox (CMCC)/PhD/Research/RICE50x"
-    remote_rice_path = "/work/cmcc/fg12520/RICE50x"
+    local_rice_path = str(context.local_rice_path())
+    remote_rice_path = str(context.remote_rice_path())
     root = Path(local_rice_path)
     # Create main folder
     os.makedirs(root / 'bluerice', exist_ok=True)

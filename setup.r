@@ -20,6 +20,9 @@
     setwd(script_path)
 
     # Local data directories (using External_Data folder in repository)
+    # Original data sources:
+    #   - Coral extent: https://drive.google.com/drive/folders/10poBMwF3QM2SenNFkT8lntIX9ZSSDe6n
+    #   - SSP gridded population: https://drive.google.com/drive/folders/1_XBbnVRYC-bN0MxDgfA6_d0f_dSS7kZ1
     dir_external <- here::here("External_Data")
     dir_wcmc <- file.path(dir_external, "01_Data")
 
@@ -71,7 +74,7 @@
         })
     }
     graphics.off()
-    
+
 ####--- Blue Capital Modules ---####
     # Note: Module scripts are NOT run automatically during setup.
     # They require data files and should be run via main.R or manually.
@@ -92,6 +95,6 @@
     cat("\nNext steps:\n")
     cat("  1. Run complete workflow: source('main.R')\n")
     cat("  2. Or run individual modules in Code/\n")
-    cat("\nFor help, see README.md or QUICK_START.md\n\n")
+    cat("\nFor help, see README.md\n\n")
 
 

@@ -26,6 +26,10 @@ Data/SCC/out/*
 *.RData
 *.gpkg
 **/__pycache__
+~$*
+*.log
+CLAUDE.md
+.CLAUDE
 
 # !/Figures/SCC/pawn.png
 # !/Figures/SCC/rennert_et_al.pdf
@@ -37,6 +41,7 @@ Data/SCC/out/*
 !/Data/SCC/out/country_level_scc.csv
 /Figures/all_figures/
 /Figures/country_scc/
+/Figures/SCC/
 .Rproj.user
 
 # External_Data - ignore large files but keep structure
@@ -65,10 +70,7 @@ Results/
 !Results/README.md
 !Results/.gitkeep
 
-blue-scc.Rproj
-
+# User-specific files
+*.Rproj
 .claude/
-
-External_Data/
-
-docs/Bastien-Olvera et al. - 2026 - Accounting for ocean impacts nearly doubles the social cost of carbon.pdf
+docs/

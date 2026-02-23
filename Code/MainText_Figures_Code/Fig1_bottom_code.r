@@ -131,13 +131,29 @@
                     mutate(value_capped = ifelse(value > 100, 100, ifelse(value < 1, 1, value)))
         color_capitals
 
+        # Create and save source data for the figure
+        figure_data <- blue_cap %>%
+            filter(value_capped > 0) %>%
+            dplyr::select(
+            countrycode,
+            R5,
+            capital,
+            category,
+            value_capped,
+            GDP_2020usd,
+            Pop2020
+            ) %>%
+            mutate(GDP_per_capita_thousand_2020USD = (GDP_2020usd/Pop2020)/1000)
+        
+        write.csv(figure_data, "Code/MainText_Figures_Code/figure_source_data/Fig1_bottom_scatter_data.csv", row.names = FALSE)
+        
         capital_plot <- ggplot(blue_cap %>% filter(value_capped >0 )) +
         geom_point(aes(
-                x = (GDP_2020usd/Pop2020)/1000, 
-                y = R5, 
-                shape = category, 
-                size = value_capped, 
-                color=capital), 
+            x = (GDP_2020usd/Pop2020)/1000, 
+            y = R5, 
+            shape = category, 
+            size = value_capped, 
+            color=capital), 
             position = position_jitter(width = 0, height = 0.3),
             alpha=0.5) +
         scale_color_manual(values=Color_capitals_black)+
@@ -151,9 +167,9 @@
             panel.grid.minor.y = element_blank()
         ) +
         labs(size="Value of Benefit\n(shown as %GDP)",shape="Value Category",color="Blue Capital",x="GDP per capita (Thousand 2020 USD)")
-  
+      
         capital_plot
-        ggsave("Figures\\Main\\Panels\\Figure1_B.png",dpi=300)
+        #ggsave("Figures\\Main\\Panels\\Figure1_B.png",dpi=300)
 
         #svglite::svglite("capital_diagrams.svg", width = 10, height = 7)
         #print(capital_plot)
@@ -227,19 +243,33 @@
         mutate(r5 = factor(r5, levels = c("ASIA","ra","LAM","rl","MAF","rm","OECD","ro","REF","rr")))
 
 
+        # Create and save source data for the sankey figure
+        sankey_data <- blue_cap_summary3 %>%
+            dplyr::select(
+            capital,
+            r5,
+            count,
+            R5,
+            total_count,
+            region_spacing,
+            color
+            )
+        
+        write.csv(sankey_data, "Code/MainText_Figures_Code/figure_source_data/Fig1_bottom_sankey_data.csv", row.names = FALSE)
+        
         sankey <- ggplot(data = blue_cap_summary3,
             aes(axis1 = capital, axis2 = r5, y = count)) +
-                geom_alluvium(aes(fill = capital), width = 0.1, knot.pos = 0.4, alpha=01) +
-                geom_stratum(width = 0.1, fill = "transparent", color = "transparent") +
-                geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
-                #scale_x_discrete(limits = c("R5", "Capital"), expand = c(0.15, 0.05)) +
-                theme_void() +
-                scale_fill_manual(values=c(Color_capitals_black,t1="transparent",t2="transparent",t3="transparent",t4="transparent",t5="transparent"))+
-                #scale_fill_manual(values=c(color_capitals))+
+            geom_alluvium(aes(fill = capital), width = 0.1, knot.pos = 0.4, alpha=01) +
+            geom_stratum(width = 0.1, fill = "transparent", color = "transparent") +
+            geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
+            #scale_x_discrete(limits = c("R5", "Capital"), expand = c(0.15, 0.05)) +
+            theme_void() +
+            scale_fill_manual(values=c(Color_capitals_black,t1="transparent",t2="transparent",t3="transparent",t4="transparent",t5="transparent"))+
+            #scale_fill_manual(values=c(color_capitals))+
             theme(legend.position = "none")
 
             sankey
-        ggsave("Figures\\Main\\Panels\\Figure1_C.png",dpi=300)
+        #ggsave("Figures\\Main\\Panels\\Figure1_C.png",dpi=300)
 
 
 
