@@ -86,7 +86,7 @@
                     filter(year == 2021) %>%
                     mutate(t_12_21 = mean(temp,na.rm=T)) %>%
                     #filter(year==2012) %>%
-                    select(t_12_21,rcp) %>%
+                    dplyr::select(t_12_21,rcp) %>%
                     inner_join(temp, by = c("rcp"))
 
                 temp$tdif <- temp$temp - temp$t_12_21
@@ -142,97 +142,60 @@ find_surpass_year <- function(df, country_col, year_col, c_dif_col, threshold = 
 
 ## Functions
 
-    #var_names <- c("C","ocean_consump_damage_coef","OCEAN_NONUSE_VALUE","OCEAN_USENM_VALUE","ocean_consump_damage_coef_sq","ocean_health_tame","CPC","CPC_OCEAN_DAM")
-    var_names <- c("C","ocean_consump_damage_coef","YNET")
-    exp_names <- c("today","damage")
+#var_names <- c("C","ocean_consump_damage_coef","OCEAN_NONUSE_VALUE","OCEAN_USENM_VALUE","ocean_consump_damage_coef_sq","ocean_health_tame","CPC","CPC_OCEAN_DAM")
+var_names <- c("C","ocean_consump_damage_coef","YNET")
+exp_names <- c("today","damage")
 
-    process_var_table <- function(var_table, exp_name, var_name) {
-        var_table <- var_table[3:nrow(var_table), ]
-        var_table <- as.data.frame(var_table)
-        print(var_name)
-        
-        if (ncol(var_table) < 4) {
-            if (var_name %in%  c("scc","pop")) {
-                names(var_table) <- c("year", "country", var_name)
-                var_table$country <- as.factor(var_table$country)
-                var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
-                var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
-                var_table$exp <- exp_name
-                var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
-            } else {
-                names(var_table) <- c("capital", "country", var_name)
-                var_table$country <- as.factor(var_table$country)
-                var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
-                var_table$exp <- exp_name
-                var_table$capital <- as.factor(var_table$capital)
-            }
-        } else {
-            if (ncol(var_table) < 7) {
-                if(var_name=="VSL"){
-                    names(var_table) <- c("year", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
-                }else{
-                names(var_table) <- c("year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
-                    var_table$country <- as.factor(var_table$country)
-                }
-            } else {
-                names(var_table) <- c("capital", "year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
-                var_table$capital <- as.factor(var_table$capital)
-                var_table$country <- as.factor(var_table$country)
-            }
+process_var_table <- function(var_table, exp_name, var_name) {
+    var_table <- var_table[3:nrow(var_table), ]
+    var_table <- as.data.frame(var_table)
+    print(var_name)
+    
+    if (ncol(var_table) < 4) {
+        if (var_name %in%  c("scc","pop")) {
+            names(var_table) <- c("year", "country", var_name)
+            var_table$country <- as.factor(var_table$country)
+            var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
             var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
+            var_table$exp <- exp_name
+            var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
+        } else {
+            names(var_table) <- c("capital", "country", var_name)
+            var_table$country <- as.factor(var_table$country)
             var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
             var_table$exp <- exp_name
-            #var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
+            var_table$capital <- as.factor(var_table$capital)
         }
-        
-        return(var_table)
-    }
+    } else {
+        if (ncol(var_table) < 7) {
+            if(var_name=="VSL"){
+                names(var_table) <- c("year","country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
 
-
-    process_data <- function(exp_names, var_names, input_path = 'Data/output_rice50x/results_ocean_') {
-    
-    process_var_table <- function(var_table, exp_name, var_name) {
-        var_table <- var_table[3:nrow(var_table), ]
-        var_table <- as.data.frame(var_table)
-        print(var_name)
-        
-        if (ncol(var_table) < 4) {
-            if (var_name %in%  c("scc","pop")) {
-                names(var_table) <- c("year", "country", var_name)
+            }else{
+                names(var_table) <- c("year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
                 var_table$country <- as.factor(var_table$country)
-                var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
-                var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
-                var_table$exp <- exp_name
-                var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
-            } else {
-                names(var_table) <- c("capital", "country", var_name)
-                var_table$country <- as.factor(var_table$country)
-                var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
-                var_table$exp <- exp_name
-                var_table$capital <- as.factor(var_table$capital)
             }
         } else {
-            if (ncol(var_table) < 7) {
-                if(var_name=="VSL"){
-                    names(var_table) <- c("year", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
-                }else{
-                names(var_table) <- c("year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
-                    var_table$country <- as.factor(var_table$country)
-                }
-            } else {
-                names(var_table) <- c("capital", "year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
-                var_table$capital <- as.factor(var_table$capital)
-                var_table$country <- as.factor(var_table$country)
-            }
-            var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
-            var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
-            var_table$exp <- exp_name
-            #var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
+            names(var_table) <- c("capital", "year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+            var_table$capital <- as.factor(var_table$capital)
+            var_table$country <- as.factor(var_table$country)
         }
-        
-        return(var_table)
+        var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
+        # Convert "INF" and other non-numeric values to NA before conversion
+        if (var_name %in% names(var_table)) {
+            var_table[[var_name]][var_table[[var_name]] %in% c("INF", "-INF", "NA", "", NA)] <- NA
+            var_table[[var_name]] <- as.numeric(var_table[[var_name]])
+        } else {
+            warning(paste("Column", var_name, "not found in var_table"))
+        }
+        var_table$exp <- exp_name
+        glimpse(var_table)
     }
     
+    return(var_table)
+}
+
+process_data <- function(exp_names, var_names, input_path = 'Data/output_rice50x/results_ocean_') {
     for (i in 1:length(exp_names)) {
         for (j in 1:length(var_names)) {
             var_table <- read_excel(paste0(input_path, exp_names[i], '.xlsx'), sheet = var_names[j])
@@ -241,9 +204,17 @@ find_surpass_year <- function(df, country_col, year_col, c_dif_col, threshold = 
             if (j == 1) {
                 assign(paste0("exp_data_", exp_names[i]), var_table, envir = .GlobalEnv)
             } else {
+
                 existing_data <- get(paste0("exp_data_", exp_names[i]))
+                glimpse(existing_data)
                 common_cols <- intersect(names(existing_data), names(var_table))
-                assign(paste0("exp_data_", exp_names[i]), merge(existing_data, var_table, by = common_cols, all = TRUE), envir = .GlobalEnv)
+                glimpse(common_cols)
+                if (length(common_cols) == 0) {
+                    # No common columns, use rbind
+                    assign(paste0("exp_data_", exp_names[i]), rbind(existing_data, var_table), envir = .GlobalEnv)
+                } else {
+                    assign(paste0("exp_data_", exp_names[i]), merge(existing_data, var_table, by = common_cols, all = TRUE), envir = .GlobalEnv)
+                }
             }
         }
     }

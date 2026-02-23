@@ -1,0 +1,965 @@
+country,iso_a3,continent,oc_capital,percentage_of_YGROSS,quantile_group
+Zambia,ZMB,Africa,Corals,NA,NA
+Zambia,ZMB,Africa,Fisheries & Mariculture,NA,NA
+Zambia,ZMB,Africa,Mangroves,NA,NA
+Zambia,ZMB,Africa,Ports,NA,NA
+Yemen,YEM,Asia,Corals,2.54208576359643,Q4 (1.9 - 20.5)
+Yemen,YEM,Asia,Fisheries & Mariculture,5.322611932147893,Q4 (1.9 - 20.5)
+Yemen,YEM,Asia,Mangroves,0.01373344360788275,Q1 (0 - 0.08)
+Yemen,YEM,Asia,Ports,NA,NA
+Vietnam,VNM,Asia,Corals,0.3282994929614519,Q2 (0.08 - 0.35)
+Vietnam,VNM,Asia,Fisheries & Mariculture,4.175954582300076,Q4 (1.9 - 20.5)
+Vietnam,VNM,Asia,Mangroves,0.27040677070117014,Q2 (0.08 - 0.35)
+Vietnam,VNM,Asia,Ports,0.16282200048276738,Q2 (0.08 - 0.35)
+Uzbekistan,UZB,Asia,Corals,NA,NA
+Uzbekistan,UZB,Asia,Fisheries & Mariculture,NA,NA
+Uzbekistan,UZB,Asia,Mangroves,NA,NA
+Uzbekistan,UZB,Asia,Ports,NA,NA
+Uruguay,URY,South America,Corals,NA,NA
+Uruguay,URY,South America,Fisheries & Mariculture,1.2324063251725244,Q3 (0.35 - 1.9)
+Uruguay,URY,South America,Mangroves,NA,NA
+Uruguay,URY,South America,Ports,0.28902291475130026,Q2 (0.08 - 0.35)
+United States of America,USA,North America,Corals,3.622627018161959,Q4 (1.9 - 20.5)
+United States of America,USA,North America,Fisheries & Mariculture,1.0814684145010003,Q3 (0.35 - 1.9)
+United States of America,USA,North America,Mangroves,0.05715022491666261,Q1 (0 - 0.08)
+United States of America,USA,North America,Ports,0.06132276520153641,Q1 (0 - 0.08)
+United Kingdom,GBR,Europe,Corals,4.640140715235077,Q4 (1.9 - 20.5)
+United Kingdom,GBR,Europe,Fisheries & Mariculture,1.2381884191617945,Q3 (0.35 - 1.9)
+United Kingdom,GBR,Europe,Mangroves,NA,NA
+United Kingdom,GBR,Europe,Ports,0.05238268932158119,Q1 (0 - 0.08)
+United Arab Emirates,ARE,Asia,Corals,2.8450710735644194,Q4 (1.9 - 20.5)
+United Arab Emirates,ARE,Asia,Fisheries & Mariculture,5.803362867656197e-4,Q1 (0 - 0.08)
+United Arab Emirates,ARE,Asia,Mangroves,0.2557064201759116,Q2 (0.08 - 0.35)
+United Arab Emirates,ARE,Asia,Ports,0.2096288441694572,Q2 (0.08 - 0.35)
+Ukraine,UKR,Europe,Corals,NA,NA
+Ukraine,UKR,Europe,Fisheries & Mariculture,1.826163294910281,Q3 (0.35 - 1.9)
+Ukraine,UKR,Europe,Mangroves,NA,NA
+Ukraine,UKR,Europe,Ports,0.018574437836407186,Q1 (0 - 0.08)
+Uganda,UGA,Africa,Corals,NA,NA
+Uganda,UGA,Africa,Fisheries & Mariculture,NA,NA
+Uganda,UGA,Africa,Mangroves,NA,NA
+Uganda,UGA,Africa,Ports,NA,NA
+Turkey,TUR,Asia,Corals,NA,NA
+Turkey,TUR,Asia,Fisheries & Mariculture,1.3621585440883208,Q3 (0.35 - 1.9)
+Turkey,TUR,Asia,Mangroves,NA,NA
+Turkey,TUR,Asia,Ports,0.04745966651998782,Q1 (0 - 0.08)
+Tunisia,TUN,Africa,Corals,NA,NA
+Tunisia,TUN,Africa,Fisheries & Mariculture,5.303304359842851,Q4 (1.9 - 20.5)
+Tunisia,TUN,Africa,Mangroves,NA,NA
+Tunisia,TUN,Africa,Ports,0.11230036962901126,Q2 (0.08 - 0.35)
+Trinidad and Tobago,TTO,North America,Corals,0.7997908441110199,Q3 (0.35 - 1.9)
+Trinidad and Tobago,TTO,North America,Fisheries & Mariculture,1.6711755619021278,Q3 (0.35 - 1.9)
+Trinidad and Tobago,TTO,North America,Mangroves,NA,NA
+Trinidad and Tobago,TTO,North America,Ports,0.9802813016750653,Q3 (0.35 - 1.9)
+Togo,TGO,Africa,Corals,NA,NA
+Togo,TGO,Africa,Fisheries & Mariculture,8.149285165589722,Q4 (1.9 - 20.5)
+Togo,TGO,Africa,Mangroves,0.0024024341112159737,Q1 (0 - 0.08)
+Togo,TGO,Africa,Ports,0.4491749517801643,Q3 (0.35 - 1.9)
+Timor-Leste,TLS,Asia,Corals,2.211568458053134,Q4 (1.9 - 20.5)
+Timor-Leste,TLS,Asia,Fisheries & Mariculture,6.345947657254126,Q4 (1.9 - 20.5)
+Timor-Leste,TLS,Asia,Mangroves,0.06171953684987562,Q1 (0 - 0.08)
+Timor-Leste,TLS,Asia,Ports,NA,NA
+Thailand,THA,Asia,Corals,0.3215592734574402,Q2 (0.08 - 0.35)
+Thailand,THA,Asia,Fisheries & Mariculture,1.9840577939083524,Q4 (1.9 - 20.5)
+Thailand,THA,Asia,Mangroves,0.3254133638859572,Q2 (0.08 - 0.35)
+Thailand,THA,Asia,Ports,0.1578745104927539,Q2 (0.08 - 0.35)
+Tanzania,TZA,Africa,Corals,1.6344823509379165,Q3 (0.35 - 1.9)
+Tanzania,TZA,Africa,Fisheries & Mariculture,2.0201232029198053,Q4 (1.9 - 20.5)
+Tanzania,TZA,Africa,Mangroves,0.20592553023640153,Q2 (0.08 - 0.35)
+Tanzania,TZA,Africa,Ports,0.08328207060356989,Q1 (0 - 0.08)
+Tajikistan,TJK,Asia,Corals,NA,NA
+Tajikistan,TJK,Asia,Fisheries & Mariculture,NA,NA
+Tajikistan,TJK,Asia,Mangroves,NA,NA
+Tajikistan,TJK,Asia,Ports,NA,NA
+Switzerland,CHE,Europe,Corals,NA,NA
+Switzerland,CHE,Europe,Fisheries & Mariculture,NA,NA
+Switzerland,CHE,Europe,Mangroves,NA,NA
+Switzerland,CHE,Europe,Ports,NA,NA
+Sweden,SWE,Europe,Corals,NA,NA
+Sweden,SWE,Europe,Fisheries & Mariculture,1.3808157884214631,Q3 (0.35 - 1.9)
+Sweden,SWE,Europe,Mangroves,NA,NA
+Sweden,SWE,Europe,Ports,0.03814718028395706,Q1 (0 - 0.08)
+eSwatini,SWZ,Africa,Corals,NA,NA
+eSwatini,SWZ,Africa,Fisheries & Mariculture,NA,NA
+eSwatini,SWZ,Africa,Mangroves,NA,NA
+eSwatini,SWZ,Africa,Ports,NA,NA
+Suriname,SUR,South America,Corals,NA,NA
+Suriname,SUR,South America,Fisheries & Mariculture,1.0715242057414593,Q3 (0.35 - 1.9)
+Suriname,SUR,South America,Mangroves,0.36014284421335085,Q3 (0.35 - 1.9)
+Suriname,SUR,South America,Ports,0.3781368121877344,Q3 (0.35 - 1.9)
+Sudan,SDN,Africa,Corals,5.10099321090265,Q4 (1.9 - 20.5)
+Sudan,SDN,Africa,Fisheries & Mariculture,0.7861157110361175,Q3 (0.35 - 1.9)
+Sudan,SDN,Africa,Mangroves,0.0071950889031638645,Q1 (0 - 0.08)
+Sudan,SDN,Africa,Ports,0.004428676426116074,Q1 (0 - 0.08)
+Sri Lanka,LKA,Asia,Corals,1.3798877706596113,Q3 (0.35 - 1.9)
+Sri Lanka,LKA,Asia,Fisheries & Mariculture,5.888411926159595,Q4 (1.9 - 20.5)
+Sri Lanka,LKA,Asia,Mangroves,0.05706714660639227,Q1 (0 - 0.08)
+Sri Lanka,LKA,Asia,Ports,0.10934979471119487,Q2 (0.08 - 0.35)
+Spain,ESP,Europe,Corals,NA,NA
+Spain,ESP,Europe,Fisheries & Mariculture,1.7620931451680488,Q3 (0.35 - 1.9)
+Spain,ESP,Europe,Mangroves,NA,NA
+Spain,ESP,Europe,Ports,0.04961033206440594,Q1 (0 - 0.08)
+South Korea,KOR,Asia,Corals,NA,NA
+South Korea,KOR,Asia,Fisheries & Mariculture,1.598426093898306,Q3 (0.35 - 1.9)
+South Korea,KOR,Asia,Mangroves,NA,NA
+South Korea,KOR,Asia,Ports,0.22462367436965305,Q2 (0.08 - 0.35)
+South Africa,ZAF,Africa,Corals,0.021452097105994106,Q1 (0 - 0.08)
+South Africa,ZAF,Africa,Fisheries & Mariculture,4.3057017683191035,Q4 (1.9 - 20.5)
+South Africa,ZAF,Africa,Mangroves,-0.014215701844022688,Benefits
+South Africa,ZAF,Africa,Ports,0.17317686875526628,Q2 (0.08 - 0.35)
+Solomon Is.,SLB,Oceania,Corals,11.299709087200045,Q4 (1.9 - 20.5)
+Solomon Is.,SLB,Oceania,Fisheries & Mariculture,7.660831671572503,Q4 (1.9 - 20.5)
+Solomon Is.,SLB,Oceania,Mangroves,0.09063977568480173,Q2 (0.08 - 0.35)
+Solomon Is.,SLB,Oceania,Ports,0.0015886182928178793,Q1 (0 - 0.08)
+Slovakia,SVK,Europe,Corals,NA,NA
+Slovakia,SVK,Europe,Fisheries & Mariculture,NA,NA
+Slovakia,SVK,Europe,Mangroves,NA,NA
+Slovakia,SVK,Europe,Ports,NA,NA
+Slovenia,SVN,Europe,Corals,NA,NA
+Slovenia,SVN,Europe,Fisheries & Mariculture,1.373932638920019,Q3 (0.35 - 1.9)
+Slovenia,SVN,Europe,Mangroves,NA,NA
+Slovenia,SVN,Europe,Ports,0.1309705157819071,Q2 (0.08 - 0.35)
+Singapore,SGP,Asia,Corals,2.2656826991164234,Q4 (1.9 - 20.5)
+Singapore,SGP,Asia,Fisheries & Mariculture,8.750529161054273e-5,Q1 (0 - 0.08)
+Singapore,SGP,Asia,Mangroves,NA,NA
+Singapore,SGP,Asia,Ports,0.6448136506858079,Q3 (0.35 - 1.9)
+Sierra Leone,SLE,Africa,Corals,NA,NA
+Sierra Leone,SLE,Africa,Fisheries & Mariculture,11.759199727649616,Q4 (1.9 - 20.5)
+Sierra Leone,SLE,Africa,Mangroves,0.6509029694071267,Q3 (0.35 - 1.9)
+Sierra Leone,SLE,Africa,Ports,0.16081655508986895,Q2 (0.08 - 0.35)
+Serbia,SRB,Europe,Corals,NA,NA
+Serbia,SRB,Europe,Fisheries & Mariculture,NA,NA
+Serbia,SRB,Europe,Mangroves,NA,NA
+Serbia,SRB,Europe,Ports,NA,NA
+Senegal,SEN,Africa,Corals,NA,NA
+Senegal,SEN,Africa,Fisheries & Mariculture,6.730712166579911,Q4 (1.9 - 20.5)
+Senegal,SEN,Africa,Mangroves,0.6007564050982249,Q3 (0.35 - 1.9)
+Senegal,SEN,Africa,Ports,0.17757701825328825,Q2 (0.08 - 0.35)
+Saudi Arabia,SAU,Asia,Corals,6.739964275834169,Q4 (1.9 - 20.5)
+Saudi Arabia,SAU,Asia,Fisheries & Mariculture,0.35210603703175836,Q3 (0.35 - 1.9)
+Saudi Arabia,SAU,Asia,Mangroves,0.02633210556392925,Q1 (0 - 0.08)
+Saudi Arabia,SAU,Asia,Ports,0.10337356519101158,Q2 (0.08 - 0.35)
+Rwanda,RWA,Africa,Corals,NA,NA
+Rwanda,RWA,Africa,Fisheries & Mariculture,NA,NA
+Rwanda,RWA,Africa,Mangroves,NA,NA
+Rwanda,RWA,Africa,Ports,NA,NA
+Russia,RUS,Europe,Corals,NA,NA
+Russia,RUS,Europe,Fisheries & Mariculture,1.9083717857119888,Q4 (1.9 - 20.5)
+Russia,RUS,Europe,Mangroves,NA,NA
+Russia,RUS,Europe,Ports,0.02579340621356263,Q1 (0 - 0.08)
+Romania,ROU,Europe,Corals,NA,NA
+Romania,ROU,Europe,Fisheries & Mariculture,1.4707100289789963,Q3 (0.35 - 1.9)
+Romania,ROU,Europe,Mangroves,NA,NA
+Romania,ROU,Europe,Ports,NA,NA
+Qatar,QAT,Asia,Corals,4.306862964296289,Q4 (1.9 - 20.5)
+Qatar,QAT,Asia,Fisheries & Mariculture,0.0010700460490457797,Q1 (0 - 0.08)
+Qatar,QAT,Asia,Mangroves,0.07123897486612611,Q1 (0 - 0.08)
+Qatar,QAT,Asia,Ports,0.03203746271680468,Q1 (0 - 0.08)
+Portugal,PRT,Europe,Corals,NA,NA
+Portugal,PRT,Europe,Fisheries & Mariculture,1.9127274418326936,Q4 (1.9 - 20.5)
+Portugal,PRT,Europe,Mangroves,NA,NA
+Portugal,PRT,Europe,Ports,0.05857419986494052,Q1 (0 - 0.08)
+Poland,POL,Europe,Corals,NA,NA
+Poland,POL,Europe,Fisheries & Mariculture,1.7534666073955045,Q3 (0.35 - 1.9)
+Poland,POL,Europe,Mangroves,NA,NA
+Poland,POL,Europe,Ports,0.02655608895768592,Q1 (0 - 0.08)
+Philippines,PHL,Asia,Corals,3.5215991121791608,Q4 (1.9 - 20.5)
+Philippines,PHL,Asia,Fisheries & Mariculture,5.165751905018529,Q4 (1.9 - 20.5)
+Philippines,PHL,Asia,Mangroves,0.0373763646901174,Q1 (0 - 0.08)
+Philippines,PHL,Asia,Ports,0.23748824094418203,Q2 (0.08 - 0.35)
+Peru,PER,South America,Corals,NA,NA
+Peru,PER,South America,Fisheries & Mariculture,2.44474197584258,Q4 (1.9 - 20.5)
+Peru,PER,South America,Mangroves,0.01389369260234368,Q1 (0 - 0.08)
+Peru,PER,South America,Ports,0.07521049427090291,Q1 (0 - 0.08)
+Paraguay,PRY,South America,Corals,NA,NA
+Paraguay,PRY,South America,Fisheries & Mariculture,NA,NA
+Paraguay,PRY,South America,Mangroves,NA,NA
+Paraguay,PRY,South America,Ports,NA,NA
+Panama,PAN,North America,Corals,4.801975217098187,Q4 (1.9 - 20.5)
+Panama,PAN,North America,Fisheries & Mariculture,0.7074272013024914,Q3 (0.35 - 1.9)
+Panama,PAN,North America,Mangroves,0.11107458544157613,Q2 (0.08 - 0.35)
+Panama,PAN,North America,Ports,0.2769157005120114,Q2 (0.08 - 0.35)
+Pakistan,PAK,Asia,Corals,NA,NA
+Pakistan,PAK,Asia,Fisheries & Mariculture,2.036506621278222,Q4 (1.9 - 20.5)
+Pakistan,PAK,Asia,Mangroves,0.5080568591685524,Q3 (0.35 - 1.9)
+Pakistan,PAK,Asia,Ports,0.03844345275630233,Q1 (0 - 0.08)
+Oman,OMN,Asia,Corals,5.928173111161391,Q4 (1.9 - 20.5)
+Oman,OMN,Asia,Fisheries & Mariculture,0.6504049244596316,Q3 (0.35 - 1.9)
+Oman,OMN,Asia,Mangroves,0.058643983188231455,Q1 (0 - 0.08)
+Oman,OMN,Asia,Ports,0.5353904466811646,Q3 (0.35 - 1.9)
+Nigeria,NGA,Africa,Corals,NA,NA
+Nigeria,NGA,Africa,Fisheries & Mariculture,6.6587244062878845,Q4 (1.9 - 20.5)
+Nigeria,NGA,Africa,Mangroves,0.25023341315124753,Q2 (0.08 - 0.35)
+Nigeria,NGA,Africa,Ports,0.04557001618271197,Q1 (0 - 0.08)
+Niger,NER,Africa,Corals,NA,NA
+Niger,NER,Africa,Fisheries & Mariculture,NA,NA
+Niger,NER,Africa,Mangroves,NA,NA
+Niger,NER,Africa,Ports,NA,NA
+Nicaragua,NIC,North America,Corals,2.046673261408114,Q4 (1.9 - 20.5)
+Nicaragua,NIC,North America,Fisheries & Mariculture,2.984156427017875,Q4 (1.9 - 20.5)
+Nicaragua,NIC,North America,Mangroves,0.1924464016197758,Q2 (0.08 - 0.35)
+Nicaragua,NIC,North America,Ports,0.14727385116937258,Q2 (0.08 - 0.35)
+New Zealand,NZL,Oceania,Corals,5.832971144797396,Q4 (1.9 - 20.5)
+New Zealand,NZL,Oceania,Fisheries & Mariculture,0.7470084428092658,Q3 (0.35 - 1.9)
+New Zealand,NZL,Oceania,Mangroves,-0.1527775009642726,Benefits
+New Zealand,NZL,Oceania,Ports,0.3236370487210237,Q2 (0.08 - 0.35)
+Netherlands,NLD,Europe,Corals,4.1358084535403785,Q4 (1.9 - 20.5)
+Netherlands,NLD,Europe,Fisheries & Mariculture,0.9971997651806607,Q3 (0.35 - 1.9)
+Netherlands,NLD,Europe,Mangroves,NA,NA
+Netherlands,NLD,Europe,Ports,0.05895211529074396,Q1 (0 - 0.08)
+Nepal,NPL,Asia,Corals,NA,NA
+Nepal,NPL,Asia,Fisheries & Mariculture,NA,NA
+Nepal,NPL,Asia,Mangroves,NA,NA
+Nepal,NPL,Asia,Ports,NA,NA
+Namibia,NAM,Africa,Corals,-1.198096672265378e-13,NA
+Namibia,NAM,Africa,Fisheries & Mariculture,5.492288808989146,Q4 (1.9 - 20.5)
+Namibia,NAM,Africa,Mangroves,-1.198096672265378e-13,NA
+Namibia,NAM,Africa,Ports,-1.198096672265378e-13,NA
+Mozambique,MOZ,Africa,Corals,1.0663830133777514,Q3 (0.35 - 1.9)
+Mozambique,MOZ,Africa,Fisheries & Mariculture,7.986607738110528,Q4 (1.9 - 20.5)
+Mozambique,MOZ,Africa,Mangroves,0.3707134199161941,Q3 (0.35 - 1.9)
+Mozambique,MOZ,Africa,Ports,0.17723925300838986,Q2 (0.08 - 0.35)
+Morocco,MAR,Africa,Corals,NA,NA
+Morocco,MAR,Africa,Fisheries & Mariculture,5.115932239735136,Q4 (1.9 - 20.5)
+Morocco,MAR,Africa,Mangroves,NA,NA
+Morocco,MAR,Africa,Ports,0.10673500121663067,Q2 (0.08 - 0.35)
+Montenegro,MNE,Europe,Corals,NA,NA
+Montenegro,MNE,Europe,Fisheries & Mariculture,0.013352005276659366,Q1 (0 - 0.08)
+Montenegro,MNE,Europe,Mangroves,NA,NA
+Montenegro,MNE,Europe,Ports,0.056952507198641304,Q1 (0 - 0.08)
+Mongolia,MNG,Asia,Corals,NA,NA
+Mongolia,MNG,Asia,Fisheries & Mariculture,NA,NA
+Mongolia,MNG,Asia,Mangroves,NA,NA
+Mongolia,MNG,Asia,Ports,NA,NA
+Moldova,MDA,Europe,Corals,NA,NA
+Moldova,MDA,Europe,Fisheries & Mariculture,NA,NA
+Moldova,MDA,Europe,Mangroves,NA,NA
+Moldova,MDA,Europe,Ports,NA,NA
+Mexico,MEX,North America,Corals,0.24722294023462524,Q2 (0.08 - 0.35)
+Mexico,MEX,North America,Fisheries & Mariculture,1.3796632939030022,Q3 (0.35 - 1.9)
+Mexico,MEX,North America,Mangroves,0.4707276521680491,Q3 (0.35 - 1.9)
+Mexico,MEX,North America,Ports,0.11814314977041215,Q2 (0.08 - 0.35)
+Mauritius,MUS,Seven seas (open ocean),Corals,16.789421674145835,Q4 (1.9 - 20.5)
+Mauritius,MUS,Seven seas (open ocean),Fisheries & Mariculture,1.094430512277511,Q3 (0.35 - 1.9)
+Mauritius,MUS,Seven seas (open ocean),Mangroves,0.002900295295842519,Q1 (0 - 0.08)
+Mauritius,MUS,Seven seas (open ocean),Ports,1.88041019616727,Q3 (0.35 - 1.9)
+Mauritania,MRT,Africa,Corals,NA,NA
+Mauritania,MRT,Africa,Fisheries & Mariculture,3.859402376892662,Q4 (1.9 - 20.5)
+Mauritania,MRT,Africa,Mangroves,1.904710210007398e-4,Q1 (0 - 0.08)
+Mauritania,MRT,Africa,Ports,0.16616446503849214,Q2 (0.08 - 0.35)
+Malta,MLT,Europe,Corals,NA,NA
+Malta,MLT,Europe,Fisheries & Mariculture,1.5509655456229843,Q3 (0.35 - 1.9)
+Malta,MLT,Europe,Mangroves,NA,NA
+Malta,MLT,Europe,Ports,0.42024521965883044,Q3 (0.35 - 1.9)
+Mali,MLI,Africa,Corals,NA,NA
+Mali,MLI,Africa,Fisheries & Mariculture,NA,NA
+Mali,MLI,Africa,Mangroves,NA,NA
+Mali,MLI,Africa,Ports,NA,NA
+Maldives,MDV,Seven seas (open ocean),Corals,20.496784485181,Q4 (1.9 - 20.5)
+Maldives,MDV,Seven seas (open ocean),Fisheries & Mariculture,2.700889738309668,Q4 (1.9 - 20.5)
+Maldives,MDV,Seven seas (open ocean),Mangroves,NA,NA
+Maldives,MDV,Seven seas (open ocean),Ports,0.24389973653839606,Q2 (0.08 - 0.35)
+Malaysia,MYS,Asia,Corals,1.2865278796794424,Q3 (0.35 - 1.9)
+Malaysia,MYS,Asia,Fisheries & Mariculture,1.7520145996206464,Q3 (0.35 - 1.9)
+Malaysia,MYS,Asia,Mangroves,0.16850511870852325,Q2 (0.08 - 0.35)
+Malaysia,MYS,Asia,Ports,0.24904521813238414,Q2 (0.08 - 0.35)
+Madagascar,MDG,Africa,Corals,1.9409712638178838,Q4 (1.9 - 20.5)
+Madagascar,MDG,Africa,Fisheries & Mariculture,5.892669614874877,Q4 (1.9 - 20.5)
+Madagascar,MDG,Africa,Mangroves,0.27450859248561826,Q2 (0.08 - 0.35)
+Madagascar,MDG,Africa,Ports,0.14558222056847023,Q2 (0.08 - 0.35)
+North Macedonia,MKD,Europe,Corals,NA,NA
+North Macedonia,MKD,Europe,Fisheries & Mariculture,NA,NA
+North Macedonia,MKD,Europe,Mangroves,NA,NA
+North Macedonia,MKD,Europe,Ports,NA,NA
+Luxembourg,LUX,Europe,Corals,NA,NA
+Luxembourg,LUX,Europe,Fisheries & Mariculture,NA,NA
+Luxembourg,LUX,Europe,Mangroves,NA,NA
+Luxembourg,LUX,Europe,Ports,NA,NA
+Lithuania,LTU,Europe,Corals,NA,NA
+Lithuania,LTU,Europe,Fisheries & Mariculture,2.276753425136783,Q4 (1.9 - 20.5)
+Lithuania,LTU,Europe,Mangroves,NA,NA
+Lithuania,LTU,Europe,Ports,0.07539104290271285,Q1 (0 - 0.08)
+Lesotho,LSO,Africa,Corals,NA,NA
+Lesotho,LSO,Africa,Fisheries & Mariculture,NA,NA
+Lesotho,LSO,Africa,Mangroves,NA,NA
+Lesotho,LSO,Africa,Ports,NA,NA
+Lebanon,LBN,Asia,Corals,NA,NA
+Lebanon,LBN,Asia,Fisheries & Mariculture,2.4456645509013883,Q4 (1.9 - 20.5)
+Lebanon,LBN,Asia,Mangroves,NA,NA
+Lebanon,LBN,Asia,Ports,0.026047021827989455,Q1 (0 - 0.08)
+Latvia,LVA,Europe,Corals,NA,NA
+Latvia,LVA,Europe,Fisheries & Mariculture,2.138012727620213,Q4 (1.9 - 20.5)
+Latvia,LVA,Europe,Mangroves,NA,NA
+Latvia,LVA,Europe,Ports,0.020119118755273384,Q1 (0 - 0.08)
+Kyrgyzstan,KGZ,Asia,Corals,NA,NA
+Kyrgyzstan,KGZ,Asia,Fisheries & Mariculture,NA,NA
+Kyrgyzstan,KGZ,Asia,Mangroves,NA,NA
+Kyrgyzstan,KGZ,Asia,Ports,NA,NA
+Kuwait,KWT,Asia,Corals,2.6755203308618234,Q4 (1.9 - 20.5)
+Kuwait,KWT,Asia,Fisheries & Mariculture,0.7326373883347811,Q3 (0.35 - 1.9)
+Kuwait,KWT,Asia,Mangroves,NA,NA
+Kuwait,KWT,Asia,Ports,0.028531820465349154,Q1 (0 - 0.08)
+Kenya,KEN,Africa,Corals,1.8738415737214422,Q3 (0.35 - 1.9)
+Kenya,KEN,Africa,Fisheries & Mariculture,2.3685436591000214e-5,Q1 (0 - 0.08)
+Kenya,KEN,Africa,Mangroves,0.2718779629734783,Q2 (0.08 - 0.35)
+Kenya,KEN,Africa,Ports,0.08564061030141937,Q2 (0.08 - 0.35)
+Kazakhstan,KAZ,Asia,Corals,NA,NA
+Kazakhstan,KAZ,Asia,Fisheries & Mariculture,NA,NA
+Kazakhstan,KAZ,Asia,Mangroves,NA,NA
+Kazakhstan,KAZ,Asia,Ports,NA,NA
+Jordan,JOR,Asia,Corals,0.19374101379379086,Q2 (0.08 - 0.35)
+Jordan,JOR,Asia,Fisheries & Mariculture,4.37653043883956,Q4 (1.9 - 20.5)
+Jordan,JOR,Asia,Mangroves,NA,NA
+Jordan,JOR,Asia,Ports,0.01874232994805102,Q1 (0 - 0.08)
+Japan,JPN,Asia,Corals,2.9166795795396028,Q4 (1.9 - 20.5)
+Japan,JPN,Asia,Fisheries & Mariculture,1.9791959669211692,Q4 (1.9 - 20.5)
+Japan,JPN,Asia,Mangroves,7.600204303194667e-5,Q1 (0 - 0.08)
+Japan,JPN,Asia,Ports,0.20106661430386716,Q2 (0.08 - 0.35)
+Jamaica,JAM,North America,Corals,3.929531594668388,Q4 (1.9 - 20.5)
+Jamaica,JAM,North America,Fisheries & Mariculture,2.198745959171074,Q4 (1.9 - 20.5)
+Jamaica,JAM,North America,Mangroves,0.08798164829351579,Q2 (0.08 - 0.35)
+Jamaica,JAM,North America,Ports,0.130912495715572,Q2 (0.08 - 0.35)
+Italy,ITA,Europe,Corals,NA,NA
+Italy,ITA,Europe,Fisheries & Mariculture,1.79062217526865,Q3 (0.35 - 1.9)
+Italy,ITA,Europe,Mangroves,NA,NA
+Italy,ITA,Europe,Ports,0.027335245492000552,Q1 (0 - 0.08)
+Israel,ISR,Asia,Corals,0.47499091202909,Q3 (0.35 - 1.9)
+Israel,ISR,Asia,Fisheries & Mariculture,0.9664535649108007,Q3 (0.35 - 1.9)
+Israel,ISR,Asia,Mangroves,NA,NA
+Israel,ISR,Asia,Ports,0.03566429314346032,Q1 (0 - 0.08)
+Ireland,IRL,Europe,Corals,NA,NA
+Ireland,IRL,Europe,Fisheries & Mariculture,0.9873139464066316,Q3 (0.35 - 1.9)
+Ireland,IRL,Europe,Mangroves,NA,NA
+Ireland,IRL,Europe,Ports,0.13428225389971304,Q2 (0.08 - 0.35)
+Iraq,IRQ,Asia,Corals,NA,NA
+Iraq,IRQ,Asia,Fisheries & Mariculture,-1.3689095579954876e-5,NA
+Iraq,IRQ,Asia,Mangroves,NA,NA
+Iraq,IRQ,Asia,Ports,-0.0032385894768516186,Benefits
+Iran,IRN,Asia,Corals,0.8762317637125764,Q3 (0.35 - 1.9)
+Iran,IRN,Asia,Fisheries & Mariculture,1.2472470768792412,Q3 (0.35 - 1.9)
+Iran,IRN,Asia,Mangroves,0.07405937699068128,Q1 (0 - 0.08)
+Iran,IRN,Asia,Ports,0.020805826317755377,Q1 (0 - 0.08)
+Indonesia,IDN,Asia,Corals,0.34878260142956535,Q2 (0.08 - 0.35)
+Indonesia,IDN,Asia,Fisheries & Mariculture,4.671533384510196,Q4 (1.9 - 20.5)
+Indonesia,IDN,Asia,Mangroves,0.15850968002352278,Q2 (0.08 - 0.35)
+Indonesia,IDN,Asia,Ports,0.050426175859625055,Q1 (0 - 0.08)
+India,IND,Asia,Corals,0.012107835366305563,Q1 (0 - 0.08)
+India,IND,Asia,Fisheries & Mariculture,3.116913422729469,Q4 (1.9 - 20.5)
+India,IND,Asia,Mangroves,1.2727703913729131,Q3 (0.35 - 1.9)
+India,IND,Asia,Ports,0.04052695760711822,Q1 (0 - 0.08)
+Iceland,ISL,Europe,Corals,NA,NA
+Iceland,ISL,Europe,Fisheries & Mariculture,1.6074003797536718,Q3 (0.35 - 1.9)
+Iceland,ISL,Europe,Mangroves,NA,NA
+Iceland,ISL,Europe,Ports,0.08320439144978489,Q1 (0 - 0.08)
+Hungary,HUN,Europe,Corals,NA,NA
+Hungary,HUN,Europe,Fisheries & Mariculture,NA,NA
+Hungary,HUN,Europe,Mangroves,NA,NA
+Hungary,HUN,Europe,Ports,NA,NA
+Honduras,HND,North America,Corals,2.8738287497619748,Q4 (1.9 - 20.5)
+Honduras,HND,North America,Fisheries & Mariculture,2.032883725010656,Q4 (1.9 - 20.5)
+Honduras,HND,North America,Mangroves,0.3371590012293988,Q2 (0.08 - 0.35)
+Honduras,HND,North America,Ports,0.07867728792022538,Q1 (0 - 0.08)
+Haiti,HTI,North America,Corals,1.3962221529519072,Q3 (0.35 - 1.9)
+Haiti,HTI,North America,Fisheries & Mariculture,6.867185055409121,Q4 (1.9 - 20.5)
+Haiti,HTI,North America,Mangroves,0.07215984854482288,Q1 (0 - 0.08)
+Haiti,HTI,North America,Ports,0.012666121581132842,Q1 (0 - 0.08)
+Guyana,GUY,South America,Corals,NA,NA
+Guyana,GUY,South America,Fisheries & Mariculture,3.7686862849039486,Q4 (1.9 - 20.5)
+Guyana,GUY,South America,Mangroves,0.2230254262664032,Q2 (0.08 - 0.35)
+Guyana,GUY,South America,Ports,3.746945349621851,Q4 (1.9 - 20.5)
+Guinea-Bissau,GNB,Africa,Corals,NA,NA
+Guinea-Bissau,GNB,Africa,Fisheries & Mariculture,1.6125449893541148,Q3 (0.35 - 1.9)
+Guinea-Bissau,GNB,Africa,Mangroves,1.6310111596903618,Q3 (0.35 - 1.9)
+Guinea-Bissau,GNB,Africa,Ports,0.20071753529892822,Q2 (0.08 - 0.35)
+Guatemala,GTM,North America,Corals,NA,NA
+Guatemala,GTM,North America,Fisheries & Mariculture,2.2501309892829284,Q4 (1.9 - 20.5)
+Guatemala,GTM,North America,Mangroves,0.23797889330683886,Q2 (0.08 - 0.35)
+Guatemala,GTM,North America,Ports,0.059188008482408856,Q1 (0 - 0.08)
+Greece,GRC,Europe,Corals,NA,NA
+Greece,GRC,Europe,Fisheries & Mariculture,1.8092725120735873,Q3 (0.35 - 1.9)
+Greece,GRC,Europe,Mangroves,NA,NA
+Greece,GRC,Europe,Ports,-0.0027095627748383645,Benefits
+Ghana,GHA,Africa,Corals,-1.415695883810834e-13,NA
+Ghana,GHA,Africa,Fisheries & Mariculture,8.297389340854952,Q4 (1.9 - 20.5)
+Ghana,GHA,Africa,Mangroves,0.07412544374294769,Q1 (0 - 0.08)
+Ghana,GHA,Africa,Ports,0.13543581221045947,Q2 (0.08 - 0.35)
+Germany,DEU,Europe,Corals,NA,NA
+Germany,DEU,Europe,Fisheries & Mariculture,1.1697271033817607,Q3 (0.35 - 1.9)
+Germany,DEU,Europe,Mangroves,NA,NA
+Germany,DEU,Europe,Ports,0.07546272029217128,Q1 (0 - 0.08)
+Georgia,GEO,Asia,Corals,NA,NA
+Georgia,GEO,Asia,Fisheries & Mariculture,1.9095757984512352,Q4 (1.9 - 20.5)
+Georgia,GEO,Asia,Mangroves,NA,NA
+Georgia,GEO,Asia,Ports,0.07156442124624622,Q1 (0 - 0.08)
+Gambia,GMB,Africa,Corals,NA,NA
+Gambia,GMB,Africa,Fisheries & Mariculture,8.461093121095924,Q4 (1.9 - 20.5)
+Gambia,GMB,Africa,Mangroves,NA,NA
+Gambia,GMB,Africa,Ports,0.06993388475220323,Q1 (0 - 0.08)
+Gabon,GAB,Africa,Corals,NA,NA
+Gabon,GAB,Africa,Fisheries & Mariculture,2.6456325001553416,Q4 (1.9 - 20.5)
+Gabon,GAB,Africa,Mangroves,0.21591921024618366,Q2 (0.08 - 0.35)
+Gabon,GAB,Africa,Ports,0.3633113884654069,Q3 (0.35 - 1.9)
+Finland,FIN,Europe,Corals,NA,NA
+Finland,FIN,Europe,Fisheries & Mariculture,1.715942051885198,Q3 (0.35 - 1.9)
+Finland,FIN,Europe,Mangroves,NA,NA
+Finland,FIN,Europe,Ports,0.043066080185260786,Q1 (0 - 0.08)
+Ethiopia,ETH,Africa,Corals,NA,NA
+Ethiopia,ETH,Africa,Fisheries & Mariculture,NA,NA
+Ethiopia,ETH,Africa,Mangroves,NA,NA
+Ethiopia,ETH,Africa,Ports,NA,NA
+Estonia,EST,Europe,Corals,NA,NA
+Estonia,EST,Europe,Fisheries & Mariculture,1.4810010067076447,Q3 (0.35 - 1.9)
+Estonia,EST,Europe,Mangroves,NA,NA
+Estonia,EST,Europe,Ports,0.04203436775891301,Q1 (0 - 0.08)
+Eq. Guinea,GNQ,Africa,Corals,NA,NA
+Eq. Guinea,GNQ,Africa,Fisheries & Mariculture,0.00181736905702266,Q1 (0 - 0.08)
+Eq. Guinea,GNQ,Africa,Mangroves,0.12544500717470405,Q2 (0.08 - 0.35)
+Eq. Guinea,GNQ,Africa,Ports,0.36847491055807446,Q3 (0.35 - 1.9)
+El Salvador,SLV,North America,Corals,-1.2136322786292586e-13,NA
+El Salvador,SLV,North America,Fisheries & Mariculture,4.338739479777811,Q4 (1.9 - 20.5)
+El Salvador,SLV,North America,Mangroves,0.22229009767311333,Q2 (0.08 - 0.35)
+El Salvador,SLV,North America,Ports,0.16082266589946145,Q2 (0.08 - 0.35)
+Egypt,EGY,Africa,Corals,2.7172288131291586,Q4 (1.9 - 20.5)
+Egypt,EGY,Africa,Fisheries & Mariculture,3.8851018871106056,Q4 (1.9 - 20.5)
+Egypt,EGY,Africa,Mangroves,0.0018759490991736019,Q1 (0 - 0.08)
+Egypt,EGY,Africa,Ports,0.061355998978257185,Q1 (0 - 0.08)
+Ecuador,ECU,South America,Corals,0.3165307346916933,Q2 (0.08 - 0.35)
+Ecuador,ECU,South America,Fisheries & Mariculture,2.066938560507808,Q4 (1.9 - 20.5)
+Ecuador,ECU,South America,Mangroves,-0.041136029770429246,Benefits
+Ecuador,ECU,South America,Ports,0.0935415489477116,Q2 (0.08 - 0.35)
+Dominican Rep.,DOM,North America,Corals,1.4407956297463251,Q3 (0.35 - 1.9)
+Dominican Rep.,DOM,North America,Fisheries & Mariculture,1.2723265523226837,Q3 (0.35 - 1.9)
+Dominican Rep.,DOM,North America,Mangroves,0.14192970651313025,Q2 (0.08 - 0.35)
+Dominican Rep.,DOM,North America,Ports,0.1903108355831841,Q2 (0.08 - 0.35)
+Djibouti,DJI,Africa,Corals,6.621906375531691,Q4 (1.9 - 20.5)
+Djibouti,DJI,Africa,Fisheries & Mariculture,2.110802116750024,Q4 (1.9 - 20.5)
+Djibouti,DJI,Africa,Mangroves,0.15884802590847566,Q2 (0.08 - 0.35)
+Djibouti,DJI,Africa,Ports,0.7430715143003935,Q3 (0.35 - 1.9)
+Denmark,DNK,Europe,Corals,NA,NA
+Denmark,DNK,Europe,Fisheries & Mariculture,1.5365158852150393,Q3 (0.35 - 1.9)
+Denmark,DNK,Europe,Mangroves,NA,NA
+Denmark,DNK,Europe,Ports,0.10052217175707646,Q2 (0.08 - 0.35)
+Czechia,CZE,Europe,Corals,NA,NA
+Czechia,CZE,Europe,Fisheries & Mariculture,NA,NA
+Czechia,CZE,Europe,Mangroves,NA,NA
+Czechia,CZE,Europe,Ports,NA,NA
+Cyprus,CYP,Asia,Corals,NA,NA
+Cyprus,CYP,Asia,Fisheries & Mariculture,1.7259347463526975,Q3 (0.35 - 1.9)
+Cyprus,CYP,Asia,Mangroves,NA,NA
+Cyprus,CYP,Asia,Ports,0.030285474934619222,Q1 (0 - 0.08)
+Croatia,HRV,Europe,Corals,NA,NA
+Croatia,HRV,Europe,Fisheries & Mariculture,2.0074637602788616,Q4 (1.9 - 20.5)
+Croatia,HRV,Europe,Mangroves,NA,NA
+Croatia,HRV,Europe,Ports,0.027616680425625532,Q1 (0 - 0.08)
+Côte d'Ivoire,CIV,Africa,Corals,NA,NA
+Côte d'Ivoire,CIV,Africa,Fisheries & Mariculture,0.0077725765054301125,Q1 (0 - 0.08)
+Côte d'Ivoire,CIV,Africa,Mangroves,0.1564377166774988,Q2 (0.08 - 0.35)
+Côte d'Ivoire,CIV,Africa,Ports,0.11107802145236587,Q2 (0.08 - 0.35)
+Costa Rica,CRI,North America,Corals,1.4750522561155102,Q3 (0.35 - 1.9)
+Costa Rica,CRI,North America,Fisheries & Mariculture,0.8519908440641034,Q3 (0.35 - 1.9)
+Costa Rica,CRI,North America,Mangroves,0.16947446178518535,Q2 (0.08 - 0.35)
+Costa Rica,CRI,North America,Ports,0.10815086472347515,Q2 (0.08 - 0.35)
+Dem. Rep. Congo,COD,Africa,Corals,NA,NA
+Dem. Rep. Congo,COD,Africa,Fisheries & Mariculture,1.0477314330823331e-5,Q1 (0 - 0.08)
+Dem. Rep. Congo,COD,Africa,Mangroves,NA,NA
+Dem. Rep. Congo,COD,Africa,Ports,NA,NA
+Congo,COG,Africa,Corals,NA,NA
+Congo,COG,Africa,Fisheries & Mariculture,4.992633578131304,Q4 (1.9 - 20.5)
+Congo,COG,Africa,Mangroves,0.014059156177310007,Q1 (0 - 0.08)
+Congo,COG,Africa,Ports,0.15708957956069725,Q2 (0.08 - 0.35)
+Comoros,COM,Africa,Corals,7.657851219927313,Q4 (1.9 - 20.5)
+Comoros,COM,Africa,Fisheries & Mariculture,0.002618931580660764,Q1 (0 - 0.08)
+Comoros,COM,Africa,Mangroves,0.01698196087745597,Q1 (0 - 0.08)
+Comoros,COM,Africa,Ports,0.42886902034739666,Q3 (0.35 - 1.9)
+Colombia,COL,South America,Corals,1.8467703274650513,Q3 (0.35 - 1.9)
+Colombia,COL,South America,Fisheries & Mariculture,2.089414471058903,Q4 (1.9 - 20.5)
+Colombia,COL,South America,Mangroves,0.11389580208163691,Q2 (0.08 - 0.35)
+Colombia,COL,South America,Ports,0.09491887780773028,Q2 (0.08 - 0.35)
+China,CHN,Asia,Corals,0.503609299977351,Q3 (0.35 - 1.9)
+China,CHN,Asia,Fisheries & Mariculture,1.38420301383212,Q3 (0.35 - 1.9)
+China,CHN,Asia,Mangroves,0.048709422911135176,Q1 (0 - 0.08)
+China,CHN,Asia,Ports,0.048181843869746686,Q1 (0 - 0.08)
+Hong Kong,HKG,Asia,Corals,NA,NA
+Hong Kong,HKG,Asia,Fisheries & Mariculture,NA,NA
+Hong Kong,HKG,Asia,Mangroves,NA,NA
+Hong Kong,HKG,Asia,Ports,0.5762628072513641,Q3 (0.35 - 1.9)
+Chile,CHL,South America,Corals,NA,NA
+Chile,CHL,South America,Fisheries & Mariculture,1.7085451329490255,Q3 (0.35 - 1.9)
+Chile,CHL,South America,Mangroves,NA,NA
+Chile,CHL,South America,Ports,0.17127639139223372,Q2 (0.08 - 0.35)
+Chad,TCD,Africa,Corals,NA,NA
+Chad,TCD,Africa,Fisheries & Mariculture,NA,NA
+Chad,TCD,Africa,Mangroves,NA,NA
+Chad,TCD,Africa,Ports,NA,NA
+Central African Rep.,CAF,Africa,Corals,NA,NA
+Central African Rep.,CAF,Africa,Fisheries & Mariculture,NA,NA
+Central African Rep.,CAF,Africa,Mangroves,NA,NA
+Central African Rep.,CAF,Africa,Ports,NA,NA
+Cabo Verde,CPV,Africa,Corals,NA,NA
+Cabo Verde,CPV,Africa,Fisheries & Mariculture,4.090976641729331,Q4 (1.9 - 20.5)
+Cabo Verde,CPV,Africa,Mangroves,NA,NA
+Cabo Verde,CPV,Africa,Ports,0.1669160201263315,Q2 (0.08 - 0.35)
+Canada,CAN,North America,Corals,NA,NA
+Canada,CAN,North America,Fisheries & Mariculture,1.3848570290111222,Q3 (0.35 - 1.9)
+Canada,CAN,North America,Mangroves,NA,NA
+Canada,CAN,North America,Ports,0.08895330395640424,Q2 (0.08 - 0.35)
+Cameroon,CMR,Africa,Corals,NA,NA
+Cameroon,CMR,Africa,Fisheries & Mariculture,7.31247527229809,Q4 (1.9 - 20.5)
+Cameroon,CMR,Africa,Mangroves,0.018474505970047878,Q1 (0 - 0.08)
+Cameroon,CMR,Africa,Ports,0.06322034826093913,Q1 (0 - 0.08)
+Cambodia,KHM,Asia,Corals,0.1842194999355421,Q2 (0.08 - 0.35)
+Cambodia,KHM,Asia,Fisheries & Mariculture,5.486854672783814,Q4 (1.9 - 20.5)
+Cambodia,KHM,Asia,Mangroves,0.28174031235368346,Q2 (0.08 - 0.35)
+Cambodia,KHM,Asia,Ports,0.06429743620185052,Q1 (0 - 0.08)
+Myanmar,MMR,Asia,Corals,1.443027597767896,Q3 (0.35 - 1.9)
+Myanmar,MMR,Asia,Fisheries & Mariculture,0.006312381007641026,Q1 (0 - 0.08)
+Myanmar,MMR,Asia,Mangroves,0.3245338488084009,Q2 (0.08 - 0.35)
+Myanmar,MMR,Asia,Ports,0.14810250380656165,Q2 (0.08 - 0.35)
+Burkina Faso,BFA,Africa,Corals,NA,NA
+Burkina Faso,BFA,Africa,Fisheries & Mariculture,NA,NA
+Burkina Faso,BFA,Africa,Mangroves,NA,NA
+Burkina Faso,BFA,Africa,Ports,NA,NA
+Bulgaria,BGR,Europe,Corals,NA,NA
+Bulgaria,BGR,Europe,Fisheries & Mariculture,1.7686723244655669,Q3 (0.35 - 1.9)
+Bulgaria,BGR,Europe,Mangroves,NA,NA
+Bulgaria,BGR,Europe,Ports,0.019171697572439608,Q1 (0 - 0.08)
+Brazil,BRA,South America,Corals,0.39036484862598553,Q3 (0.35 - 1.9)
+Brazil,BRA,South America,Fisheries & Mariculture,0.7515716217090427,Q3 (0.35 - 1.9)
+Brazil,BRA,South America,Mangroves,0.20693627478018597,Q2 (0.08 - 0.35)
+Brazil,BRA,South America,Ports,0.11184193817491335,Q2 (0.08 - 0.35)
+Botswana,BWA,Africa,Corals,NA,NA
+Botswana,BWA,Africa,Fisheries & Mariculture,NA,NA
+Botswana,BWA,Africa,Mangroves,NA,NA
+Botswana,BWA,Africa,Ports,NA,NA
+Bosnia and Herz.,BIH,Europe,Corals,NA,NA
+Bosnia and Herz.,BIH,Europe,Fisheries & Mariculture,NA,NA
+Bosnia and Herz.,BIH,Europe,Mangroves,NA,NA
+Bosnia and Herz.,BIH,Europe,Ports,NA,NA
+Bolivia,BOL,South America,Corals,NA,NA
+Bolivia,BOL,South America,Fisheries & Mariculture,NA,NA
+Bolivia,BOL,South America,Mangroves,NA,NA
+Bolivia,BOL,South America,Ports,NA,NA
+Bhutan,BTN,Asia,Corals,NA,NA
+Bhutan,BTN,Asia,Fisheries & Mariculture,NA,NA
+Bhutan,BTN,Asia,Mangroves,NA,NA
+Bhutan,BTN,Asia,Ports,NA,NA
+Benin,BEN,Africa,Corals,NA,NA
+Benin,BEN,Africa,Fisheries & Mariculture,6.969213981068238,Q4 (1.9 - 20.5)
+Benin,BEN,Africa,Mangroves,0.10709658960519855,Q2 (0.08 - 0.35)
+Benin,BEN,Africa,Ports,0.12010013391971758,Q2 (0.08 - 0.35)
+Belize,BLZ,North America,Corals,6.490268265414725,Q4 (1.9 - 20.5)
+Belize,BLZ,North America,Fisheries & Mariculture,1.350301735655847,Q3 (0.35 - 1.9)
+Belize,BLZ,North America,Mangroves,0.4925499074908989,Q3 (0.35 - 1.9)
+Belize,BLZ,North America,Ports,0.20140529597779755,Q2 (0.08 - 0.35)
+Belgium,BEL,Europe,Corals,NA,NA
+Belgium,BEL,Europe,Fisheries & Mariculture,1.354183953859915,Q3 (0.35 - 1.9)
+Belgium,BEL,Europe,Mangroves,NA,NA
+Belgium,BEL,Europe,Ports,0.0976274151629814,Q2 (0.08 - 0.35)
+Belarus,BLR,Europe,Corals,NA,NA
+Belarus,BLR,Europe,Fisheries & Mariculture,NA,NA
+Belarus,BLR,Europe,Mangroves,NA,NA
+Belarus,BLR,Europe,Ports,NA,NA
+Barbados,BRB,North America,Corals,6.549615307135166,Q4 (1.9 - 20.5)
+Barbados,BRB,North America,Fisheries & Mariculture,2.1320159283335727,Q4 (1.9 - 20.5)
+Barbados,BRB,North America,Mangroves,NA,NA
+Barbados,BRB,North America,Ports,0.16428907762723768,Q2 (0.08 - 0.35)
+Bangladesh,BGD,Asia,Corals,0.003927685436294455,Q1 (0 - 0.08)
+Bangladesh,BGD,Asia,Fisheries & Mariculture,3.633931974194525,Q4 (1.9 - 20.5)
+Bangladesh,BGD,Asia,Mangroves,0.31029120728020676,Q2 (0.08 - 0.35)
+Bangladesh,BGD,Asia,Ports,0.05884560811290182,Q1 (0 - 0.08)
+Bahrain,BHR,Asia,Corals,6.778586757230953,Q4 (1.9 - 20.5)
+Bahrain,BHR,Asia,Fisheries & Mariculture,5.119213566562455e-4,Q1 (0 - 0.08)
+Bahrain,BHR,Asia,Mangroves,NA,NA
+Bahrain,BHR,Asia,Ports,0.05850590605932383,Q1 (0 - 0.08)
+Bahamas,BHS,North America,Corals,19.724354641681394,Q4 (1.9 - 20.5)
+Bahamas,BHS,North America,Fisheries & Mariculture,0.47175334593484963,Q3 (0.35 - 1.9)
+Bahamas,BHS,North America,Mangroves,0.08800549369963916,Q2 (0.08 - 0.35)
+Bahamas,BHS,North America,Ports,0.5917752744342905,Q3 (0.35 - 1.9)
+Azerbaijan,AZE,Asia,Corals,NA,NA
+Azerbaijan,AZE,Asia,Fisheries & Mariculture,NA,NA
+Azerbaijan,AZE,Asia,Mangroves,NA,NA
+Azerbaijan,AZE,Asia,Ports,NA,NA
+Austria,AUT,Europe,Corals,NA,NA
+Austria,AUT,Europe,Fisheries & Mariculture,NA,NA
+Austria,AUT,Europe,Mangroves,NA,NA
+Austria,AUT,Europe,Ports,NA,NA
+Australia,AUS,Oceania,Corals,16.469022289720723,Q4 (1.9 - 20.5)
+Australia,AUS,Oceania,Fisheries & Mariculture,0.056613598047421415,Q1 (0 - 0.08)
+Australia,AUS,Oceania,Mangroves,0.034406152230556965,Q1 (0 - 0.08)
+Australia,AUS,Oceania,Ports,0.08695342748348406,Q2 (0.08 - 0.35)
+Armenia,ARM,Asia,Corals,NA,NA
+Armenia,ARM,Asia,Fisheries & Mariculture,NA,NA
+Armenia,ARM,Asia,Mangroves,NA,NA
+Armenia,ARM,Asia,Ports,NA,NA
+Argentina,ARG,South America,Corals,-7.171913002675363e-14,NA
+Argentina,ARG,South America,Fisheries & Mariculture,1.4430919040692642,Q3 (0.35 - 1.9)
+Argentina,ARG,South America,Mangroves,-7.171913002675363e-14,NA
+Argentina,ARG,South America,Ports,0.08709356926737771,Q2 (0.08 - 0.35)
+Angola,AGO,Africa,Corals,NA,NA
+Angola,AGO,Africa,Fisheries & Mariculture,0.0011926287298799237,Q1 (0 - 0.08)
+Angola,AGO,Africa,Mangroves,0.3906756704942023,Q3 (0.35 - 1.9)
+Angola,AGO,Africa,Ports,0.5035223724732996,Q3 (0.35 - 1.9)
+Algeria,DZA,Africa,Corals,NA,NA
+Algeria,DZA,Africa,Fisheries & Mariculture,3.1124211932384664,Q4 (1.9 - 20.5)
+Algeria,DZA,Africa,Mangroves,NA,NA
+Algeria,DZA,Africa,Ports,0.104392698720884,Q2 (0.08 - 0.35)
+Albania,ALB,Europe,Corals,NA,NA
+Albania,ALB,Europe,Fisheries & Mariculture,0.007464665803184075,Q1 (0 - 0.08)
+Albania,ALB,Europe,Mangroves,NA,NA
+Albania,ALB,Europe,Ports,0.04075905672673982,Q1 (0 - 0.08)
+France,-99,Europe,Corals,NA,NA
+France,-99,Europe,Fisheries & Mariculture,NA,NA
+France,-99,Europe,Mangroves,NA,NA
+France,-99,Europe,Ports,NA,NA
+Papua New Guinea,PNG,Oceania,Corals,NA,NA
+Papua New Guinea,PNG,Oceania,Fisheries & Mariculture,NA,NA
+Papua New Guinea,PNG,Oceania,Mangroves,NA,NA
+Papua New Guinea,PNG,Oceania,Ports,NA,NA
+Afghanistan,AFG,Asia,Corals,NA,NA
+Afghanistan,AFG,Asia,Fisheries & Mariculture,NA,NA
+Afghanistan,AFG,Asia,Mangroves,NA,NA
+Afghanistan,AFG,Asia,Ports,NA,NA
+Cuba,CUB,North America,Corals,NA,NA
+Cuba,CUB,North America,Fisheries & Mariculture,NA,NA
+Cuba,CUB,North America,Mangroves,NA,NA
+Cuba,CUB,North America,Ports,NA,NA
+Greenland,GRL,North America,Corals,NA,NA
+Greenland,GRL,North America,Fisheries & Mariculture,NA,NA
+Greenland,GRL,North America,Mangroves,NA,NA
+Greenland,GRL,North America,Ports,NA,NA
+New Caledonia,NCL,Oceania,Corals,NA,NA
+New Caledonia,NCL,Oceania,Fisheries & Mariculture,NA,NA
+New Caledonia,NCL,Oceania,Mangroves,NA,NA
+New Caledonia,NCL,Oceania,Ports,NA,NA
+Guinea,GIN,Africa,Corals,NA,NA
+Guinea,GIN,Africa,Fisheries & Mariculture,NA,NA
+Guinea,GIN,Africa,Mangroves,NA,NA
+Guinea,GIN,Africa,Ports,NA,NA
+Libya,LBY,Africa,Corals,NA,NA
+Libya,LBY,Africa,Fisheries & Mariculture,NA,NA
+Libya,LBY,Africa,Mangroves,NA,NA
+Libya,LBY,Africa,Ports,NA,NA
+North Korea,PRK,Asia,Corals,NA,NA
+North Korea,PRK,Asia,Fisheries & Mariculture,NA,NA
+North Korea,PRK,Asia,Mangroves,NA,NA
+North Korea,PRK,Asia,Ports,NA,NA
+Norway,-99,Europe,Corals,NA,NA
+Norway,-99,Europe,Fisheries & Mariculture,NA,NA
+Norway,-99,Europe,Mangroves,NA,NA
+Norway,-99,Europe,Ports,NA,NA
+S. Sudan,SSD,Africa,Corals,NA,NA
+S. Sudan,SSD,Africa,Fisheries & Mariculture,NA,NA
+S. Sudan,SSD,Africa,Mangroves,NA,NA
+S. Sudan,SSD,Africa,Ports,NA,NA
+Syria,SYR,Asia,Corals,NA,NA
+Syria,SYR,Asia,Fisheries & Mariculture,NA,NA
+Syria,SYR,Asia,Mangroves,NA,NA
+Syria,SYR,Asia,Ports,NA,NA
+Taiwan,TWN,Asia,Corals,NA,NA
+Taiwan,TWN,Asia,Fisheries & Mariculture,NA,NA
+Taiwan,TWN,Asia,Mangroves,NA,NA
+Taiwan,TWN,Asia,Ports,NA,NA
+Zimbabwe,ZWE,Africa,Corals,NA,NA
+Zimbabwe,ZWE,Africa,Fisheries & Mariculture,NA,NA
+Zimbabwe,ZWE,Africa,Mangroves,NA,NA
+Zimbabwe,ZWE,Africa,Ports,NA,NA
+Eritrea,ERI,Africa,Corals,NA,NA
+Eritrea,ERI,Africa,Fisheries & Mariculture,NA,NA
+Eritrea,ERI,Africa,Mangroves,NA,NA
+Eritrea,ERI,Africa,Ports,NA,NA
+Laos,LAO,Asia,Corals,NA,NA
+Laos,LAO,Asia,Fisheries & Mariculture,NA,NA
+Laos,LAO,Asia,Mangroves,NA,NA
+Laos,LAO,Asia,Ports,NA,NA
+Liberia,LBR,Africa,Corals,NA,NA
+Liberia,LBR,Africa,Fisheries & Mariculture,NA,NA
+Liberia,LBR,Africa,Mangroves,NA,NA
+Liberia,LBR,Africa,Ports,NA,NA
+Samoa,WSM,Oceania,Corals,NA,NA
+Samoa,WSM,Oceania,Fisheries & Mariculture,NA,NA
+Samoa,WSM,Oceania,Mangroves,NA,NA
+Samoa,WSM,Oceania,Ports,NA,NA
+Vanuatu,VUT,Oceania,Corals,NA,NA
+Vanuatu,VUT,Oceania,Fisheries & Mariculture,NA,NA
+Vanuatu,VUT,Oceania,Mangroves,NA,NA
+Vanuatu,VUT,Oceania,Ports,NA,NA
+Palestine,PSE,Asia,Corals,NA,NA
+Palestine,PSE,Asia,Fisheries & Mariculture,NA,NA
+Palestine,PSE,Asia,Mangroves,NA,NA
+Palestine,PSE,Asia,Ports,NA,NA
+Siachen Glacier,-99,Asia,Corals,NA,NA
+Siachen Glacier,-99,Asia,Fisheries & Mariculture,NA,NA
+Siachen Glacier,-99,Asia,Mangroves,NA,NA
+Siachen Glacier,-99,Asia,Ports,NA,NA
+Somaliland,-99,Africa,Corals,NA,NA
+Somaliland,-99,Africa,Fisheries & Mariculture,NA,NA
+Somaliland,-99,Africa,Mangroves,NA,NA
+Somaliland,-99,Africa,Ports,NA,NA
+Cayman Is.,CYM,North America,Corals,NA,NA
+Cayman Is.,CYM,North America,Fisheries & Mariculture,NA,NA
+Cayman Is.,CYM,North America,Mangroves,NA,NA
+Cayman Is.,CYM,North America,Ports,NA,NA
+Falkland Is.,FLK,South America,Corals,NA,NA
+Falkland Is.,FLK,South America,Fisheries & Mariculture,NA,NA
+Falkland Is.,FLK,South America,Mangroves,NA,NA
+Falkland Is.,FLK,South America,Ports,NA,NA
+Puerto Rico,PRI,North America,Corals,NA,NA
+Puerto Rico,PRI,North America,Fisheries & Mariculture,NA,NA
+Puerto Rico,PRI,North America,Mangroves,NA,NA
+Puerto Rico,PRI,North America,Ports,NA,NA
+Antigua and Barb.,ATG,North America,Corals,NA,NA
+Antigua and Barb.,ATG,North America,Fisheries & Mariculture,NA,NA
+Antigua and Barb.,ATG,North America,Mangroves,NA,NA
+Antigua and Barb.,ATG,North America,Ports,NA,NA
+Brunei,BRN,Asia,Corals,NA,NA
+Brunei,BRN,Asia,Fisheries & Mariculture,NA,NA
+Brunei,BRN,Asia,Mangroves,NA,NA
+Brunei,BRN,Asia,Ports,NA,NA
+Burundi,BDI,Africa,Corals,NA,NA
+Burundi,BDI,Africa,Fisheries & Mariculture,NA,NA
+Burundi,BDI,Africa,Mangroves,NA,NA
+Burundi,BDI,Africa,Ports,NA,NA
+Dominica,DMA,North America,Corals,NA,NA
+Dominica,DMA,North America,Fisheries & Mariculture,NA,NA
+Dominica,DMA,North America,Mangroves,NA,NA
+Dominica,DMA,North America,Ports,NA,NA
+Fiji,FJI,Oceania,Corals,NA,NA
+Fiji,FJI,Oceania,Fisheries & Mariculture,NA,NA
+Fiji,FJI,Oceania,Mangroves,NA,NA
+Fiji,FJI,Oceania,Ports,NA,NA
+Grenada,GRD,North America,Corals,NA,NA
+Grenada,GRD,North America,Fisheries & Mariculture,NA,NA
+Grenada,GRD,North America,Mangroves,NA,NA
+Grenada,GRD,North America,Ports,NA,NA
+Kosovo,-99,Europe,Corals,NA,NA
+Kosovo,-99,Europe,Fisheries & Mariculture,NA,NA
+Kosovo,-99,Europe,Mangroves,NA,NA
+Kosovo,-99,Europe,Ports,NA,NA
+Liechtenstein,LIE,Europe,Corals,NA,NA
+Liechtenstein,LIE,Europe,Fisheries & Mariculture,NA,NA
+Liechtenstein,LIE,Europe,Mangroves,NA,NA
+Liechtenstein,LIE,Europe,Ports,NA,NA
+N. Cyprus,-99,Asia,Corals,NA,NA
+N. Cyprus,-99,Asia,Fisheries & Mariculture,NA,NA
+N. Cyprus,-99,Asia,Mangroves,NA,NA
+N. Cyprus,-99,Asia,Ports,NA,NA
+Saint Lucia,LCA,North America,Corals,NA,NA
+Saint Lucia,LCA,North America,Fisheries & Mariculture,NA,NA
+Saint Lucia,LCA,North America,Mangroves,NA,NA
+Saint Lucia,LCA,North America,Ports,NA,NA
+St. Vin. and Gren.,VCT,North America,Corals,NA,NA
+St. Vin. and Gren.,VCT,North America,Fisheries & Mariculture,NA,NA
+St. Vin. and Gren.,VCT,North America,Mangroves,NA,NA
+St. Vin. and Gren.,VCT,North America,Ports,NA,NA
+São Tomé and Principe,STP,Africa,Corals,NA,NA
+São Tomé and Principe,STP,Africa,Fisheries & Mariculture,NA,NA
+São Tomé and Principe,STP,Africa,Mangroves,NA,NA
+São Tomé and Principe,STP,Africa,Ports,NA,NA
+Seychelles,SYC,Seven seas (open ocean),Corals,NA,NA
+Seychelles,SYC,Seven seas (open ocean),Fisheries & Mariculture,NA,NA
+Seychelles,SYC,Seven seas (open ocean),Mangroves,NA,NA
+Seychelles,SYC,Seven seas (open ocean),Ports,NA,NA
+Somalia,SOM,Africa,Corals,NA,NA
+Somalia,SOM,Africa,Fisheries & Mariculture,NA,NA
+Somalia,SOM,Africa,Mangroves,NA,NA
+Somalia,SOM,Africa,Ports,NA,NA
+Anguilla,AIA,North America,Corals,NA,NA
+Anguilla,AIA,North America,Fisheries & Mariculture,NA,NA
+Anguilla,AIA,North America,Mangroves,NA,NA
+Anguilla,AIA,North America,Ports,NA,NA
+W. Sahara,ESH,Africa,Corals,NA,NA
+W. Sahara,ESH,Africa,Fisheries & Mariculture,NA,NA
+W. Sahara,ESH,Africa,Mangroves,NA,NA
+W. Sahara,ESH,Africa,Ports,NA,NA
+Macao,MAC,Asia,Corals,NA,NA
+Macao,MAC,Asia,Fisheries & Mariculture,NA,NA
+Macao,MAC,Asia,Mangroves,NA,NA
+Macao,MAC,Asia,Ports,NA,NA
+Fr. Polynesia,PYF,Oceania,Corals,NA,NA
+Fr. Polynesia,PYF,Oceania,Fisheries & Mariculture,NA,NA
+Fr. Polynesia,PYF,Oceania,Mangroves,NA,NA
+Fr. Polynesia,PYF,Oceania,Ports,NA,NA
+Wallis and Futuna Is.,WLF,Oceania,Corals,NA,NA
+Wallis and Futuna Is.,WLF,Oceania,Fisheries & Mariculture,NA,NA
+Wallis and Futuna Is.,WLF,Oceania,Mangroves,NA,NA
+Wallis and Futuna Is.,WLF,Oceania,Ports,NA,NA
+Cook Is.,COK,Oceania,Corals,NA,NA
+Cook Is.,COK,Oceania,Fisheries & Mariculture,NA,NA
+Cook Is.,COK,Oceania,Mangroves,NA,NA
+Cook Is.,COK,Oceania,Ports,NA,NA
+Niue,NIU,Oceania,Corals,NA,NA
+Niue,NIU,Oceania,Fisheries & Mariculture,NA,NA
+Niue,NIU,Oceania,Mangroves,NA,NA
+Niue,NIU,Oceania,Ports,NA,NA
+Tonga,TON,Oceania,Corals,NA,NA
+Tonga,TON,Oceania,Fisheries & Mariculture,NA,NA
+Tonga,TON,Oceania,Mangroves,NA,NA
+Tonga,TON,Oceania,Ports,NA,NA
+Pitcairn Is.,PCN,Oceania,Corals,NA,NA
+Pitcairn Is.,PCN,Oceania,Fisheries & Mariculture,NA,NA
+Pitcairn Is.,PCN,Oceania,Mangroves,NA,NA
+Pitcairn Is.,PCN,Oceania,Ports,NA,NA
+S. Geo. and the Is.,SGS,Seven seas (open ocean),Corals,NA,NA
+S. Geo. and the Is.,SGS,Seven seas (open ocean),Fisheries & Mariculture,NA,NA
+S. Geo. and the Is.,SGS,Seven seas (open ocean),Mangroves,NA,NA
+S. Geo. and the Is.,SGS,Seven seas (open ocean),Ports,NA,NA
+American Samoa,ASM,Oceania,Corals,NA,NA
+American Samoa,ASM,Oceania,Fisheries & Mariculture,NA,NA
+American Samoa,ASM,Oceania,Mangroves,NA,NA
+American Samoa,ASM,Oceania,Ports,NA,NA
+Aruba,ABW,North America,Corals,NA,NA
+Aruba,ABW,North America,Fisheries & Mariculture,NA,NA
+Aruba,ABW,North America,Mangroves,NA,NA
+Aruba,ABW,North America,Ports,NA,NA
+Curaçao,CUW,North America,Corals,NA,NA
+Curaçao,CUW,North America,Fisheries & Mariculture,NA,NA
+Curaçao,CUW,North America,Mangroves,NA,NA
+Curaçao,CUW,North America,Ports,NA,NA
+Br. Indian Ocean Ter.,IOT,Seven seas (open ocean),Corals,NA,NA
+Br. Indian Ocean Ter.,IOT,Seven seas (open ocean),Fisheries & Mariculture,NA,NA
+Br. Indian Ocean Ter.,IOT,Seven seas (open ocean),Mangroves,NA,NA
+Br. Indian Ocean Ter.,IOT,Seven seas (open ocean),Ports,NA,NA
+Andorra,AND,Europe,Corals,NA,NA
+Andorra,AND,Europe,Fisheries & Mariculture,NA,NA
+Andorra,AND,Europe,Mangroves,NA,NA
+Andorra,AND,Europe,Ports,NA,NA
+Faeroe Is.,FRO,Europe,Corals,NA,NA
+Faeroe Is.,FRO,Europe,Fisheries & Mariculture,NA,NA
+Faeroe Is.,FRO,Europe,Mangroves,NA,NA
+Faeroe Is.,FRO,Europe,Ports,NA,NA
+Micronesia,FSM,Oceania,Corals,NA,NA
+Micronesia,FSM,Oceania,Fisheries & Mariculture,NA,NA
+Micronesia,FSM,Oceania,Mangroves,NA,NA
+Micronesia,FSM,Oceania,Ports,NA,NA
+Åland,ALA,Europe,Corals,NA,NA
+Åland,ALA,Europe,Fisheries & Mariculture,NA,NA
+Åland,ALA,Europe,Mangroves,NA,NA
+Åland,ALA,Europe,Ports,NA,NA
+Fr. S. Antarctic Lands,ATF,Seven seas (open ocean),Corals,NA,NA
+Fr. S. Antarctic Lands,ATF,Seven seas (open ocean),Fisheries & Mariculture,NA,NA
+Fr. S. Antarctic Lands,ATF,Seven seas (open ocean),Mangroves,NA,NA
+Fr. S. Antarctic Lands,ATF,Seven seas (open ocean),Ports,NA,NA
+St-Barthélemy,BLM,North America,Corals,NA,NA
+St-Barthélemy,BLM,North America,Fisheries & Mariculture,NA,NA
+St-Barthélemy,BLM,North America,Mangroves,NA,NA
+St-Barthélemy,BLM,North America,Ports,NA,NA
+St-Martin,MAF,North America,Corals,NA,NA
+St-Martin,MAF,North America,Fisheries & Mariculture,NA,NA
+St-Martin,MAF,North America,Mangroves,NA,NA
+St-Martin,MAF,North America,Ports,NA,NA
+Nauru,NRU,Oceania,Corals,NA,NA
+Nauru,NRU,Oceania,Fisheries & Mariculture,NA,NA
+Nauru,NRU,Oceania,Mangroves,NA,NA
+Nauru,NRU,Oceania,Ports,NA,NA
+Sint Maarten,SXM,North America,Corals,NA,NA
+Sint Maarten,SXM,North America,Fisheries & Mariculture,NA,NA
+Sint Maarten,SXM,North America,Mangroves,NA,NA
+Sint Maarten,SXM,North America,Ports,NA,NA
+St. Kitts and Nevis,KNA,North America,Corals,NA,NA
+St. Kitts and Nevis,KNA,North America,Fisheries & Mariculture,NA,NA
+St. Kitts and Nevis,KNA,North America,Mangroves,NA,NA
+St. Kitts and Nevis,KNA,North America,Ports,NA,NA
+San Marino,SMR,Europe,Corals,NA,NA
+San Marino,SMR,Europe,Fisheries & Mariculture,NA,NA
+San Marino,SMR,Europe,Mangroves,NA,NA
+San Marino,SMR,Europe,Ports,NA,NA
+Isle of Man,IMN,Europe,Corals,NA,NA
+Isle of Man,IMN,Europe,Fisheries & Mariculture,NA,NA
+Isle of Man,IMN,Europe,Mangroves,NA,NA
+Isle of Man,IMN,Europe,Ports,NA,NA
+Bermuda,BMU,North America,Corals,NA,NA
+Bermuda,BMU,North America,Fisheries & Mariculture,NA,NA
+Bermuda,BMU,North America,Mangroves,NA,NA
+Bermuda,BMU,North America,Ports,NA,NA
+British Virgin Is.,VGB,North America,Corals,NA,NA
+British Virgin Is.,VGB,North America,Fisheries & Mariculture,NA,NA
+British Virgin Is.,VGB,North America,Mangroves,NA,NA
+British Virgin Is.,VGB,North America,Ports,NA,NA
+Montserrat,MSR,North America,Corals,NA,NA
+Montserrat,MSR,North America,Fisheries & Mariculture,NA,NA
+Montserrat,MSR,North America,Mangroves,NA,NA
+Montserrat,MSR,North America,Ports,NA,NA
+Saint Helena,SHN,Seven seas (open ocean),Corals,NA,NA
+Saint Helena,SHN,Seven seas (open ocean),Fisheries & Mariculture,NA,NA
+Saint Helena,SHN,Seven seas (open ocean),Mangroves,NA,NA
+Saint Helena,SHN,Seven seas (open ocean),Ports,NA,NA
+Turks and Caicos Is.,TCA,North America,Corals,NA,NA
+Turks and Caicos Is.,TCA,North America,Fisheries & Mariculture,NA,NA
+Turks and Caicos Is.,TCA,North America,Mangroves,NA,NA
+Turks and Caicos Is.,TCA,North America,Ports,NA,NA
+Guam,GUM,Oceania,Corals,NA,NA
+Guam,GUM,Oceania,Fisheries & Mariculture,NA,NA
+Guam,GUM,Oceania,Mangroves,NA,NA
+Guam,GUM,Oceania,Ports,NA,NA
+N. Mariana Is.,MNP,Oceania,Corals,NA,NA
+N. Mariana Is.,MNP,Oceania,Fisheries & Mariculture,NA,NA
+N. Mariana Is.,MNP,Oceania,Mangroves,NA,NA
+N. Mariana Is.,MNP,Oceania,Ports,NA,NA
+U.S. Virgin Is.,VIR,North America,Corals,NA,NA
+U.S. Virgin Is.,VIR,North America,Fisheries & Mariculture,NA,NA
+U.S. Virgin Is.,VIR,North America,Mangroves,NA,NA
+U.S. Virgin Is.,VIR,North America,Ports,NA,NA
+St. Pierre and Miquelon,SPM,North America,Corals,NA,NA
+St. Pierre and Miquelon,SPM,North America,Fisheries & Mariculture,NA,NA
+St. Pierre and Miquelon,SPM,North America,Mangroves,NA,NA
+St. Pierre and Miquelon,SPM,North America,Ports,NA,NA
+Turkmenistan,TKM,Asia,Corals,NA,NA
+Turkmenistan,TKM,Asia,Fisheries & Mariculture,NA,NA
+Turkmenistan,TKM,Asia,Mangroves,NA,NA
+Turkmenistan,TKM,Asia,Ports,NA,NA
+Palau,PLW,Oceania,Corals,NA,NA
+Palau,PLW,Oceania,Fisheries & Mariculture,NA,NA
+Palau,PLW,Oceania,Mangroves,NA,NA
+Palau,PLW,Oceania,Ports,NA,NA
+Guernsey,GGY,Europe,Corals,NA,NA
+Guernsey,GGY,Europe,Fisheries & Mariculture,NA,NA
+Guernsey,GGY,Europe,Mangroves,NA,NA
+Guernsey,GGY,Europe,Ports,NA,NA
+Jersey,JEY,Europe,Corals,NA,NA
+Jersey,JEY,Europe,Fisheries & Mariculture,NA,NA
+Jersey,JEY,Europe,Mangroves,NA,NA
+Jersey,JEY,Europe,Ports,NA,NA
+Venezuela,VEN,South America,Corals,NA,NA
+Venezuela,VEN,South America,Fisheries & Mariculture,NA,NA
+Venezuela,VEN,South America,Mangroves,NA,NA
+Venezuela,VEN,South America,Ports,NA,NA
+Ashmore and Cartier Is.,-99,Oceania,Corals,NA,NA
+Ashmore and Cartier Is.,-99,Oceania,Fisheries & Mariculture,NA,NA
+Ashmore and Cartier Is.,-99,Oceania,Mangroves,NA,NA
+Ashmore and Cartier Is.,-99,Oceania,Ports,NA,NA
+Heard I. and McDonald Is.,HMD,Seven seas (open ocean),Corals,NA,NA
+Heard I. and McDonald Is.,HMD,Seven seas (open ocean),Fisheries & Mariculture,NA,NA
+Heard I. and McDonald Is.,HMD,Seven seas (open ocean),Mangroves,NA,NA
+Heard I. and McDonald Is.,HMD,Seven seas (open ocean),Ports,NA,NA
+Indian Ocean Ter.,-99,Asia,Corals,NA,NA
+Indian Ocean Ter.,-99,Asia,Fisheries & Mariculture,NA,NA
+Indian Ocean Ter.,-99,Asia,Mangroves,NA,NA
+Indian Ocean Ter.,-99,Asia,Ports,NA,NA
+Norfolk Island,NFK,Oceania,Corals,NA,NA
+Norfolk Island,NFK,Oceania,Fisheries & Mariculture,NA,NA
+Norfolk Island,NFK,Oceania,Mangroves,NA,NA
+Norfolk Island,NFK,Oceania,Ports,NA,NA
+Kiribati,KIR,Oceania,Corals,NA,NA
+Kiribati,KIR,Oceania,Fisheries & Mariculture,NA,NA
+Kiribati,KIR,Oceania,Mangroves,NA,NA
+Kiribati,KIR,Oceania,Ports,NA,NA
+Malawi,MWI,Africa,Corals,NA,NA
+Malawi,MWI,Africa,Fisheries & Mariculture,NA,NA
+Malawi,MWI,Africa,Mangroves,NA,NA
+Malawi,MWI,Africa,Ports,NA,NA
+Marshall Is.,MHL,Oceania,Corals,NA,NA
+Marshall Is.,MHL,Oceania,Fisheries & Mariculture,NA,NA
+Marshall Is.,MHL,Oceania,Mangroves,NA,NA
+Marshall Is.,MHL,Oceania,Ports,NA,NA
+Tuvalu,TUV,Oceania,Corals,NA,NA
+Tuvalu,TUV,Oceania,Fisheries & Mariculture,NA,NA
+Tuvalu,TUV,Oceania,Mangroves,NA,NA
+Tuvalu,TUV,Oceania,Ports,NA,NA
+Monaco,MCO,Europe,Corals,NA,NA
+Monaco,MCO,Europe,Fisheries & Mariculture,NA,NA
+Monaco,MCO,Europe,Mangroves,NA,NA
+Monaco,MCO,Europe,Ports,NA,NA
+Vatican,VAT,Europe,Corals,NA,NA
+Vatican,VAT,Europe,Fisheries & Mariculture,NA,NA
+Vatican,VAT,Europe,Mangroves,NA,NA
+Vatican,VAT,Europe,Ports,NA,NA

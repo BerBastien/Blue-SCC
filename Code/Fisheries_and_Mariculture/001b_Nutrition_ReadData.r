@@ -99,10 +99,6 @@
             ssp_gdp_pop <- ssp_pop %>% left_join(ssp_gdp,by=c("scenario","ISO3","year")) %>% rename(ssp=scenario)
             glimpse(ssp_gdp_pop)
             
-            T_ssp45 <- read.csv("Data/scenarios/SSP245_magicc_202303021423.csv")
-            T_ssp85 <- read.csv("Data/scenarios/SSP585_magicc_202303221353.csv")
-            T_ssp126 <- read.csv("Data/scenarios/SSP126_magicc_202308040902.csv")
-            T_ssp460 <- read.csv("Data/scenarios/SSP460_magicc_202402051249.csv")
 
             temp1 <- data.frame(temp = t(T_ssp45[17,c(13:length(T_ssp45))]), year = names(T_ssp45[17,c(13:length(T_ssp45))]))
             temp1$year <- as.integer(sub('X', '', temp1$year))
@@ -313,6 +309,7 @@
     
     ## Read Dependence (end)
     #write.csv(gbd_deaths_number_doseresponse_pop_temp_future_dep,"Data/Modules/fish/Nutrition/gbd_deaths_number_doseresponse_pop_temp_future.csv")
+    gbd_deaths_number_doseresponse_pop_temp_future_dep <- read.csv("Data/Modules/fish/Nutrition/gbd_deaths_number_doseresponse_pop_temp_future.csv")
 
 
     
