@@ -16,6 +16,9 @@ Data/SCC/out/*
 *.RData
 *.gpkg
 **/__pycache__
+~$*
+*.log
+CLAUDE.md
 
 # !/Figures/SCC/pawn.png
 # !/Figures/SCC/rennert_et_al.pdf
