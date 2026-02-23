@@ -71,6 +71,6 @@ Results/
 !Results/.gitkeep
 
 # User-specific files
-*.Rproj
 .claude/
+*.Rproj
 docs/
