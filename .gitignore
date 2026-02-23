@@ -19,6 +19,7 @@ Data/SCC/out/*
 ~$*
 *.log
 CLAUDE.md
+.CLAUDE
 
 # !/Figures/SCC/pawn.png
 # !/Figures/SCC/rennert_et_al.pdf
