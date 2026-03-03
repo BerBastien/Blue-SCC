@@ -2,11 +2,11 @@
     # Corals 
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals\\geospatial_coral_polygons.rdat") 
     # Mangroves
-    geospatial_mangroves_polygons <- st_read("Data\\input_modules\\mangroves\\gmw\\gmw_v3_2020_vec.shp")
+    geospatial_mangroves_polygons <- st_read("External_Data\\input_modules\\mangroves\\gmw\\gmw_v3_2020_vec.shp")
     # Ports
-    geospatial_ports_polygons <- st_read("Data\\input_modules\\ports\\nodes_maritime.gpkg")
+    geospatial_ports_polygons <- st_read("External_Data\\input_modules\\ports\\nodes_maritime.gpkg")
     # Fisheries
-    geospatial_fish_raster <- readRDS("Data\\input_modules\\fish\\species_richness_yr0.Rds")
+    geospatial_fish_raster <- readRDS("External_Data\\input_modules\\fish\\species_richness_yr0.Rds")
     eez_boundaries <- st_read("Data/other/eez_boundaries_v11.gpkg")
 
     crs_map_corals <- st_crs(geospatial_coral_polygons)

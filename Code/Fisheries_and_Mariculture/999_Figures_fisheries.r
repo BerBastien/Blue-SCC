@@ -1,5 +1,5 @@
 ## Load data(start)
-    fisheries_df_temp_gdp <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/fisheries_Free_EtAl.csv")
+    fisheries_df_temp_gdp <- read.csv("External_Data/input_modules/fish/Statistical/fisheries_Free_EtAl.csv")
     fish_tcoeff <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff.csv")
 ## Load data (end)
 
@@ -99,7 +99,7 @@
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5, title = "Damage Coefficients\n(GDP Change/Degree C)",ticks.colour = "black", frame.colour = "black")) +
     ggtitle("Fisheries Damage Function")
     ED_Table5 <- merged_data %>% st_drop_geometry(merged_data)%>% select(iso_a3,GDP_FractionChange_perC,GDP_FractionChange_perC_se)
-    write.csv(ED_Table5,file="ExtendedData\\ED_Table5_fisheries.csv")
+    write.csv(ED_Table5,file="Data/SuppTables/TableS11_fisheries.csv")
         
   #map_port
 
@@ -202,93 +202,19 @@
       theme_minimal() +
       labs(color = "Region",y="Profits (%GDP)")
 
-      file_path <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/SCC/out/country_level_scc.csv"
-
-      df <- read_csv(file_path)
-
-      # Filter for country (e.g., ISL)
-      df_bar <- df %>%
-        filter(iso3 == "ISL", oc_capital!="Total")  # Change to SLB or other if needed
-
-      # Optional: reorder capital so it looks better on x-axis
-      df_bar$oc_capital <- factor(df_bar$oc_capital,
-                                  levels = c("Corals", "Fisheries", "Mangroves", "Ports"))
-
-      # Plot
-      ggplot(df_bar, aes(x = oc_capital, y = scc, fill = valuation)) +
-        geom_bar(stat = "identity", width = 0.7, color = "gray30") +
-        geom_hline(yintercept = 0, color = "red", linewidth = 1, linetype = "dashed") +
-        scale_fill_manual(values=c("#a1c93b","#3b50c9","#81cbcd"))+
-        theme_minimal(base_size = 14) +
-        labs(
-          title = "SCC Components by Ocean Capital – ISL",
-          x = "Ocean Capital",
-          y = "Social Cost of Carbon (USD / tCO2)",
-          fill = "Valuation Type"
-        ) +
-        theme(
-          axis.text.x = element_text(angle = 15, hjust = 1),
-          plot.title = element_text(hjust = 0.5, face = "bold")
-        )
-
-        ggsave("C:/Users/basti/Documents/GitHub/BlueDICE/Figures/SM/fisheries/fisheries_revenues.jpg")
-
-        file_path <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/SCC/out/country_level_scc.csv"
-output_dir <- "C:/Users/basti/Documents/GitHub/BlueDICE/Figures/country_scc/"
-
-# Create output folder if it doesn't exist
-if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
-
-# Load data
-df <- read_csv(file_path)
-
-# Remove any total rows (if needed)
-df <- df %>% filter(oc_capital != "Total")
-
-# Reorder capital
-df$oc_capital <- factor(df$oc_capital, levels = c("Corals", "Fisheries", "Mangroves", "Ports"))
-
-# Define color palette manually
-valuation_colors <- c("Market value" = "#a1c93b", 
-                      "Non-market use value" = "#3b50c9", 
-                      "Nonuse value" = "#81cbcd")
-
-# Loop over iso3 codes
-for (iso in unique(df$iso3)) {
-  
-  df_bar <- df %>% filter(iso3 == iso)
-
-  p <- ggplot(df_bar, aes(x = oc_capital, y = scc, fill = valuation)) +
-    geom_bar(stat = "identity", width = 0.7, color = "gray30") +
-    geom_hline(yintercept = 0, color = "red", linewidth = 1, linetype = "dashed") +
-    scale_fill_manual(values = valuation_colors) +
-    theme_minimal(base_size = 14) +
-    labs(
-      title = paste0("SCC Components by Ocean Capital – ", iso),
-      x = "Ocean Capital",
-      y = "Social Cost of Carbon (USD / tCO₂)",
-      fill = "Valuation Type"
-    ) +
-    theme(
-      axis.text.x = element_text(angle = 15, hjust = 1),
-      plot.title = element_text(hjust = 0.5, face = "bold")
-    )
-
-  # Save to PNG
-  ggsave(
-    filename = paste0(output_dir, iso, "_scc_barplot.jpg"),
-    plot = p,
-    width = 8,
-    height = 6,
-    dpi = 300
-  )
-}
+      # file_path <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/SCC/out/country_level_scc.csv"
+      # df <- read_csv(file_path)
+      # df_bar <- df %>% filter(iso3 == "ISL", oc_capital!="Total")
+      # df_bar$oc_capital <- factor(df_bar$oc_capital, levels = c("Corals", "Fisheries", "Mangroves", "Ports"))
+      # ggplot(df_bar, aes(x = oc_capital, y = scc, fill = valuation)) + ...
+      # ggsave("C:/Users/basti/.../fisheries_revenues.jpg")
+      # [country-level SCC loop omitted — uses local paths from another machine]
 
 ##
 
 ## Figures Nutrition (start)
     ## Nutrition Change (start)
-      nut_proj_long_coeff <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/nut_proj_long_coeff.csv")
+      nut_proj_long_coeff <- read.csv("External_Data/input_modules/fish/nutrition/nut_proj_long_coeff.csv")
       
       windows()
       ggplot(nut_proj_long_coeff) +
@@ -309,8 +235,8 @@ for (iso in unique(df$iso3)) {
 
     
     ## Risk Change Cardiovascular Omega (start)
-      gbd_deaths_number_doseresponse_pop_temp_future <- 
-        read.csv("Data/output_modules_input_rice50x/output_modules/fish/gbd_deaths_number_doseresponse_pop_temp_future.csv")
+      gbd_deaths_number_doseresponse_pop_temp_future <-
+        read.csv("External_Data/input_modules/fish/nutrition/gbd_deaths_number_doseresponse_pop_temp_future.csv")
 
 
       
@@ -343,49 +269,43 @@ for (iso in unique(df$iso3)) {
           "darkorange4", "brown"
           )
       
-      global_deaths <- ggplot(gbd_deaths_number_doseresponse_pop_temp_future_dep %>% filter(ssp=="SSP2",year>2020,ISO3!="LUX")) +
-      geom_line(aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000, color=cause, group=interaction(cause,ISO3,nutrient)),alpha=0.1) +
-          geom_point(data=gbd_deaths_number_doseresponse_pop_temp_future_dep %>% filter(ssp=="SSP2",year==2100,ISO3!="LUX"),
-              aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000, color=cause, shape=nutrient, group=interaction(cause,nutrient))) +
-          #xlim(c(2020,2120))+
-          #geom_text_repel(data=gbd_deaths_number_doseresponse_pop_temp_future %>% filter(ssp=="SSP2",year==2100),
-          #   aes(x = deaths_percapita_future*Pop.million*10^6, y=100*delta_risk, color=nutrient, label=cause),size=2.5) +
-          ylab("Increase in Health Conditions (%)") +
-          labs(title="World under SSP2-4.6 (2020 to 2100)",shape="Deficiency",color="Mortality Cause",y="Additional Deaths \n(per million persons)",x="GDP per capita (Thousand 2020 USD)") +
-          #scale_x_continuous(trans="log2")+
-          #scale_y_continuous(trans="log2")+
-          theme_minimal() +
-          scale_color_manual(values=c25) +
-          theme(legend.position = "bottom") +
-          guides(shape = guide_legend(title.position = "top", title.hjust = 0.5),
-                  color = guide_legend(title.position = "top", title.hjust = 0.5))
-        
-      #ggsave("Figures/SM/fisheries/health_all_cause_nologxy.png")
-
-      MEX_deaths <- ggplot(gbd_deaths_number_doseresponse_pop_temp_future_dep %>% filter(ssp=="SSP2",year>2020,ISO3=="MEX")) +
-          geom_line(aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000, color=cause, group=interaction(cause,ISO3,nutrient))) +
-          geom_ribbon(aes(ymax = (deaths_percapita_future+deaths_percapita_future_se*1.96)*10^6, ymin = (deaths_percapita_future-deaths_percapita_future_se*1.96)*10^6, 
-              x=GDPpc_2020USD/1000, fill=cause, group=interaction(cause,ISO3,nutrient)),alpha=0.3) +
-          geom_point(data=gbd_deaths_number_doseresponse_pop_temp_future_dep %>% filter(ssp=="SSP2",year==2100,ISO3=="MEX"),
-              aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000, color=cause, shape=nutrient, group=interaction(cause,nutrient))) +
-          ylab("Increase in Health Conditions (%)") +
-          labs(title="Mexico under SSP2-4.6 (2020 to 2100)",shape="Deficiency",color="Mortality Cause",fill="Mortality Cause",y="Additional Deaths \n(per million persons)",x="GDP per capita (Thousand 2020 USD)") +
-          theme_minimal() +
-          scale_color_manual(values=c25)  +
-          scale_fill_manual(values=c25) +
-          theme(legend.position = "bottom") +
-          guides(shape = guide_legend(title.position = "top", title.hjust = 0.5),
-                  color = guide_legend(title.position = "top", title.hjust = 0.5),
-                  fill = guide_legend(title.position = "top", title.hjust = 0.5))
-
-      windows()
-      ggarrange(global_deaths,MEX_deaths,ncol=2,common.legend=TRUE,legend="bottom")    
-      #ggsave("Figures/SM/fisheries/health_all_cause_global_mex_nutdep.png")
+      # Commented out: gbd_deaths_number_doseresponse_pop_temp_future_dep not available
+      # global_deaths <- ggplot(gbd_deaths_number_doseresponse_pop_temp_future_dep %>% filter(ssp=="SSP2",year>2020,ISO3!="LUX")) +
+      # geom_line(aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000, color=cause, group=interaction(cause,ISO3,nutrient)),alpha=0.1) +
+      #     geom_point(data=gbd_deaths_number_doseresponse_pop_temp_future_dep %>% filter(ssp=="SSP2",year==2100,ISO3!="LUX"),
+      #         aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000, color=cause, shape=nutrient, group=interaction(cause,nutrient))) +
+      #     ylab("Increase in Health Conditions (%)") +
+      #     labs(title="World under SSP2-4.6 (2020 to 2100)",shape="Deficiency",color="Mortality Cause",y="Additional Deaths \n(per million persons)",x="GDP per capita (Thousand 2020 USD)") +
+      #     theme_minimal() +
+      #     scale_color_manual(values=c25) +
+      #     theme(legend.position = "bottom") +
+      #     guides(shape = guide_legend(title.position = "top", title.hjust = 0.5),
+      #             color = guide_legend(title.position = "top", title.hjust = 0.5))
+      # #ggsave("Figures/SM/fisheries/health_all_cause_nologxy.png")
+      #
+      # MEX_deaths <- ggplot(gbd_deaths_number_doseresponse_pop_temp_future_dep %>% filter(ssp=="SSP2",year>2020,ISO3=="MEX")) +
+      #     geom_line(aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000, color=cause, group=interaction(cause,ISO3,nutrient))) +
+      #     geom_ribbon(aes(ymax = (deaths_percapita_future+deaths_percapita_future_se*1.96)*10^6, ymin = (deaths_percapita_future-deaths_percapita_future_se*1.96)*10^6,
+      #         x=GDPpc_2020USD/1000, fill=cause, group=interaction(cause,ISO3,nutrient)),alpha=0.3) +
+      #     geom_point(data=gbd_deaths_number_doseresponse_pop_temp_future_dep %>% filter(ssp=="SSP2",year==2100,ISO3=="MEX"),
+      #         aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000, color=cause, shape=nutrient, group=interaction(cause,nutrient))) +
+      #     ylab("Increase in Health Conditions (%)") +
+      #     labs(title="Mexico under SSP2-4.6 (2020 to 2100)",shape="Deficiency",color="Mortality Cause",fill="Mortality Cause",y="Additional Deaths \n(per million persons)",x="GDP per capita (Thousand 2020 USD)") +
+      #     theme_minimal() +
+      #     scale_color_manual(values=c25)  +
+      #     scale_fill_manual(values=c25) +
+      #     theme(legend.position = "bottom") +
+      #     guides(shape = guide_legend(title.position = "top", title.hjust = 0.5),
+      #             color = guide_legend(title.position = "top", title.hjust = 0.5),
+      #             fill = guide_legend(title.position = "top", title.hjust = 0.5))
+      # windows()
+      # ggarrange(global_deaths,MEX_deaths,ncol=2,common.legend=TRUE,legend="bottom")
+      # #ggsave("Figures/SM/fisheries/health_all_cause_global_mex_nutdep.png")
 
     ## future Deaths Global
 
     ## Future Deaths by nutrient
-      deaths_by_nutrient <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_nutrient.csv")
+      deaths_by_nutrient <- read.csv("External_Data/input_modules/fish/nutrition/deaths_by_nutrient.csv")
       windows()
       ggplot(deaths_by_nutrient %>% filter(ssp=="SSP2",year>2020,ISO3!="LUX")) +
         geom_line(aes(y = deaths_percapita_future*10^6, x=GDPpc_2020USD/1000,  color=nutrient, group=interaction(ISO3,nutrient)),alpha=0.1) +
@@ -404,7 +324,7 @@ for (iso in unique(df$iso3)) {
 
     ## Deaths by Country (start)
       
-      deaths_by_country <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country_Globalvsl.csv")
+      deaths_by_country <- read.csv("External_Data/input_modules/fish/nutrition/deaths_by_country_Globalvsl.csv")
       #glimpse(deaths_by_country)
       windows()
       ggplot(deaths_by_country %>% filter(ssp=="SSP2",year>2020)) +
@@ -504,7 +424,7 @@ for (iso in unique(df$iso3)) {
     ## Deaths by Country (end)
 
     ## Health Damages in Dollars (start)
-      deaths_by_country_vsl <- read.csv("Data/Modules/fish/Nutrition/deaths_by_country_GlobalVSL.csv")
+      deaths_by_country_vsl <- read.csv("External_Data/input_modules/fish/nutrition/deaths_by_country_Globalvsl.csv")
       glimpse(deaths_by_country_vsl)
       windows()
       ggplot(deaths_by_country_vsl) +
@@ -545,7 +465,7 @@ for (iso in unique(df$iso3)) {
       
       
     
-    fisheries_df_iso <- read.csv(file="Data/Modules/fish/Nutrition/health_benefits_tcoeff_GlobalVSL.csv")
+    fisheries_df_iso <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/health_benefits_tcoeff_GlobalVSL.csv")
     glimpse(fisheries_df_iso)
     # Get the world map in sf format
     world <- ne_countries(scale = "medium", returnclass = "sf")

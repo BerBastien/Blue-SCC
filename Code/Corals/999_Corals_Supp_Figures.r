@@ -32,7 +32,7 @@
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_temp_maldives.Rds")#coral_temp_maldives
 
     
-    corals_df_iso <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals_area_damage_value.csv")
+    corals_df_iso <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
     
     continents <- ne_countries(scale = "medium", returnclass = "sf") %>%
                     st_transform(st_crs(corals_area_coeff_sf))  
@@ -289,8 +289,8 @@
             color = guide_legend(title.position = "top", title.hjust = 0.5)
         )
     #glimpse(data_robinson)
-    #geospatial_coral_polygons <- data_robinson
-    #save(geospatial_coral_polygons, file="Data/output_modules_input_rice50x/output_modules/corals/geospatial_coral_polygons.rdat")        
+    geospatial_coral_polygons <- data_robinson
+    save(geospatial_coral_polygons, file="Data/output_modules_input_rice50x/output_modules/corals/geospatial_coral_polygons.rdat")        
     #ggsave("Figures/SM/corals/Effect1C_coralcover_categories.png",dpi=600) 
 
     

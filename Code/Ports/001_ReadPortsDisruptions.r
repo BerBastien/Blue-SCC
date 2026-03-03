@@ -9,10 +9,10 @@
 #-trade_risk_mUSD_yr_2050: trade at-risk (in million USD/yr) in 2050 under both CC and trade growth. 
 
 
-port_exp <- read.csv("Data\\input_modules\\ports\\future_country_exports_at_risk.csv")
-port_imp <- read.csv("Data\\input_modules\\ports\\future_country_imports_at_risk.csv")
-port_phy_rev <- read.csv("Data\\input_modules\\ports\\future_country_port_infra_revenue_risk.csv")
-port_df_old <- read.csv("Data\\input_modules\\ports\\Old Data\\port_risk_midcentury.csv")
+port_exp <- read.csv("External_Data\\input_modules\\ports\\future_country_exports_at_risk.csv")
+port_imp <- read.csv("External_Data\\input_modules\\ports\\future_country_imports_at_risk.csv")
+port_phy_rev <- read.csv("External_Data\\input_modules\\ports\\future_country_port_infra_revenue_risk.csv")
+port_df_old <- read.csv("External_Data\\input_modules\\ports\\Old Data\\port_risk_midcentury.csv")
 
 ## Merge base risk and future risk (start)
   names(port_imp)[c(4:5)] <- paste0(names(port_imp)[c(4:5)],"_imp")## Merge import and exports

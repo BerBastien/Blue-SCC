@@ -1,5 +1,5 @@
 ## Load Data (start)
-  datadir <- "Data/input_modules/fish/Statistical/"
+  datadir <- "External_Data/input_modules/fish/Statistical/"
   data <- readRDS(paste0(datadir, "total_catch_profit_timeseries.Rds"))
 ## Load Data (End)
 

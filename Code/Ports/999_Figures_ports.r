@@ -1,9 +1,12 @@
 
 # Load files (start)
-  port_ssp<- read.csv("Data/output_modules_input_rice50x/output_modules/ports/ports_ssps_rcps.csv")
-    load(file="Data/output_modules_input_rice50x/output_modules/ports/ports_tcoeff.Rds")
-    port_locations_file <- 'Data/input_modules/ports/nodes_maritime.gpkg'
+  port_ssp<- read.csv("External_Data/input_modules/ports/ports_ssps_rcps.csv")
+    load(file="External_Data/input_modules/ports/ports_tcoeff.Rds")
+    port_locations_file <- 'External_Data/input_modules/ports/nodes_maritime.gpkg'
     library(scales)
+    regions <- read.csv('Data/other/r5regions.csv')
+    names(regions) <- c("R5","countrycode")
+    regions$R5 <- as.character(gsub("R5", "", regions$R5))
 # Load files (end)
 
 ## Fig P1 (start)
@@ -331,7 +334,7 @@
 
 ## Figure comparing ports and fisheries
 
-fisheries_df_temp_gdp <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/fisheries_Free_EtAl.csv")
+fisheries_df_temp_gdp <- read.csv("External_Data/input_modules/fish/Statistical/fisheries_Free_EtAl.csv")
 
 plot_profits_usd <- ggplot(fisheries_df_temp_gdp %>% filter(scenario=="Full Adaptation", country_iso3=="MEX", year>2013))+
     geom_line(aes(y=profits_usd/10^6,x=year,color=rcp, group=interaction(rcp,country_iso3)))+
@@ -346,15 +349,15 @@ plot_profits_usd <- ggplot(fisheries_df_temp_gdp %>% filter(scenario=="Full Adap
     
     fish_tcoeff <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff.csv")
 
-    GDP_FractionChange_perC
+    # GDP_FractionChange_perC  # bare column reference removed
 
     ###############
     #################
     ###############
 
 
-    ED_Table4_ports <- read.csv(file="ExtendedData\\ED_Table4_ports.csv")
-    ED_Table5_fisheries <- read.csv(file="ExtendedData\\ED_Table5_fisheries.csv")
+    ED_Table4_ports <- read.csv(file="Data/SuppTables/TableS10_ports.csv")
+    ED_Table5_fisheries <- read.csv(file="Data/SuppTables/TableS11_fisheries.csv")
     glimpse(ED_Table4_ports)
     glimpse(ED_Table5_fisheries)
     ports_fi <- ED_Table4_ports %>% 

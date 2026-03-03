@@ -19,7 +19,7 @@ deflator = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50
 deflator20_05 = deflator.loc[deflator.year==2005, 'value'].iloc[0] / deflator.loc[deflator.year==2020, 'value'].iloc[0]
 deflator07_05 = deflator.loc[deflator.year==2005, 'value'].iloc[0] / deflator.loc[deflator.year==2007, 'value'].iloc[0]
 # %% GDP per capita
-gdx_dict = gdxpds.read_gdx.to_dataframes(context.projectpath().parent / 'RICE50x/input/data/ssp_navigate-ssp_base.gdx')
+gdx_dict = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/ssp_navigate-ssp_base.gdx')
 gdp = gdx_dict['gdp_base_navigate'].rename(columns={'Value': 'gdp'})
 popu = gdx_dict['pop_base_navigate'].rename(columns={'Value': 'popu'})
 gdppc = pd.merge(gdp, popu).query("ssp=='SSP2'").drop(columns=['ssp'])\

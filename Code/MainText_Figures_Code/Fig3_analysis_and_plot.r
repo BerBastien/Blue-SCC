@@ -1,8 +1,84 @@
 # Convert GDX Files to XLSX ----
-    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx")
-    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx")
-    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx")
+    system("gdx2xls Results/RICE50x/results_ocean_today.gdx")
+    system("gdx2xls Results/RICE50x/results_ocean_damage_pulse.gdx")
+    system("gdx2xls Results/RICE50x/results_ocean_damage.gdx")
 
+
+## Regions
+    regions <- read.csv('Data/other/r5regions.csv')
+    names(regions) <- c("R5","countrycode")
+    regions$R5 <- as.character(gsub("R5", "", regions$R5))
+
+## Helper functions (from crosscutting_data.r)
+process_var_table <- function(var_table, exp_name, var_name) {
+    var_table <- var_table[3:nrow(var_table), ]
+    var_table <- as.data.frame(var_table)
+    print(var_name)
+
+    if (ncol(var_table) < 4) {
+        if (var_name %in%  c("scc","pop")) {
+            names(var_table) <- c("year", "country", var_name)
+            var_table$country <- as.factor(var_table$country)
+            var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
+            var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
+            var_table$exp <- exp_name
+            var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
+        } else {
+            names(var_table) <- c("capital", "country", var_name)
+            var_table$country <- as.factor(var_table$country)
+            var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
+            var_table$exp <- exp_name
+            var_table$capital <- as.factor(var_table$capital)
+        }
+    } else {
+        if (ncol(var_table) < 7) {
+            if(var_name=="VSL"){
+                names(var_table) <- c("year","country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+            }else{
+                names(var_table) <- c("year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+                var_table$country <- as.factor(var_table$country)
+            }
+        } else {
+            names(var_table) <- c("capital", "year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+            var_table$capital <- as.factor(var_table$capital)
+            var_table$country <- as.factor(var_table$country)
+        }
+        var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
+        if (var_name %in% names(var_table)) {
+            var_table[[var_name]][var_table[[var_name]] %in% c("INF", "-INF", "NA", "", NA)] <- NA
+            var_table[[var_name]] <- as.numeric(var_table[[var_name]])
+        } else {
+            warning(paste("Column", var_name, "not found in var_table"))
+        }
+        var_table$exp <- exp_name
+        glimpse(var_table)
+    }
+
+    return(var_table)
+}
+
+process_data <- function(exp_names, var_names, input_path = 'Results/RICE50x/results_ocean_') {
+    for (i in 1:length(exp_names)) {
+        for (j in 1:length(var_names)) {
+            var_table <- read_excel(paste0(input_path, exp_names[i], '.xlsx'), sheet = var_names[j])
+            var_table <- process_var_table(var_table, exp_names[i], var_names[j])
+
+            if (j == 1) {
+                assign(paste0("exp_data_", exp_names[i]), var_table, envir = .GlobalEnv)
+            } else {
+                existing_data <- get(paste0("exp_data_", exp_names[i]))
+                glimpse(existing_data)
+                common_cols <- intersect(names(existing_data), names(var_table))
+                glimpse(common_cols)
+                if (length(common_cols) == 0) {
+                    assign(paste0("exp_data_", exp_names[i]), rbind(existing_data, var_table), envir = .GlobalEnv)
+                } else {
+                    assign(paste0("exp_data_", exp_names[i]), merge(existing_data, var_table, by = common_cols, all = TRUE), envir = .GlobalEnv)
+                }
+            }
+        }
+    }
+}
 
 ## Read BLUERICE50x Results
     # Key variables
@@ -10,12 +86,12 @@
         "C", "ocean_consump_damage_coef", "ocean_consump_damage_coef_sq", "YNET",
         "OCEAN_USENM_VALUE_PERKM2", "VSL", "CPC", "OCEAN_NONUSE_VALUE_PERKM2",
         "OCEAN_AREA", "ocean_area_start", "ocean_value_intercept_unm", "ocean_value_exp_unm",
-        "ocean_value_intercept_nu", "ocean_value_exp_nu", "pop", 
+        "ocean_value_intercept_nu", "ocean_value_exp_nu", "pop",
         "ocean_health_beta", "ocean_health_mu", "ocean_health_tame"
     )
     exp_names <- "damage"
 
-    process_data(exp_names, var_names)
+    process_data(exp_names, var_names, input_path = 'Results/RICE50x/results_ocean_')
 
     ## Temperature
     tatm <- read_excel('Data/output_rice50x/results_ocean_damage.xlsx', sheet = "TATM") %>%
@@ -568,7 +644,7 @@ plot_sectoral_damages <- ggplot(map_data %>% filter(continent != "Antarctica")) 
                 quantile_group
               )
 
-            Save to CSV
+            # Save to CSV
             # write_csv(source_data_fig3c, 
             #           "Code/MainText_Figures_Code/figure_source_data/Fig3C_source_data.csv")
 

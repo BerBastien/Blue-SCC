@@ -229,7 +229,7 @@
         coefs_with_vcov %>% filter(countrycode=="AUS")
        
         # write.csv(coefs_with_vcov,file="Data\\output_modules_input_rice50x\\input_rice50x\\coral_GDPdam_coefficients.csv")
-        # write.csv(ssp_corals_growth,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\ssp_corals_growth.csv")
+        write.csv(ssp_corals_growth,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\ssp_corals_growth.csv")
          write.csv(market_coefficients_by_country3,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")
         ED_Table1_coralscoefs <- market_coefficients_by_country3 %>% filter(year==2020) %>% select(countrycode,CoralArea_2020_km2,DamCoef_changeperC,DamCoef_changeperC_se)
         #write.csv(ED_Table1_coralscoefs,file="ExtendedData\\ED_Table1_coralscoefs.csv")

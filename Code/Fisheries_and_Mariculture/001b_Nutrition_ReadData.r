@@ -2,7 +2,7 @@
 ## Change in nutrient availbaility
 
 ## Read Data (start)
-    datadir <- "Data\\input_modules\\fish\\nutrition\\"
+    datadir <- "External_Data\\input_modules\\fish\\nutrition\\"
     nut_proj <- read.csv(paste0(datadir,"Figure4_Cheung_etal_2024.csv"))
     nut_proj_hi <- read.csv(paste0(datadir,"Cheung_etal_2024_Figure4_high_income.csv")) 
     nut_proj_li <- read.csv(paste0(datadir,"Cheung_etal_2024_Figure4_low_income.csv")) 
@@ -52,7 +52,7 @@
 
         nut_proj_long_coeff <- nut_proj_long %>% left_join(nut_tcoeff,by=c("nutrient","income"))
         glimpse(nut_proj_long_coeff)
-        #write.csv(nut_proj_long_coeff,"Data/Modules/fish/Nutrition/nut_proj_long_coeff.csv")
+        #write.csv(nut_proj_long_coeff,"Data/output_modules_input_rice50x/output_modules/fish/nut_proj_long_coeff.csv")
             
 
 ## nutrient Damage Fucntion Coefficients (end)
@@ -166,7 +166,7 @@
       #  delta_risk = ((tcoeff/100)*tdif)*total_effect)
     
     
-    #write.csv(ssp_gdp_pop_nut,"Data/Modules/fish/Nutrition/ssp_gdp_pop_nut.csv")
+    #write.csv(ssp_gdp_pop_nut,"Data/output_modules_input_rice50x/output_modules/fish/ssp_gdp_pop_nut.csv")
 
     glimpse(ssp_gdp_pop_nut)
 
@@ -308,8 +308,8 @@
 
     
     ## Read Dependence (end)
-    #write.csv(gbd_deaths_number_doseresponse_pop_temp_future_dep,"Data/Modules/fish/Nutrition/gbd_deaths_number_doseresponse_pop_temp_future.csv")
-    gbd_deaths_number_doseresponse_pop_temp_future_dep <- read.csv("Data/Modules/fish/Nutrition/gbd_deaths_number_doseresponse_pop_temp_future.csv")
+    #write.csv(gbd_deaths_number_doseresponse_pop_temp_future_dep,"Data/output_modules_input_rice50x/output_modules/fish/gbd_deaths_number_doseresponse_pop_temp_future.csv")
+    gbd_deaths_number_doseresponse_pop_temp_future_dep <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/gbd_deaths_number_doseresponse_pop_temp_future.csv")
 
 
     
@@ -326,7 +326,7 @@
         GDPpc_2020USD = first(GDPpc_2020USD)
         )
     glimpse(deaths_by_nutrient)
-    #write.csv(deaths_by_nutrient,"Data/Modules/fish/Nutrition/deaths_by_nutrient.csv")
+    #write.csv(deaths_by_nutrient,"Data/output_modules_input_rice50x/output_modules/fish/deaths_by_nutrient.csv")
 
     
     deaths_by_country <- gbd_deaths_number_doseresponse_pop_temp_future_dep %>% group_by(ISO3,year,ssp) %>% 
@@ -346,8 +346,8 @@
 
     
 
-    #write.csv(deaths_by_country,"Data/Modules/fish/Nutrition/deaths_by_country.csv")
-    deaths_by_country <- read.csv("Data/Modules/fish/Nutrition/deaths_by_country.csv")
+    #write.csv(deaths_by_country,"Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country.csv")
+    deaths_by_country <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country.csv")
 
 
 
@@ -482,9 +482,9 @@
     summarize(mean_se_2 = mean(health_damage_percGDP_se^2,na.rm=TRUE), 
             mean_se_2_root = sqrt(mean(health_damage_percGDP_se^2,na.rm=TRUE)), 
             mean_se = mean(health_damage_percGDP_se,na.rm=TRUE))
-    #write.csv(deaths_by_country_vsl,"Data/Modules/fish/Nutrition/deaths_by_country_vsl.csv")
-    #write.csv(deaths_by_country_vsl,"Data/Modules/fish/Nutrition/deaths_by_country_Globalvsl.csv")
-    deaths_by_country_vsl <- read.csv("Data/Modules/fish/Nutrition/deaths_by_country_Globalvsl.csv")
+    #write.csv(deaths_by_country_vsl,"Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country_vsl.csv")
+    #write.csv(deaths_by_country_vsl,"Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country_Globalvsl.csv")
+    deaths_by_country_vsl <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country_Globalvsl.csv")
 
      
 
@@ -536,10 +536,10 @@
         theme_minimal()
 
         
-        #write.csv(health_benefits_tcoeff,"Data/Modules/fish/Nutrition/health_benefits_tcoeff.csv")
-        #write.csv(health_benefits_tcoeff,"Data/Modules/fish/Nutrition/health_benefits_tcoeff_GlobalVSL.csv")
-        health_benefits_tcoeff <- read.csv("Data/Modules/fish/Nutrition/health_benefits_tcoeff.csv")
-        health_benefits_tcoeff_global <- read.csv("Data/Modules/fish/Nutrition/health_benefits_tcoeff_GlobalVSL.csv")
+        #write.csv(health_benefits_tcoeff,"Data/output_modules_input_rice50x/input_rice50x/health_benefits_tcoeff.csv")
+        #write.csv(health_benefits_tcoeff,"Data/output_modules_input_rice50x/input_rice50x/health_benefits_tcoeff_GlobalVSL.csv")
+        health_benefits_tcoeff <- read.csv("Data/output_modules_input_rice50x/input_rice50x/health_benefits_tcoeff.csv")
+        health_benefits_tcoeff_global <- read.csv("Data/output_modules_input_rice50x/input_rice50x/health_benefits_tcoeff_GlobalVSL.csv")
     
 
     health_tcoeff_dam <- deaths_by_country_vsl %>% filter(!is.na(health_damage_percGDP)) %>% 
@@ -571,8 +571,8 @@
 
         glimpse(health_tcoeff_dam)
         
-        #write.csv(health_tcoeff_dam,"Data/Modules/fish/Nutrition/health_damages_tcoeff.csv")
-        write.csv(health_tcoeff_dam,"Data/Modules/fish/Nutrition/health_damages_tcoeff_GlobalVSL.csv")
+        #write.csv(health_tcoeff_dam,"Data/output_modules_input_rice50x/output_modules/fish/health_damages_tcoeff.csv")
+        write.csv(health_tcoeff_dam,"Data/output_modules_input_rice50x/output_modules/fish/health_damages_tcoeff_GlobalVSL.csv")
 
 
 

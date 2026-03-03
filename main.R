@@ -35,13 +35,61 @@ cat("===========================================================================
 cat("\n>>> Step 0: Setting up environment...\n")
 
 # Install and load required packages
-if (!require("pacman")) install.packages("pacman")
-source("setup.r")
+if (!require("pacman", quietly = TRUE)) install.packages("pacman")
 
-# Set working directory to repo root (if not already there)
+pacman::p_load('raster','ggOceanMapsData','ggOceanMaps', 'ggpubr',"reshape",
+    'dplyr','ncdf4','ggplot2','tidyverse','RColorBrewer','colorspace','spData','sf',
+    'lfe','marginaleffects','rgdal',"rnaturalearth",'rgeos','geosphere','sf','ggthemes',
+    "exactextractr","WDI","ggrepel","viridis","scico","scales","stringr","patchwork", "readxl",
+    "countrycode","purrr","tidyr","rlang","rnaturalearthdata","ggalluvial","svglite","ggplot2",
+    "dplyr","WDI","ggpubr","scico","rnaturalearth","scales","readxlsx","tidyquant","dplyr", "here")
+
+# Set working directory to repo root
+script_path <- here::here()
+setwd(script_path)
+
 if (!file.exists("main.R")) {
   stop("Please run this script from the repository root directory")
 }
+
+# Local data directories (using External_Data folder in repository)
+dir_external <- here::here("External_Data")
+dir_wcmc <- file.path(dir_external, "01_Data")
+dir_ssps_gridded <- dir_external  # SPP1, SPP2, SPP3, SPP4, SPP5 folders
+dir_ssps <- file.path(dir_external, "SSPs")
+
+if (!dir.exists(dir_ssps)) {
+    dir.create(dir_ssps, recursive = TRUE)
+    dir.create(file.path(dir_ssps, "CO2Pulse"), recursive = TRUE)
+    warning("\n========================================")
+    warning("External_Data/SSPs/ directory created.")
+    warning("REQUIRED CSV FILES (not yet present):")
+    warning("  - External_Data/SSPs/SspDb_country_data_2013-06-12.csv")
+    warning("  - External_Data/SSPs/ssp_gdp.csv")
+    warning("  - External_Data/SSPs/ssp_pop.csv")
+    warning("  - External_Data/SSPs/CO2Pulse/*.csv (SSP scenario temperature files)")
+    warning("========================================\n")
+}
+
+# Load miscellaneous utility files
+misc_folder <- here::here("Code", "Misc")
+r_files_misc <- list.files(path = misc_folder, pattern = "\\.[rR]$", full.names = TRUE)
+cat("\nLoading miscellaneous utility files...\n")
+skip_files <- c("crosscutting_data.r", "estimating_eaths.r")
+for (misc_file in r_files_misc) {
+    file_name <- basename(misc_file)
+    if (file_name %in% skip_files) {
+        cat("  Skipping", file_name, "(requires external data files)\n")
+        next
+    }
+    tryCatch({
+        source(misc_file)
+        cat("  Loaded:", file_name, "\n")
+    }, error = function(e) {
+        warning(paste("Could not load", file_name, ":", conditionMessage(e)))
+    })
+}
+graphics.off()
 
 ################################################################################
 # 1. RUN MODULE R SCRIPTS (OR SKIP IF ALREADY PROCESSED)
@@ -69,12 +117,12 @@ if (outputs_exist) {
   for (f in required_outputs) {
     cat("    -", f, "\n")
   }
-  cat("\n  Note: To regenerate module outputs, you need raw input data in Data/input_modules/\n")
+  cat("\n  Note: To regenerate module outputs, you need raw input data in External_Data/input_modules/\n")
   cat("        See module-specific README files for data requirements.\n")
 
 } else {
   cat("\n  Module outputs not found. Running module R scripts...\n")
-  cat("  (This requires raw input data in Data/input_modules/)\n\n")
+  cat("  (This requires raw input data in External_Data/input_modules/)\n\n")
 
   ## 1.1 CORALS
   cat("  [1/4] Processing Corals module...\n")
@@ -85,7 +133,7 @@ if (outputs_exist) {
     cat("      ✓ Corals module complete\n")
   }, error = function(e) {
     cat("      ✗ Error in Corals module:", conditionMessage(e), "\n")
-    cat("      Check that raw input data exists in Data/input_modules/corals/\n")
+    cat("      Check that raw input data exists in External_Data/input_modules/corals/\n")
   })
 
   ## 1.2 MANGROVES

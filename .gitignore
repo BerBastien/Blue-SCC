@@ -2,7 +2,7 @@
 .Rhistory
 test_*.r
 test_*.R
-/Data/input_modules
+/External_Data/input_modules
 /Code/Blue-scc
 Figures/*
 !Figures/Main
