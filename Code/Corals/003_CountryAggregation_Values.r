@@ -1,7 +1,7 @@
 
 
-    load(file="Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_sf.Rds") #corals_area_coeff_sf
-    load(file="Data/output_modules_input_rice50x/output_modules/corals/coral_country.Rds") 
+    load(file="External_Data/output_modules/corals/corals_area_coeff_sf.Rds") #corals_area_coeff_sf
+    load(file="External_Data/output_modules/corals/coral_country.Rds") 
     glimpse(corals_area_coeff_sf )
     c_coef <- corals_area_coeff_sf %>% st_drop_geometry()
     c_country <- coral_country  %>% st_drop_geometry()
@@ -11,8 +11,8 @@
 
         
    
-    #save(corals_df,file="Data/output_modules_input_rice50x/output_modules/corals/corals_df.Rds")
-    #write.csv(corals_df,file="Data/output_modules_input_rice50x/output_modules/corals/corals_df.csv")
+    #save(corals_df,file="External_Data/output_modules/corals/corals_df.Rds")
+    #write.csv(corals_df,file="External_Data/output_modules/corals/corals_df.csv")
     
        
     ## Get Mean Coefficient by Country
@@ -229,7 +229,7 @@
         coefs_with_vcov %>% filter(countrycode=="AUS")
        
         # write.csv(coefs_with_vcov,file="Data\\output_modules_input_rice50x\\input_rice50x\\coral_GDPdam_coefficients.csv")
-        # write.csv(ssp_corals_growth,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\ssp_corals_growth.csv")
+        write.csv(ssp_corals_growth,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\ssp_corals_growth.csv")
          write.csv(market_coefficients_by_country3,file="Data\\output_modules_input_rice50x\\output_modules\\corals\\market_coefficients_by_country3.csv")
         ED_Table1_coralscoefs <- market_coefficients_by_country3 %>% filter(year==2020) %>% select(countrycode,CoralArea_2020_km2,DamCoef_changeperC,DamCoef_changeperC_se)
         #write.csv(ED_Table1_coralscoefs,file="ExtendedData\\ED_Table1_coralscoefs.csv")
@@ -255,7 +255,7 @@
                 temp_cover_maldives_updated <- bind_rows(temp_cover_maldives, new_rows)
             glimpse(temp_cover_maldives_updated)
             ggplot(temp_cover_maldives_updated) + geom_line(aes(x=tdif,y=cover*(1+cover_change_perc/100),group=uniqueplace)) + geom_point(aes(x=tdif,y=cover*(1+cover_change_perc/100),color=scenario))
-            load("Data/output_modules_input_rice50x/output_modules/corals/coral_areas_maldives_single_joined.Rds")
+            load("External_Data/output_modules/corals/coral_areas_maldives_single_joined.Rds")
             glimpse(coral_areas_maldives_single)
             glimpse(coral_areas_maldives_single_joined)
             ggplot(coral_areas_maldives_single_joined, aes(x=area_km2*cover,y=mean_coef))+geom_point()        
@@ -410,7 +410,7 @@
             ggsave("Figures/SM/corals/TOTAL_maldives_market_total_value_usd.png",dpi=600)
             
             series_mdv %>% filter(year==2021) %>% select(mean_coef)
-            #corals_df <- read.csv(file="Data/output_modules_input_rice50x/output_modules/corals/corals_df.csv")
+            #corals_df <- read.csv(file="External_Data/output_modules/corals/corals_df.csv")
                 #glimpse(corals_df)
             #corals_df %>% filter(countrycode=="MDV") %>% summarize(area=sum(area_km2,na.rm=T))
         ## Maldives

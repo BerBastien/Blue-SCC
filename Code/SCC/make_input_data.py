@@ -19,7 +19,7 @@ deflator = pd.read_csv(context.projectpath() / 'Data/output_modules_input_rice50
 deflator20_05 = deflator.loc[deflator.year==2005, 'value'].iloc[0] / deflator.loc[deflator.year==2020, 'value'].iloc[0]
 deflator07_05 = deflator.loc[deflator.year==2005, 'value'].iloc[0] / deflator.loc[deflator.year==2007, 'value'].iloc[0]
 # %% GDP per capita
-gdx_dict = gdxpds.read_gdx.to_dataframes(context.projectpath().parent / 'RICE50x\input\data\ssp_navigate-ssp_base.gdx')
+gdx_dict = gdxpds.read_gdx.to_dataframes(context.projectpath() / 'Data/output_modules_input_rice50x/input_rice50x/ssp_navigate-ssp_base.gdx')
 gdp = gdx_dict['gdp_base_navigate'].rename(columns={'Value': 'gdp'})
 popu = gdx_dict['pop_base_navigate'].rename(columns={'Value': 'popu'})
 gdppc = pd.merge(gdp, popu).query("ssp=='SSP2'").drop(columns=['ssp'])\
@@ -168,9 +168,16 @@ df = df.rename(columns={
     'exp_nu': 'ocean_value_exp_nu',
     'exp_nu_se': 'ocean_value_exp_nu_se',
 })
+# Save to Data/SCC/out/ directory (primary location)
+output_path = context.projectpath() / 'Data/SCC/out/ocean_data.parquet'
 try:
-    df.to_parquet(context.projectpath().parent / "RICE50x/input/data/ocean_data.parquet")
-except OSError:
-    df.to_parquet(r"C:\Users\basti\Documents\GitHub\RICE50x\input\data\ocean_data.parquet")
-except:
-    raise OSError('File could not be saved.')
+    df.to_parquet(output_path)
+    print(f"✓ ocean_data.parquet saved to {output_path}")
+except Exception as e:
+    # Fallback: Try RICE50x/input/data/ directory
+    try:
+        fallback_path = context.projectpath().parent / "RICE50x/input/data/ocean_data.parquet"
+        df.to_parquet(fallback_path)
+        print(f"✓ ocean_data.parquet saved to {fallback_path}")
+    except Exception as e2:
+        raise OSError(f'Could not save ocean_data.parquet to either location. Errors: {e}, {e2}')

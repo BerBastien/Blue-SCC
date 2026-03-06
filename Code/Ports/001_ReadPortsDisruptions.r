@@ -9,10 +9,10 @@
 #-trade_risk_mUSD_yr_2050: trade at-risk (in million USD/yr) in 2050 under both CC and trade growth. 
 
 
-port_exp <- read.csv("Data\\input_modules\\ports\\future_country_exports_at_risk.csv")
-port_imp <- read.csv("Data\\input_modules\\ports\\future_country_imports_at_risk.csv")
-port_phy_rev <- read.csv("Data\\input_modules\\ports\\future_country_port_infra_revenue_risk.csv")
-port_df_old <- read.csv("Data\\input_modules\\ports\\Old Data\\port_risk_midcentury.csv")
+port_exp <- read.csv("External_Data\\input_modules\\ports\\future_country_exports_at_risk.csv")
+port_imp <- read.csv("External_Data\\input_modules\\ports\\future_country_imports_at_risk.csv")
+port_phy_rev <- read.csv("External_Data\\input_modules\\ports\\future_country_port_infra_revenue_risk.csv")
+port_df_old <- read.csv("External_Data\\input_modules\\ports\\Old Data\\port_risk_midcentury.csv")
 
 ## Merge base risk and future risk (start)
   names(port_imp)[c(4:5)] <- paste0(names(port_imp)[c(4:5)],"_imp")## Merge import and exports
@@ -83,9 +83,9 @@ port_df_old <- read.csv("Data\\input_modules\\ports\\Old Data\\port_risk_midcent
 
 ## Read RCPs Temps (start)
 
-  T_ssp45 <- read.csv("Data/other/scenarios/SSP245_magicc_202303021423.csv")
-  T_ssp85 <- read.csv("Data/other/scenarios/SSP585_magicc_202303221353.csv")
-  T_ssp126 <- read.csv("Data/other/scenarios/SSP126_magicc_202308040902.csv")
+  T_ssp45 <- read.csv("External_Data/other/scenarios/SSP245_magicc_202303021423.csv")
+  T_ssp85 <- read.csv("External_Data/other/scenarios/SSP585_magicc_202303221353.csv")
+  T_ssp126 <- read.csv("External_Data/other/scenarios/SSP126_magicc_202308040902.csv")
 
 
   temp <- data.frame(temp = t(T_ssp45[17,c(13:length(T_ssp45))]), year = names(T_ssp45[17,c(13:length(T_ssp45))]))
@@ -128,7 +128,7 @@ port_df_old <- read.csv("Data\\input_modules\\ports\\Old Data\\port_risk_midcent
 ## Read RCPs Temps (end)  
 
 ## Read SSps GDP (start)
-    ssps <- read.csv(paste0(dir_box,"/SSPs/SspDb_country_data_2013-06-12.csv"))
+    ssps <- read.csv(file.path(dir_ssps, "SspDb_country_data_2013-06-12.csv"))
     glimpse(ssps)
     
 
@@ -172,7 +172,7 @@ port_df_old <- read.csv("Data\\input_modules\\ports\\Old Data\\port_risk_midcent
 
     port_ssp %>% summarise(mean(risk_base_perc, na.rm=T))
     
-    #write.csv(port_ssp,"Data/output_modules_input_rice50x/output_modules/ports/ports_ssps_rcps.csv")
+    #write.csv(port_ssp,"External_Data/output_modules/ports/ports_ssps_rcps.csv")
 
     glimpse(port_ssp)
   

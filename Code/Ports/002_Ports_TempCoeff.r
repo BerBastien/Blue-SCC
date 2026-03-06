@@ -1,6 +1,6 @@
 
 
-port_ssp<- read.csv("Data/output_modules_input_rice50x/output_modules/ports/ports_ssps_rcps.csv")
+port_ssp<- read.csv("External_Data/output_modules/ports/ports_ssps_rcps.csv")
 
 port_ssp_sum <- port_ssp %>% 
                 group_by(iso3,RCP,SSP) %>% 
@@ -35,7 +35,7 @@ ports_tcoeff <- port_ssp_sum %>%
         unnest(data) %>% slice(1) %>% ungroup %>% dplyr::select(iso3,tcoeff,se,pval) %>% as.data.frame()
         
 
-        #save(ports_tcoeff,file="Data/output_modules_input_rice50x/output_modules/ports/ports_tcoeff.Rds")
+        #save(ports_tcoeff,file="External_Data/output_modules/ports/ports_tcoeff.Rds")
 
         glimpse(ports_tcoeff)
 

@@ -1,9 +1,7 @@
 library(tidyverse)
 
 # Load deaths_by_country_fisheries
-deaths_by_country_fisheries <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/deaths_by_country_Globalvsl.csv")
-deaths_by_country_fisheries <- deaths_by_country_vsl
-glimpse(deaths_by_country_fisheries)
+deaths_by_country_fisheries <- read.csv("External_Data/input_modules/fish/nutrition/deaths_by_country_Globalvsl.csv")
 
 
 fisheries_1C <- deaths_by_country_fisheries %>%
@@ -24,9 +22,9 @@ deaths_percapita_future <- mean(fisheries_1C$deaths_percapita_future, na.rm = TR
 deaths_percapita_future_se <- sqrt(mean((fisheries_1C$deaths_percapita_future_se)^2, na.rm = TRUE))
 
 # Load temperature and excess deaths data
-temp_df <- read.csv("Data/other/excess_deaths/give-mortality-ph/output_vars/results/CromarMortality_temperature.csv")
-excess_df <- read.csv("Data/other/excess_deaths/give-mortality-ph/output_vars/results/CromarMortality_excess_deaths_global.csv")
-mortality_change_df <- read.csv("Data/other/excess_deaths/give-mortality-ph/output_vars/results/CromarMortality_mortality_change_global.csv")
+temp_df <- read.csv("External_Data/other/excess_deaths/give-mortality-ph/output_vars/results/CromarMortality_temperature.csv")
+excess_df <- read.csv("External_Data/other/excess_deaths/give-mortality-ph/output_vars/results/CromarMortality_excess_deaths_global.csv")
+mortality_change_df <- read.csv("External_Data/other/excess_deaths/give-mortality-ph/output_vars/results/CromarMortality_mortality_change_global.csv")
 # Merge by trialnum
 merged_df <- inner_join(temp_df, excess_df, by = c("trialnum", "time"))
 merged_df <- inner_join(merged_df, mortality_change_df, by = c("trialnum", "time"))
@@ -65,14 +63,14 @@ cat("The ratio of excess deaths in our model versus the GIVE model mean at 1C is
 
 ## Table A9.6: Climate-related deaths per capita (in deaths per million) by region and risk factor
 ## (FVC: fruit and vegetable consumption; MTC: red-meat consumption; UND: underweight; OVW: overweight; OBS: obesity).  
-    deaths_nut_springmann_risk <- read_excel("Data/other/excess_deaths/Springmann_nutrition/NutritionDeaths_Springmann2016.xlsx", sheet = "Table A9.6",skip=2)
+    deaths_nut_springmann_risk <- read_excel("External_Data/other/excess_deaths/Springmann_nutrition/NutritionDeaths_Springmann2016.xlsx", sheet = "Table A9.6",skip=2)
     names(deaths_nut_springmann_risk)<- c("iso_a3","total","fvc","mtc","und","ovw","obs")
     deaths_nut_springmann_risk <- deaths_nut_springmann_risk %>% mutate(total_adj = fvc + mtc + und)
     deaths_nut_springmann_risk <- gather(deaths_nut_springmann_risk, key = "risk_factor", value = "value", total:total_adj) %>%
     #deaths_nut_springmann_risk_map <- left_join(world %>% dplyr::select(iso_a3), deaths_nut_springmann_risk, by = "iso_a3") %>% 
                         filter(risk_factor=="total_adj")
                         
-    ssp_pop <- read.csv(file="Data/other/excess_deaths/Springmann_nutrition/ssp_pop.csv")
+    ssp_pop <- read.csv(file="External_Data/other/excess_deaths/Springmann_nutrition/ssp_pop.csv")
     
     pop_2050 <- ssp_pop %>%
         filter(year == 2050) %>%

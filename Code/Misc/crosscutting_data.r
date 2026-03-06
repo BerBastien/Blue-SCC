@@ -1,15 +1,15 @@
 ## Loading Cross-cutting dataframes
 
 
-    regions  <- read.csv('Data\\other\\r5regions.csv')
+    regions  <- read.csv('External_Data/other/r5regions.csv')
     names(regions) <- c("R5","countrycode")
-    ed57  <- read.csv('Data/other/ed57regions.csv')
+    #ed57  <- read.csv('External_Data/other/ed57regions.csv')
     regions$R5 <- as.character(gsub("R5", "", regions$R5))
-    ssp_gdp <- read.csv(file=paste0(dir_box,"\\SSPs\\ssp_gdp.csv"))
-    ssp_pop <- read.csv(file=paste0(dir_box,'\\SSPs\\ssp_pop.csv'))
-    
+    ssp_gdp <- read.csv(file=file.path(dir_ssps, "ssp_gdp.csv"))
+    ssp_pop <- read.csv(file=file.path(dir_ssps, "ssp_pop.csv"))
+
     ssp_gdp_pop <- ssp_pop %>% left_join(ssp_gdp,by=c("scenario","ISO3","year")) %>% dplyr::rename(ssp=scenario)
-    ssp_temp <- read.csv(file=paste0(dir_box,"SSPs\\CO2Pulse\\SSP245_magicc_202303021423.csv"))
+    ssp_temp <- read.csv("External_Data/other/scenarios/SSP245_magicc_202303021423.csv")
     countries_in_ssps <- unique(ssp_pop$ISO3)            
 
     ssp_gdp$countrycode <- ssp_gdp$ISO3
@@ -24,8 +24,8 @@
 
 
 
-    ssp_temp_long$temp2020 <- ssp_temp_long %>% filter(year==2020) %>% dplyr::select(value) %>% unlist()
-    ssp_temp_long$temp <- ssp_temp_long$value - ssp_temp_long$temp2020
+    temp2020_val <- ssp_temp_long %>% filter(year==2020) %>% pull(value)
+    ssp_temp_long$temp <- ssp_temp_long$value - temp2020_val
 
 
     
@@ -45,10 +45,10 @@
 
 
 
-            T_ssp45 <- read.csv("Data/other/scenarios/SSP245_magicc_202303021423.csv")
-            T_ssp85 <- read.csv("Data/other/scenarios/SSP585_magicc_202303221353.csv")
-            T_ssp126 <- read.csv("Data/other/scenarios/SSP126_magicc_202308040902.csv")
-            T_ssp460 <- read.csv("Data/other/scenarios/SSP460_magicc_202402051249.csv")
+            T_ssp45 <- read.csv("External_Data/other/scenarios/SSP245_magicc_202303021423.csv")
+            T_ssp85 <- read.csv("External_Data/other/scenarios/SSP585_magicc_202303221353.csv")
+            T_ssp126 <- read.csv("External_Data/other/scenarios/SSP126_magicc_202308040902.csv")
+            T_ssp460 <- read.csv("External_Data/other/scenarios/SSP460_magicc_202402051249.csv")
 
             temp1 <- data.frame(temp = t(T_ssp45[17,c(13:length(T_ssp45))]), year = names(T_ssp45[17,c(13:length(T_ssp45))]))
             temp1$year <- as.integer(sub('X', '', temp1$year))
@@ -195,7 +195,7 @@ process_var_table <- function(var_table, exp_name, var_name) {
     return(var_table)
 }
 
-process_data <- function(exp_names, var_names, input_path = 'Data/output_rice50x/results_ocean_') {
+process_data <- function(exp_names, var_names, input_path = 'Results/RICE50x/results_ocean_') {
     for (i in 1:length(exp_names)) {
         for (j in 1:length(var_names)) {
             var_table <- read_excel(paste0(input_path, exp_names[i], '.xlsx'), sheet = var_names[j])

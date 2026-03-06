@@ -1,14 +1,14 @@
 #setup 
 
-    dir1 <- paste0(getwd(),'\\Data\\input_modules\\corals\\')
+    dir1 <- paste0(getwd(),'\\External_Data\\input_modules\\corals\\')
     
 #setup 
 
 # Merge future coral cover with GMST (start)
     # Input Data (start)
         corals <- read.csv(paste0(dir1,"data_futurecorals.csv")) #Dataset from Sully et al.
-        T_ssp45 <- read.csv("Data/other/scenarios/SSP245_magicc_202303021423.csv")
-        T_ssp85 <- read.csv("Data/other/scenarios/SSP585_magicc_202303221353.csv")
+        T_ssp45 <- read.csv("External_Data/other/scenarios/SSP245_magicc_202303021423.csv")
+        T_ssp85 <- read.csv("External_Data/other/scenarios/SSP585_magicc_202303221353.csv")
     # Input Data (end)
     
     ## Arranging Coral Projections (start)
@@ -102,9 +102,9 @@
     ## Merging coral projections and GMST (end)
 
     ## Output Files (start)    
-        #save(corals_temp_unique,file="Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.Rds")
-        #write.csv(corals_temp,"Data/output_modules_input_rice50x/output_modules/corals/corals_temp.csv")
-        #write.csv(corals_temp_unique,"Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.csv")
+        save(corals_temp_unique,file="External_Data/output_modules/corals/corals_temp_unique.Rds")
+        #write.csv(corals_temp,"External_Data/output_modules/corals/corals_temp.csv")
+        #write.csv(corals_temp_unique,"External_Data/output_modules/corals/corals_temp_unique.csv")
 
     ## Output Files (start)
 
@@ -115,7 +115,7 @@
 
 ## Estimate Temperature Coefficient (start)
     # Input (start)
-        load(file="Data/output_modules_input_rice50x/output_modules/corals/corals_temp_unique.Rds")
+        load(file="External_Data/output_modules/corals/corals_temp_unique.Rds")
     # Input (start)
 
     # Read coral spatial areas
@@ -184,11 +184,11 @@
 
         
         # Output (start)
-            save(corals_tcoeff,file="Data/output_modules_input_rice50x/output_modules/corals/corals_tcoeff.Rds")
+            save(corals_tcoeff,file="External_Data/output_modules/corals/corals_tcoeff.Rds")
         # Output (end)
     # Estimate GMST Coefficient (end)
 
-        load(file="Data/output_modules_input_rice50x/output_modules/corals/corals_tcoeff.Rds")
+        load(file="External_Data/output_modules/corals/corals_tcoeff.Rds")
         glimpse(corals_tcoeff)
 
          corals_tcoeff_sf <- corals_tcoeff %>%
@@ -386,8 +386,8 @@
 
         breaks <- seq(min((coral_temp_gulf$tcoeff*0.01)), max((coral_temp_gulf$tcoeff*0.01)),length.out=10)
         coral_temp_gulf$coef_group <- cut((coral_temp_gulf$tcoeff*0.01), breaks = breaks, labels = FALSE)
-        #save(coral_areas_gulf,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_gulf.Rds")
-        #save(coral_temp_gulf,file="Data/output_modules_input_rice50x/output_modules/corals/coral_temp_gulf.Rds")
+        save(coral_areas_gulf,file="External_Data/output_modules/corals/coral_areas_gulf.Rds")
+        save(coral_temp_gulf,file="External_Data/output_modules/corals/coral_temp_gulf.Rds")
     ## Zoom in the Gulf of Mexico (end)
 
     ## Zoom in Florida Keys (start)
@@ -465,10 +465,10 @@
 
 
 
-        # save(coral_areas_keys,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys.Rds")
-        # save(coral_areas_keys_single,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys_single.Rds")
-        # save(coral_areas_keys_single_joined,file="Data/output_modules_input_rice50x/output_modules/corals/coral_areas_keys_single_joined.Rds")
-        # save(coral_temp_keys,file="Data/output_modules_input_rice50x/output_modules/corals/coral_temp_keys.Rds")
+        save(coral_areas_keys,file="External_Data/output_modules/corals/coral_areas_keys.Rds")
+        save(coral_areas_keys_single,file="External_Data/output_modules/corals/coral_areas_keys_single.Rds")
+        save(coral_areas_keys_single_joined,file="External_Data/output_modules/corals/coral_areas_keys_single_joined.Rds")
+        save(coral_temp_keys,file="External_Data/output_modules/corals/coral_temp_keys.Rds")
 
     ## Zoom in Florida Keys (end)
 
@@ -566,10 +566,10 @@
         coral_areas_maldives_single_joined$surveys <- as.factor(coral_areas_maldives_single_joined$surveys)
 
         # Save the data
-        # save(coral_areas_maldives, file = "Data/output_modules_input_rice50x/output_modules/corals/coral_areas_maldives.Rds")
-        # save(coral_areas_maldives_single, file = "Data/output_modules_input_rice50x/output_modules/corals/coral_areas_maldives_single.Rds")
-        # save(coral_areas_maldives_single_joined, file = "Data/output_modules_input_rice50x/output_modules/corals/coral_areas_maldives_single_joined.Rds")
-        # save(coral_temp_maldives, file = "Data/output_modules_input_rice50x/output_modules/corals/coral_temp_maldives.Rds")
+        save(coral_areas_maldives, file = "External_Data/output_modules/corals/coral_areas_maldives.Rds")
+        save(coral_areas_maldives_single, file = "External_Data/output_modules/corals/coral_areas_maldives_single.Rds")
+        save(coral_areas_maldives_single_joined, file = "External_Data/output_modules/corals/coral_areas_maldives_single_joined.Rds")
+        save(coral_temp_maldives, file = "External_Data/output_modules/corals/coral_temp_maldives.Rds")
 
         ## Zoom in Maldives (end)
 
@@ -631,9 +631,9 @@
         
         ## Output (start)
             ##uncomment if data is ot there
-            #save(corals_area_coeff_sf,file="Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_sf.Rds")
-            #save(corals_area_coeff_df,file="Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_df.Rds")
-            load("Data/output_modules_input_rice50x/output_modules/corals/corals_area_coeff_sf.Rds")
+            save(corals_area_coeff_sf,file="External_Data/output_modules/corals/corals_area_coeff_sf.Rds")
+            save(corals_area_coeff_df,file="External_Data/output_modules/corals/corals_area_coeff_df.Rds")
+            load("External_Data/output_modules/corals/corals_area_coeff_sf.Rds")
             glimpse(corals_area_coeff_sf)
         
         ## Output (end)

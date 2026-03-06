@@ -1,5 +1,5 @@
 ## Load Data (start)
-  datadir <- "Data/input_modules/fish/Statistical/"
+  datadir <- "External_Data/input_modules/fish/Statistical/"
   data <- readRDS(paste0(datadir, "total_catch_profit_timeseries.Rds"))
 ## Load Data (End)
 
@@ -87,7 +87,7 @@ glimpse(fisheries_df)
 ## Temp SSPS (start)
 
 ## ADD GDP (start)
-  ssps <- read.csv(paste0(dir_box,"/SSPs/SspDb_country_data_2013-06-12.csv"))
+  ssps <- read.csv(file.path(dir_ssps, "SspDb_country_data_2013-06-12.csv"))
   glimpse(ssps)
     
     ssp <- melt(ssps, id = c("MODEL","SCENARIO","REGION","VARIABLE","UNIT")) 
@@ -144,7 +144,7 @@ glimpse(fisheries_df)
 
   glimpse(fisheries_df_temp_gdp)
 
-  #write.csv(fisheries_df_temp_gdp,"Data/output_modules_input_rice50x/output_modules/fish/fisheries_Free_EtAl.csv")
+  #write.csv(fisheries_df_temp_gdp,"External_Data/output_modules/fish/fisheries_Free_EtAl.csv")
 
 
 

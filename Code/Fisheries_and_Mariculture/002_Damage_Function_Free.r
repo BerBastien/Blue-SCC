@@ -1,7 +1,7 @@
 ## Damage Funcion Fisheries
 
 
-fisheries_df_temp_gdp <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/fisheries_Free_EtAl.csv")
+fisheries_df_temp_gdp <- read.csv("External_Data/output_modules/fish/fisheries_Free_EtAl.csv")
 
 fish_df <- fisheries_df_temp_gdp %>% 
          filter(scenario == "Full Adaptation", 
@@ -44,7 +44,7 @@ fish_tcoeff <- fish_df %>%
 
 
         
-        save(fish_tcoeff,file="Data/output_modules_input_rice50x/output_modules/fish/fish_tcoeff_FreeEtAl.Rds")
+        save(fish_tcoeff,file="External_Data/output_modules/fish/fish_tcoeff_FreeEtAl.Rds")
 
         glimpse(fish_tcoeff)
     

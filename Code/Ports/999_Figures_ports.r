@@ -1,9 +1,12 @@
 
 # Load files (start)
-  port_ssp<- read.csv("Data/output_modules_input_rice50x/output_modules/ports/ports_ssps_rcps.csv")
-    load(file="Data/output_modules_input_rice50x/output_modules/ports/ports_tcoeff.Rds")
-    port_locations_file <- 'Data/input_modules/ports/nodes_maritime.gpkg'
+  port_ssp<- read.csv("External_Data/input_modules/ports/ports_ssps_rcps.csv")
+    load(file="External_Data/input_modules/ports/ports_tcoeff.Rds")
+    port_locations_file <- 'External_Data/input_modules/ports/nodes_maritime.gpkg'
     library(scales)
+    regions <- read.csv('External_Data/other/r5regions.csv')
+    names(regions) <- c("R5","countrycode")
+    regions$R5 <- as.character(gsub("R5", "", regions$R5))
 # Load files (end)
 
 ## Fig P1 (start)
@@ -89,8 +92,6 @@
   common.legend=TRUE,legend="bottom"),
       density_RCP_ssp,ncol=1)
 
-  windows()
-  print(fig_p1)
   #ggsave("Figures/SM/ports/present_future_risk.png")
 
 
@@ -176,8 +177,6 @@
       ggtitle("C. Damage Function Coefficients")
 
     fig_p2 <- ggarrange(plot_effect_ports,map_port,ncol=2)
-    windows()
-    print(fig_p2)
     glimpse(merged_data)
     ED_Table4_ports <- merged_data %>%st_drop_geometry(merged_data)%>% select(iso_a3,GDP_FractionChange_perC,GDP_FractionChange_perC_se)
     #write.csv(ED_Table4_ports,file="ExtendedData\\ED_Table4_ports.csv")
@@ -207,8 +206,6 @@
 
     fig_p2_v2 <- ggarrange(plot_effect_ports,map2_port,ncol=2)
 
-    windows()
-    print(fig_p2_v2)
     #ggsave("Figures/SM/ports/coefficients_v2.png")
   
   #Panel C with ports (end)
@@ -323,15 +320,13 @@
   #Panel C with quantiles (end)
 
 
-  windows()
-  print(fig_p2_v2)
   #ggsave("Figures/SM/ports/coefficients_v3.png")
 ## Fig P2 (end)
 
 
 ## Figure comparing ports and fisheries
 
-fisheries_df_temp_gdp <- read.csv("Data/output_modules_input_rice50x/output_modules/fish/fisheries_Free_EtAl.csv")
+fisheries_df_temp_gdp <- read.csv("External_Data/input_modules/fish/Statistical/fisheries_Free_EtAl.csv")
 
 plot_profits_usd <- ggplot(fisheries_df_temp_gdp %>% filter(scenario=="Full Adaptation", country_iso3=="MEX", year>2013))+
     geom_line(aes(y=profits_usd/10^6,x=year,color=rcp, group=interaction(rcp,country_iso3)))+
@@ -346,15 +341,15 @@ plot_profits_usd <- ggplot(fisheries_df_temp_gdp %>% filter(scenario=="Full Adap
     
     fish_tcoeff <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/fish_tcoeff.csv")
 
-    GDP_FractionChange_perC
+    # GDP_FractionChange_perC  # bare column reference removed
 
     ###############
     #################
     ###############
 
 
-    ED_Table4_ports <- read.csv(file="ExtendedData\\ED_Table4_ports.csv")
-    ED_Table5_fisheries <- read.csv(file="ExtendedData\\ED_Table5_fisheries.csv")
+    ED_Table4_ports <- read.csv(file="Data/SuppTables/TableS10_ports.csv")
+    ED_Table5_fisheries <- read.csv(file="Data/SuppTables/TableS11_fisheries.csv")
     glimpse(ED_Table4_ports)
     glimpse(ED_Table5_fisheries)
     ports_fi <- ED_Table4_ports %>% 

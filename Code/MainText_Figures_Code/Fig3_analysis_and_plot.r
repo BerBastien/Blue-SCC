@@ -1,8 +1,84 @@
 # Convert GDX Files to XLSX ----
-    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.gdx")
-    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage_pulse.gdx")
-    system("gdx2xls C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_damage.gdx")
+    system("gdx2xls Results/RICE50x/results_ocean_today.gdx")
+    system("gdx2xls Results/RICE50x/results_ocean_damage_pulse.gdx")
+    system("gdx2xls Results/RICE50x/results_ocean_damage.gdx")
 
+
+## Regions
+    regions <- read.csv('External_Data/other/r5regions.csv')
+    names(regions) <- c("R5","countrycode")
+    regions$R5 <- as.character(gsub("R5", "", regions$R5))
+
+## Helper functions (from crosscutting_data.r)
+process_var_table <- function(var_table, exp_name, var_name) {
+    var_table <- var_table[3:nrow(var_table), ]
+    var_table <- as.data.frame(var_table)
+    print(var_name)
+
+    if (ncol(var_table) < 4) {
+        if (var_name %in%  c("scc","pop")) {
+            names(var_table) <- c("year", "country", var_name)
+            var_table$country <- as.factor(var_table$country)
+            var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
+            var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
+            var_table$exp <- exp_name
+            var_table$id <- paste(var_table$country, var_table$year, var_table$exp, sep = "")
+        } else {
+            names(var_table) <- c("capital", "country", var_name)
+            var_table$country <- as.factor(var_table$country)
+            var_table[, var_name] <- as.double(unlist(var_table[, var_name]))
+            var_table$exp <- exp_name
+            var_table$capital <- as.factor(var_table$capital)
+        }
+    } else {
+        if (ncol(var_table) < 7) {
+            if(var_name=="VSL"){
+                names(var_table) <- c("year","country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+            }else{
+                names(var_table) <- c("year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+                var_table$country <- as.factor(var_table$country)
+            }
+        } else {
+            names(var_table) <- c("capital", "year", "country", paste0(var_name, "_low"), var_name, paste0(var_name, "_high"), paste0(var_name, "_marginal"))
+            var_table$capital <- as.factor(var_table$capital)
+            var_table$country <- as.factor(var_table$country)
+        }
+        var_table$year <- 1980 + (as.integer(var_table$year) - 1) * 5
+        if (var_name %in% names(var_table)) {
+            var_table[[var_name]][var_table[[var_name]] %in% c("INF", "-INF", "NA", "", NA)] <- NA
+            var_table[[var_name]] <- as.numeric(var_table[[var_name]])
+        } else {
+            warning(paste("Column", var_name, "not found in var_table"))
+        }
+        var_table$exp <- exp_name
+        glimpse(var_table)
+    }
+
+    return(var_table)
+}
+
+process_data <- function(exp_names, var_names, input_path = 'Results/RICE50x/results_ocean_') {
+    for (i in 1:length(exp_names)) {
+        for (j in 1:length(var_names)) {
+            var_table <- read_excel(paste0(input_path, exp_names[i], '.xlsx'), sheet = var_names[j])
+            var_table <- process_var_table(var_table, exp_names[i], var_names[j])
+
+            if (j == 1) {
+                assign(paste0("exp_data_", exp_names[i]), var_table, envir = .GlobalEnv)
+            } else {
+                existing_data <- get(paste0("exp_data_", exp_names[i]))
+                glimpse(existing_data)
+                common_cols <- intersect(names(existing_data), names(var_table))
+                glimpse(common_cols)
+                if (length(common_cols) == 0) {
+                    assign(paste0("exp_data_", exp_names[i]), rbind(existing_data, var_table), envir = .GlobalEnv)
+                } else {
+                    assign(paste0("exp_data_", exp_names[i]), merge(existing_data, var_table, by = common_cols, all = TRUE), envir = .GlobalEnv)
+                }
+            }
+        }
+    }
+}
 
 ## Read BLUERICE50x Results
     # Key variables
@@ -10,15 +86,15 @@
         "C", "ocean_consump_damage_coef", "ocean_consump_damage_coef_sq", "YNET",
         "OCEAN_USENM_VALUE_PERKM2", "VSL", "CPC", "OCEAN_NONUSE_VALUE_PERKM2",
         "OCEAN_AREA", "ocean_area_start", "ocean_value_intercept_unm", "ocean_value_exp_unm",
-        "ocean_value_intercept_nu", "ocean_value_exp_nu", "pop", 
+        "ocean_value_intercept_nu", "ocean_value_exp_nu", "pop",
         "ocean_health_beta", "ocean_health_mu", "ocean_health_tame"
     )
     exp_names <- "damage"
 
-    process_data(exp_names, var_names)
+    process_data(exp_names, var_names, input_path = 'Results/RICE50x/results_ocean_')
 
     ## Temperature
-    tatm <- read_excel('Data/output_rice50x/results_ocean_damage.xlsx', sheet = "TATM") %>%
+    tatm <- read_excel('Results/RICE50x/results_ocean_damage.xlsx', sheet = "TATM") %>%
         dplyr::select(year = 1, tatm = 3) %>%
         mutate(
             year = 1980 + (as.integer(year) - 1) * 5,
@@ -255,6 +331,26 @@ shapes <- c("Market" = 15, "Non-market Use" = 16, "Non-use" = 17)
         #Consequently, ASIA bears 94% of these damages, followed by OECD (5%), LAM, and MAF. 
         nonuse_damages_2100
 
+  # Create source data for the figure
+  source_data_fig3a <- plot_data %>% 
+    filter(value < 0, year < end_year + 1, country != "ken") %>%
+    dplyr::select(
+      year,
+      country,
+      YNET,
+      pop,
+      capital,
+      variable,
+      value,
+      CPC
+    ) %>%
+    arrange(capital, variable, country, year)
+
+  # Save to CSV
+  write_csv(source_data_fig3a, 
+            "Code/MainText_Figures_Code/figure_source_data/Fig3A_source_data.csv")
+
+  # Create the plot
   time_damages_plot <- ggplot(plot_data %>% filter(value<0,year < end_year+1,country!="ken" ), 
             aes(x = CPC/1000, y = -value, color = capital, group = interaction(country,capital, variable))) +
         geom_line(alpha=0.5) +
@@ -278,7 +374,7 @@ shapes <- c("Market" = 15, "Non-market Use" = 16, "Non-use" = 17)
                         plot.title = element_text(hjust = 0.5)
                     )
 
-                    time_damages_plot
+                    invisible(time_damages_plot)
 
   time_damages_plot_onlyfisheries <- ggplot(plot_data %>% filter(year < end_year+1,capital=="Fisheries & Mariculture",variable=="Market"), 
             aes(x = CPC/1000, y = -value, color = capital, group = interaction(country,capital, variable))) +
@@ -302,9 +398,9 @@ shapes <- c("Market" = 15, "Non-market Use" = 16, "Non-use" = 17)
                         plot.title = element_text(hjust = 0.5)
                     )
                     
-  time_damages_plot_onlyfisheries 
+  invisible(time_damages_plot_onlyfisheries)
   plot_data %>% filter(year < end_year+1,capital=="Fisheries & Mariculture",variable=="Market",country=="rus") 
-        #ggsave("C:/Users/basti/Documents/GitHub/BlueDICE/Figures/SM/fisheries/fisheries_losses.jpg")
+        #ggsave("Figures/SM/fisheries/fisheries_losses.jpg")
 
 
 
@@ -312,7 +408,7 @@ shapes <- c("Market" = 15, "Non-market Use" = 16, "Non-use" = 17)
 
 ###### Figure 3C
 # Step 1: Read the CSV file
-file_path <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/analysis_output/MarketEquivalentValues.csv"
+file_path <- "Results/RICE50x/analysis_output/MarketEquivalentValues.csv"
 data <- read_csv(file_path)
 
 
@@ -346,7 +442,7 @@ aggregated_data <- data_2050 %>%
 
 glimpse(aggregated_data)
 # Step 4: Read the Excel file's 'YGROSS' sheet
-file_path_excel <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.xlsx"
+file_path_excel <- "Results/RICE50x/results_ocean_today.xlsx"
 ygross_data <- read_excel(file_path_excel, sheet = "YGROSS", skip = 3, col_names = FALSE)
 pop_data <- read_excel(file_path_excel, sheet = "pop", skip = 3, col_names = FALSE)
 # Step 2: Rename columns for easier access
@@ -377,7 +473,7 @@ map_data <- world %>%
 
 
 
-file_path_excel <- "C:/Users/basti/Documents/GitHub/BlueDICE/Data/output_rice50x/results_ocean_today.xlsx"
+file_path_excel <- "Results/RICE50x/results_ocean_today.xlsx"
 ygross_data <- read_excel(file_path_excel, sheet = "YGROSS", skip = 3, col_names = FALSE)
 pop_data <- read_excel(file_path_excel, sheet = "pop", skip = 3, col_names = FALSE)
 names(ygross_data) <- c("t", "country", "info", "gdp_value", "upperbound", "marginal")
@@ -436,7 +532,7 @@ left_join(plot_data %>%
                       plot.title = element_text(hjust = 0.5)
                       )
 
-                    time_damages_plot_adjusted
+                    invisible(time_damages_plot_adjusted)
                     #ggsave("Figures/SM/FigS26_welfare-adjustment-effect-sectoral_damages.jpg",  dpi = 300)
 
 # Step 2: Separate rows with NA in `oc_capital`, duplicate for each unique `oc_capital`, and recombine
@@ -535,24 +631,41 @@ plot_sectoral_damages <- ggplot(map_data %>% filter(continent != "Antarctica")) 
                 plot.title = element_text(hjust = 0.5)
             )
 
+            # Create source data for the figure
+            source_data_fig3c <- map_data %>% 
+              filter(continent != "Antarctica") %>%
+              st_drop_geometry() %>%  # Remove geometry for CSV export
+              dplyr::select(
+                country = name,
+                iso_a3,
+                continent,
+                oc_capital,
+                percentage_of_YGROSS,
+                quantile_group
+              )
 
-plot_sectoral_damages_legbottom <- ggplot(map_data %>% filter(continent != "Antarctica")) +
-  geom_sf(aes(fill = quantile_group), color = "grey", linewidth = 0.1) +
-  facet_wrap(~oc_capital) +
-  scale_fill_manual(values = custom_colors, na.value = "transparent", name = "% of GDP") +
-  coord_sf(crs = "+proj=robin") + # Robinson projection
-  theme_void() +
-  labs(
-    title = "B. Damages in 2050",
-    fill = "% of GDP (Quantiles)"
-  ) +
-  theme(
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank(),
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom"
-  )
+            # Save to CSV
+            # write_csv(source_data_fig3c, 
+            #           "Code/MainText_Figures_Code/figure_source_data/Fig3C_source_data.csv")
+
+            # Create the plot with legend at bottom
+            plot_sectoral_damages_legbottom <- ggplot(map_data %>% filter(continent != "Antarctica")) +
+              geom_sf(aes(fill = quantile_group), color = "grey", linewidth = 0.1) +
+              facet_wrap(~oc_capital) +
+              scale_fill_manual(values = custom_colors, na.value = "transparent", name = "% of GDP") +
+              coord_sf(crs = "+proj=robin") + # Robinson projection
+              theme_void() +
+              labs(
+                title = "B. Damages in 2050",
+                fill = "% of GDP (Quantiles)"
+              ) +
+              theme(
+                axis.text = element_blank(),
+                axis.ticks = element_blank(),
+                panel.grid = element_blank(),
+                plot.title = element_text(hjust = 0.5),
+                legend.position = "bottom"
+              )
 
 
 
@@ -610,6 +723,19 @@ for (i in seq_along(theta_values)) {
 glimpse(results)
 results
 # Plot the results
+# Create source data for Figure 3B
+source_data_fig3b <- results %>%
+  filter(theta >= -0.1, theta <= 1.12) %>%
+  dplyr::select(
+    theta,
+    market_dollar_equivalent_loss
+  )
+
+# Save to CSV
+write_csv(source_data_fig3b, 
+          "Code/MainText_Figures_Code/figure_source_data/Fig3B_source_data.csv")
+
+# Create the plot
 market_eq <- ggplot(results, aes(x = theta, y = market_dollar_equivalent_loss)) +
   geom_line() +
   labs(
@@ -647,7 +773,7 @@ market_eq <- ggplot(results, aes(x = theta, y = market_dollar_equivalent_loss)) 
   theme(
     plot.title = element_text(hjust = 0.5)  # Left-align the title
   )+ xlim(c(-0.1,1.12))
-market_eq
+market_eq  # (kept for interactive inspection; no window opened)
 #ggsave("Figures/Utility/Simulation_Utility_MarketLoss.png")
 
 

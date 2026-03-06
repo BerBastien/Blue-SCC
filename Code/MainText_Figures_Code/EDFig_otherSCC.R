@@ -61,5 +61,5 @@ combined_plot <- p1 + p2 + plot_layout(ncol = 2)
 
 print(combined_plot)
 
-ggsave("EDFig_otherSCC.png", combined_plot, width = 12, height = 6, dpi = 300)
-ggsave("EDFig_otherSCC.pdf", combined_plot, width = 12, height = 6)
+ggsave("Figures/Main/EDFig_otherSCC.png", combined_plot, width = 12, height = 6, dpi = 300)
+ggsave("Figures/Main/EDFig_otherSCC.pdf", combined_plot, width = 12, height = 6)

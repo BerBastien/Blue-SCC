@@ -32,7 +32,7 @@
     load(file="Data\\output_modules_input_rice50x\\output_modules\\corals/coral_temp_maldives.Rds")#coral_temp_maldives
 
     
-    corals_df_iso <- read.csv(file="Data\\output_modules_input_rice50x\\output_modules\\corals_area_damage_value.csv")
+    corals_df_iso <- read.csv(file="Data/output_modules_input_rice50x/input_rice50x/corals_areaDam_Value.csv")
     
     continents <- ne_countries(scale = "medium", returnclass = "sf") %>%
                     st_transform(st_crs(corals_area_coeff_sf))  
@@ -102,9 +102,6 @@
     
     fig_c1 <- ggarrange(ggarrange(individual_coral_change,leg,ncol=2,widths=c(4,1)),density_coral_coeff_cover)
     
-    windows()
-    print(fig_c1)
-    Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
     
     #ggsave("Figures/SM/corals/Coeff_CoralCover_PresentCoverv2.png",dpi=600)
 
@@ -159,9 +156,6 @@
         labs(x = "Cover damage \n(% change/C)", y = "Count", fill = "Cover change") +
         theme_minimal()
     fig_c2 <- ggarrange(coral_areas_temp,ggarrange(count_areas,count_temp,nrow=2,ncol=1,legend="none"),ncol=2,widths=c(2,1))
-    windows()
-    print(fig_c2)
-    Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
     #ggsave("Figures/SM/corals/CoralChange_temp_area.png",dpi=600)
 ## Fig. S2 (end)
 
@@ -220,9 +214,6 @@
             coral_areas_temp_florida2,
             coral_areas_temp_florida3,ncol=3,legend="bottom",align="h")
         
-    windows()
-    print(fig_c3)
-    Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
 
     #ggsave("Figures/SM/corals/meandamage.png",dpi=600)
 
@@ -289,8 +280,8 @@
             color = guide_legend(title.position = "top", title.hjust = 0.5)
         )
     #glimpse(data_robinson)
-    #geospatial_coral_polygons <- data_robinson
-    #save(geospatial_coral_polygons, file="Data/output_modules_input_rice50x/output_modules/corals/geospatial_coral_polygons.rdat")        
+    geospatial_coral_polygons <- data_robinson
+    save(geospatial_coral_polygons, file="External_Data/output_modules/corals/geospatial_coral_polygons.rdat")        
     #ggsave("Figures/SM/corals/Effect1C_coralcover_categories.png",dpi=600) 
 
     
@@ -324,9 +315,7 @@
         )
 
     # Display the combined plot
-    windows()
     print(combined_plot)
-    Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
     #ggsave("Figures/SM/corals/Effect1C_coralcover_categories_histogram.png",dpi=600) 
 
 ## Fig. C4 (end)
@@ -372,9 +361,6 @@
     coord_sf(crs = "+proj=robin") + # Robinson projection
     theme_minimal() +
     labs(fill = "Coral cover loss \n(% change/C)") 
-    windows()
-    print(fig_c5)
-    Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
     #ggsave("Figures/SM/corals/coral_countrymap_catv2.png",dpi=600) 
 
     # Custom colors for the categories
@@ -438,9 +424,6 @@
             guides(color=FALSE) + xlab("GDP in 2100 (2005 Int USD)") + ylab("Market Benefits From Corals (% GDP)") + ggtitle("Market benefits in 2100\n Under SSP2")
     fig_c6 <- ggarrange(ggarrange(Market_Value,coral_benefits_2100),coral_dam_plot2,ncol=1)
 
-    windows()
-    print(fig_c6)
-    Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
     #ggsave("Figures/SM/corals/DamageFunction_linearv2.png",dpi=600) 
 
 ## Fig. C6
@@ -505,9 +488,6 @@
     coral_temp_maldives %>% summarize(mean_coef = mean(tcoeff,na.rm=TRUE))
     
 
-    windows()
-    print(fig_c7)
-    Sys.sleep(0.5)  # Add a short pause to ensure the plot is rendered when running source
 
     #ggsave("Figures/SM/corals/maldives_meandamagev2.png",dpi=600)
 
